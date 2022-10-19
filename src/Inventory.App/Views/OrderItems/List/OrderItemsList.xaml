@@ -12,15 +12,15 @@
         <DataTemplate x:Key="HeaderTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="48"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="12*"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="12*" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="Product ID" Style="{StaticResource ColumnHeaderStyle}" />
                 <TextBlock Grid.Column="2" Text="Product Name" Style="{StaticResource ColumnHeaderStyle}" />
@@ -36,15 +36,15 @@
         <DataTemplate x:Key="ItemTemplate" x:DataType="models:OrderItemModel">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="48"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="12*"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="12*" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="0" Padding="1" Height="31">
                     <Image Source="{x:Bind Product.ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" x:Phase="2" />

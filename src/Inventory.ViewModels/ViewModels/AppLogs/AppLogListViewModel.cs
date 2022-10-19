@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -24,13 +22,9 @@ using System.Threading.Tasks;
 namespace Inventory.ViewModels
 {
     #region AppLogListArgs
+
     public class AppLogListArgs
     {
-        public static AppLogListArgs CreateEmpty()
-        {
-            return new AppLogListArgs { IsEmpty = true };
-        }
-
         public AppLogListArgs()
         {
             OrderByDesc = r => r.DateTime;
@@ -38,11 +32,18 @@ namespace Inventory.ViewModels
 
         public bool IsEmpty { get; set; }
 
+        public Expression<Func<AppLog, object>> OrderBy { get; set; }
+
+        public Expression<Func<AppLog, object>> OrderByDesc { get; set; }
+
         public string Query { get; set; }
 
-        public Expression<Func<AppLog, object>> OrderBy { get; set; }
-        public Expression<Func<AppLog, object>> OrderByDesc { get; set; }
+        public static AppLogListArgs CreateEmpty()
+        {
+            return new AppLogListArgs { IsEmpty = true };
+        }
     }
+
     #endregion
 
     public class AppLogListViewModel : GenericListViewModel<AppLogModel>
@@ -52,6 +53,16 @@ namespace Inventory.ViewModels
         }
 
         public AppLogListArgs ViewModelArgs { get; private set; }
+
+        public AppLogListArgs CreateArgs()
+        {
+            return new AppLogListArgs
+            {
+                Query = Query,
+                OrderBy = ViewModelArgs.OrderBy,
+                OrderByDesc = ViewModelArgs.OrderByDesc
+            };
+        }
 
         public async Task LoadAsync(AppLogListArgs args)
         {
@@ -63,31 +74,6 @@ namespace Inventory.ViewModels
             {
                 EndStatusMessage("Logs loaded");
             }
-        }
-        public void Unload()
-        {
-            ViewModelArgs.Query = Query;
-        }
-
-        public void Subscribe()
-        {
-            MessageService.Subscribe<AppLogListViewModel>(this, OnMessage);
-            MessageService.Subscribe<AppLogDetailsViewModel>(this, OnMessage);
-            MessageService.Subscribe<ILogService, AppLog>(this, OnLogServiceMessage);
-        }
-        public void Unsubscribe()
-        {
-            MessageService.Unsubscribe(this);
-        }
-
-        public AppLogListArgs CreateArgs()
-        {
-            return new AppLogListArgs
-            {
-                Query = Query,
-                OrderBy = ViewModelArgs.OrderBy,
-                OrderByDesc = ViewModelArgs.OrderByDesc
-            };
         }
 
         public async Task<bool> RefreshAsync()
@@ -120,28 +106,21 @@ namespace Inventory.ViewModels
             return isOk;
         }
 
-        private async Task<IList<AppLogModel>> GetItemsAsync()
+        public void Subscribe()
         {
-            if (!ViewModelArgs.IsEmpty)
-            {
-                DataRequest<AppLog> request = BuildDataRequest();
-                return await LogService.GetLogsAsync(request);
-            }
-            return new List<AppLogModel>();
+            MessageService.Subscribe<AppLogListViewModel>(this, OnMessage);
+            MessageService.Subscribe<AppLogDetailsViewModel>(this, OnMessage);
+            MessageService.Subscribe<ILogService, AppLog>(this, OnLogServiceMessage);
         }
 
-        protected override void OnNew()
+        public void Unload()
         {
-            throw new NotImplementedException();
+            ViewModelArgs.Query = Query;
         }
 
-        protected override async void OnRefresh()
+        public void Unsubscribe()
         {
-            StartStatusMessage("Loading logs...");
-            if (await RefreshAsync())
-            {
-                EndStatusMessage("Logs loaded");
-            }
+            MessageService.Unsubscribe(this);
         }
 
         protected override async void OnDeleteSelection()
@@ -183,6 +162,30 @@ namespace Inventory.ViewModels
             }
         }
 
+        protected override void OnNew()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override async void OnRefresh()
+        {
+            StartStatusMessage("Loading logs...");
+            if (await RefreshAsync())
+            {
+                EndStatusMessage("Logs loaded");
+            }
+        }
+
+        private DataRequest<AppLog> BuildDataRequest()
+        {
+            return new DataRequest<AppLog>()
+            {
+                Query = Query,
+                OrderBy = ViewModelArgs.OrderBy,
+                OrderByDesc = ViewModelArgs.OrderByDesc
+            };
+        }
+
         private async Task DeleteItemsAsync(IEnumerable<AppLogModel> models)
         {
             foreach (AppLogModel model in models)
@@ -200,14 +203,25 @@ namespace Inventory.ViewModels
             }
         }
 
-        private DataRequest<AppLog> BuildDataRequest()
+        private async Task<IList<AppLogModel>> GetItemsAsync()
         {
-            return new DataRequest<AppLog>()
+            if (!ViewModelArgs.IsEmpty)
             {
-                Query = Query,
-                OrderBy = ViewModelArgs.OrderBy,
-                OrderByDesc = ViewModelArgs.OrderByDesc
-            };
+                DataRequest<AppLog> request = BuildDataRequest();
+                return await LogService.GetLogsAsync(request);
+            }
+            return new List<AppLogModel>();
+        }
+
+        private async void OnLogServiceMessage(ILogService logService, string message, AppLog log)
+        {
+            if (message == "LogAdded")
+            {
+                await ContextService.RunAsync(async () =>
+                {
+                    await RefreshAsync();
+                });
+            }
         }
 
         private async void OnMessage(ViewModelBase sender, string message, object args)
@@ -223,17 +237,6 @@ namespace Inventory.ViewModels
                         await RefreshAsync();
                     });
                     break;
-            }
-        }
-
-        private async void OnLogServiceMessage(ILogService logService, string message, AppLog log)
-        {
-            if (message == "LogAdded")
-            {
-                await ContextService.RunAsync(async () =>
-                {
-                    await RefreshAsync();
-                });
             }
         }
     }

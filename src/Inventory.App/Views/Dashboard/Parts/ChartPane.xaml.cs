@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Storage;
@@ -33,9 +31,11 @@ namespace Inventory.Views
             _webView.NavigationCompleted += OnNavigationCompleted;
         }
 
-        private void OnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        public static async Task<string> LoadStringFromPackageFileAsync(string name)
         {
-            RootGridLayout.Children.Add(_webView);
+            // Using the storage classes to read the content from a file as a string.
+            StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Assets/Html/{name}"));
+            return await FileIO.ReadTextAsync(file);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -44,11 +44,9 @@ namespace Inventory.Views
             _webView.NavigateToString(text);
         }
 
-        public static async Task<string> LoadStringFromPackageFileAsync(string name)
+        private void OnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            // Using the storage classes to read the content from a file as a string.
-            StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Assets/Html/{name}"));
-            return await FileIO.ReadTextAsync(file);
+            RootGridLayout.Children.Add(_webView);
         }
     }
 }

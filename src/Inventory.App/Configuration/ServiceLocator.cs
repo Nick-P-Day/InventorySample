@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -23,6 +21,22 @@ namespace Inventory
         private static readonly ConcurrentDictionary<int, ServiceLocator> _serviceLocators = new ConcurrentDictionary<int, ServiceLocator>();
 
         private static ServiceProvider _rootServiceProvider = null;
+
+        private IServiceScope _serviceScope = null;
+
+        private ServiceLocator()
+        {
+            _serviceScope = _rootServiceProvider.CreateScope();
+        }
+
+        public static ServiceLocator Current
+        {
+            get
+            {
+                int currentViewId = ApplicationView.GetForCurrentView().Id;
+                return _serviceLocators.GetOrAdd(currentViewId, key => new ServiceLocator());
+            }
+        }
 
         public static void Configure(IServiceCollection serviceCollection)
         {
@@ -73,15 +87,6 @@ namespace Inventory
             _rootServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        public static ServiceLocator Current
-        {
-            get
-            {
-                int currentViewId = ApplicationView.GetForCurrentView().Id;
-                return _serviceLocators.GetOrAdd(currentViewId, key => new ServiceLocator());
-            }
-        }
-
         public static void DisposeCurrent()
         {
             int currentViewId = ApplicationView.GetForCurrentView().Id;
@@ -89,13 +94,6 @@ namespace Inventory
             {
                 current.Dispose();
             }
-        }
-
-        private IServiceScope _serviceScope = null;
-
-        private ServiceLocator()
-        {
-            _serviceScope = _rootServiceProvider.CreateScope();
         }
 
         public T GetService<T>()
@@ -109,6 +107,7 @@ namespace Inventory
         }
 
         #region Dispose
+
         public void Dispose()
         {
             Dispose(true);
@@ -125,6 +124,7 @@ namespace Inventory
                 }
             }
         }
+
         #endregion
     }
 }

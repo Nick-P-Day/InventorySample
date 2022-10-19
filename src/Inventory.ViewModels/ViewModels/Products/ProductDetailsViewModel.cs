@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Models;
@@ -23,36 +21,59 @@ using System.Windows.Input;
 namespace Inventory.ViewModels
 {
     #region ProductDetailsArgs
+
     public class ProductDetailsArgs
     {
+        public bool IsNew => String.IsNullOrEmpty(ProductID);
+
+        public string ProductID { get; set; }
+
         public static ProductDetailsArgs CreateDefault()
         {
             return new ProductDetailsArgs();
         }
-
-        public string ProductID { get; set; }
-
-        public bool IsNew => String.IsNullOrEmpty(ProductID);
     }
+
     #endregion
 
     public class ProductDetailsViewModel : GenericDetailsViewModel<ProductModel>
     {
+        private object _newPictureSource = null;
+
         public ProductDetailsViewModel(IProductService productService, IFilePickerService filePickerService, ICommonServices commonServices) : base(commonServices)
         {
             ProductService = productService;
             FilePickerService = filePickerService;
         }
 
-        public IProductService ProductService { get; }
+        public ICommand EditPictureCommand => new RelayCommand(OnEditPicture);
         public IFilePickerService FilePickerService { get; }
-
-        public override string Title => (Item?.IsNew ?? true) ? "New Product" : TitleEdit;
-        public string TitleEdit => Item == null ? "Product" : $"{Item.Name}";
-
         public override bool ItemIsNew => Item?.IsNew ?? true;
 
+        public object NewPictureSource
+        {
+            get => _newPictureSource;
+            set => Set(ref _newPictureSource, value);
+        }
+
+        public IProductService ProductService { get; }
+        public override string Title => (Item?.IsNew ?? true) ? "New Product" : TitleEdit;
+        public string TitleEdit => Item == null ? "Product" : $"{Item.Name}";
         public ProductDetailsArgs ViewModelArgs { get; private set; }
+
+        public override void BeginEdit()
+        {
+            NewPictureSource = null;
+            base.BeginEdit();
+        }
+
+        public ProductDetailsArgs CreateArgs()
+        {
+            return new ProductDetailsArgs
+            {
+                ProductID = Item?.ProductID
+            };
+        }
 
         public async Task LoadAsync(ProductDetailsArgs args)
         {
@@ -76,78 +97,26 @@ namespace Inventory.ViewModels
                 }
             }
         }
-        public void Unload()
-        {
-            ViewModelArgs.ProductID = Item?.ProductID;
-        }
 
         public void Subscribe()
         {
             MessageService.Subscribe<ProductDetailsViewModel, ProductModel>(this, OnDetailsMessage);
             MessageService.Subscribe<ProductListViewModel>(this, OnListMessage);
         }
+
+        public void Unload()
+        {
+            ViewModelArgs.ProductID = Item?.ProductID;
+        }
+
         public void Unsubscribe()
         {
             MessageService.Unsubscribe(this);
         }
 
-        public ProductDetailsArgs CreateArgs()
+        protected override async Task<bool> ConfirmDeleteAsync()
         {
-            return new ProductDetailsArgs
-            {
-                ProductID = Item?.ProductID
-            };
-        }
-
-        private object _newPictureSource = null;
-        public object NewPictureSource
-        {
-            get => _newPictureSource;
-            set => Set(ref _newPictureSource, value);
-        }
-
-        public override void BeginEdit()
-        {
-            NewPictureSource = null;
-            base.BeginEdit();
-        }
-
-        public ICommand EditPictureCommand => new RelayCommand(OnEditPicture);
-        private async void OnEditPicture()
-        {
-            NewPictureSource = null;
-            ImagePickerResult result = await FilePickerService.OpenImagePickerAsync();
-            if (result != null)
-            {
-                EditableItem.Picture = result.ImageBytes;
-                EditableItem.PictureSource = result.ImageSource;
-                EditableItem.Thumbnail = result.ImageBytes;
-                EditableItem.ThumbnailSource = result.ImageSource;
-                NewPictureSource = result.ImageSource;
-            }
-            else
-            {
-                NewPictureSource = null;
-            }
-        }
-
-        protected override async Task<bool> SaveItemAsync(ProductModel model)
-        {
-            try
-            {
-                StartStatusMessage("Saving product...");
-                await Task.Delay(100);
-                await ProductService.UpdateProductAsync(model);
-                EndStatusMessage("Product saved");
-                LogInformation("Product", "Save", "Product saved successfully", $"Product {model.ProductID} '{model.Name}' was saved successfully.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                StatusError($"Error saving Product: {ex.Message}");
-                LogException("Product", "Save", ex);
-                return false;
-            }
+            return await DialogService.ShowAsync("Confirm Delete", "Are you sure you want to delete current product?", "Ok", "Cancel");
         }
 
         protected override async Task<bool> DeleteItemAsync(ProductModel model)
@@ -169,20 +138,31 @@ namespace Inventory.ViewModels
             }
         }
 
-        protected override async Task<bool> ConfirmDeleteAsync()
-        {
-            return await DialogService.ShowAsync("Confirm Delete", "Are you sure you want to delete current product?", "Ok", "Cancel");
-        }
-
         protected override IEnumerable<IValidationConstraint<ProductModel>> GetValidationConstraints(ProductModel model)
         {
             yield return new RequiredConstraint<ProductModel>("Name", m => m.Name);
             yield return new RequiredGreaterThanZeroConstraint<ProductModel>("Category", m => m.CategoryID);
         }
 
-        /*
-         *  Handle external messages
-         ****************************************************************/
+        protected override async Task<bool> SaveItemAsync(ProductModel model)
+        {
+            try
+            {
+                StartStatusMessage("Saving product...");
+                await Task.Delay(100);
+                await ProductService.UpdateProductAsync(model);
+                EndStatusMessage("Product saved");
+                LogInformation("Product", "Save", "Product saved successfully", $"Product {model.ProductID} '{model.Name}' was saved successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                StatusError($"Error saving Product: {ex.Message}");
+                LogException("Product", "Save", ex);
+                return false;
+            }
+        }
+
         private async void OnDetailsMessage(ProductDetailsViewModel sender, string message, ProductModel changed)
         {
             ProductModel current = Item;
@@ -213,12 +193,45 @@ namespace Inventory.ViewModels
                                 }
                             });
                             break;
+
                         case "ItemDeleted":
                             await OnItemDeletedExternally();
                             break;
                     }
                 }
             }
+        }
+
+        private async void OnEditPicture()
+        {
+            NewPictureSource = null;
+            ImagePickerResult result = await FilePickerService.OpenImagePickerAsync();
+            if (result != null)
+            {
+                EditableItem.Picture = result.ImageBytes;
+                EditableItem.PictureSource = result.ImageSource;
+                EditableItem.Thumbnail = result.ImageBytes;
+                EditableItem.ThumbnailSource = result.ImageSource;
+                NewPictureSource = result.ImageSource;
+            }
+            else
+            {
+                NewPictureSource = null;
+            }
+        }
+
+        /*
+         *  Handle external messages
+         ****************************************************************/
+
+        private async Task OnItemDeletedExternally()
+        {
+            await ContextService.RunAsync(() =>
+            {
+                CancelEdit();
+                IsEnabled = false;
+                StatusMessage("WARNING: This product has been deleted externally");
+            });
         }
 
         private async void OnListMessage(ProductListViewModel sender, string message, object args)
@@ -237,6 +250,7 @@ namespace Inventory.ViewModels
                             }
                         }
                         break;
+
                     case "ItemRangesDeleted":
                         try
                         {
@@ -253,16 +267,6 @@ namespace Inventory.ViewModels
                         break;
                 }
             }
-        }
-
-        private async Task OnItemDeletedExternally()
-        {
-            await ContextService.RunAsync(() =>
-            {
-                CancelEdit();
-                IsEnabled = false;
-                StatusMessage("WARNING: This product has been deleted externally");
-            });
         }
     }
 }

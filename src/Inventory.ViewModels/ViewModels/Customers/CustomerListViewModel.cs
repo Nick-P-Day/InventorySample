@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -25,13 +23,9 @@ using System.Windows.Input;
 namespace Inventory.ViewModels
 {
     #region CustomerListArgs
+
     public class CustomerListArgs
     {
-        public static CustomerListArgs CreateEmpty()
-        {
-            return new CustomerListArgs { IsEmpty = true };
-        }
-
         public CustomerListArgs()
         {
             OrderBy = r => r.FirstName;
@@ -39,11 +33,18 @@ namespace Inventory.ViewModels
 
         public bool IsEmpty { get; set; }
 
+        public Expression<Func<Customer, object>> OrderBy { get; set; }
+
+        public Expression<Func<Customer, object>> OrderByDesc { get; set; }
+
         public string Query { get; set; }
 
-        public Expression<Func<Customer, object>> OrderBy { get; set; }
-        public Expression<Func<Customer, object>> OrderByDesc { get; set; }
+        public static CustomerListArgs CreateEmpty()
+        {
+            return new CustomerListArgs { IsEmpty = true };
+        }
     }
+
     #endregion
 
     public class CustomerListViewModel : GenericListViewModel<CustomerModel>
@@ -55,7 +56,18 @@ namespace Inventory.ViewModels
 
         public ICustomerService CustomerService { get; }
 
+        public ICommand OpenInNewViewCommand => new RelayCommand(OnOpenInNewView);
         public CustomerListArgs ViewModelArgs { get; private set; }
+
+        public CustomerListArgs CreateArgs()
+        {
+            return new CustomerListArgs
+            {
+                Query = Query,
+                OrderBy = ViewModelArgs.OrderBy,
+                OrderByDesc = ViewModelArgs.OrderByDesc
+            };
+        }
 
         public async Task LoadAsync(CustomerListArgs args)
         {
@@ -67,30 +79,6 @@ namespace Inventory.ViewModels
             {
                 EndStatusMessage("Customers loaded");
             }
-        }
-        public void Unload()
-        {
-            ViewModelArgs.Query = Query;
-        }
-
-        public void Subscribe()
-        {
-            MessageService.Subscribe<CustomerListViewModel>(this, OnMessage);
-            MessageService.Subscribe<CustomerDetailsViewModel>(this, OnMessage);
-        }
-        public void Unsubscribe()
-        {
-            MessageService.Unsubscribe(this);
-        }
-
-        public CustomerListArgs CreateArgs()
-        {
-            return new CustomerListArgs
-            {
-                Query = Query,
-                OrderBy = ViewModelArgs.OrderBy,
-                OrderByDesc = ViewModelArgs.OrderByDesc
-            };
         }
 
         public async Task<bool> RefreshAsync()
@@ -123,46 +111,20 @@ namespace Inventory.ViewModels
             return isOk;
         }
 
-        private async Task<IList<CustomerModel>> GetItemsAsync()
+        public void Subscribe()
         {
-            if (!ViewModelArgs.IsEmpty)
-            {
-                DataRequest<Customer> request = BuildDataRequest();
-                return await CustomerService.GetCustomersAsync(request);
-            }
-            return new List<CustomerModel>();
+            MessageService.Subscribe<CustomerListViewModel>(this, OnMessage);
+            MessageService.Subscribe<CustomerDetailsViewModel>(this, OnMessage);
         }
 
-        public ICommand OpenInNewViewCommand => new RelayCommand(OnOpenInNewView);
-        private async void OnOpenInNewView()
+        public void Unload()
         {
-            if (SelectedItem != null)
-            {
-                await NavigationService.CreateNewViewAsync<CustomerDetailsViewModel>(new CustomerDetailsArgs { CustomerID = SelectedItem.CustomerID });
-            }
+            ViewModelArgs.Query = Query;
         }
 
-        protected override async void OnNew()
+        public void Unsubscribe()
         {
-            if (IsMainView)
-            {
-                await NavigationService.CreateNewViewAsync<CustomerDetailsViewModel>(new CustomerDetailsArgs());
-            }
-            else
-            {
-                NavigationService.Navigate<CustomerDetailsViewModel>(new CustomerDetailsArgs());
-            }
-
-            StatusReady();
-        }
-
-        protected override async void OnRefresh()
-        {
-            StartStatusMessage("Loading customers...");
-            if (await RefreshAsync())
-            {
-                EndStatusMessage("Customers loaded");
-            }
+            MessageService.Unsubscribe(this);
         }
 
         protected override async void OnDeleteSelection()
@@ -204,6 +166,39 @@ namespace Inventory.ViewModels
             }
         }
 
+        protected override async void OnNew()
+        {
+            if (IsMainView)
+            {
+                await NavigationService.CreateNewViewAsync<CustomerDetailsViewModel>(new CustomerDetailsArgs());
+            }
+            else
+            {
+                NavigationService.Navigate<CustomerDetailsViewModel>(new CustomerDetailsArgs());
+            }
+
+            StatusReady();
+        }
+
+        protected override async void OnRefresh()
+        {
+            StartStatusMessage("Loading customers...");
+            if (await RefreshAsync())
+            {
+                EndStatusMessage("Customers loaded");
+            }
+        }
+
+        private DataRequest<Customer> BuildDataRequest()
+        {
+            return new DataRequest<Customer>()
+            {
+                Query = Query,
+                OrderBy = ViewModelArgs.OrderBy,
+                OrderByDesc = ViewModelArgs.OrderByDesc
+            };
+        }
+
         private async Task DeleteItemsAsync(IEnumerable<CustomerModel> models)
         {
             foreach (CustomerModel model in models)
@@ -221,14 +216,14 @@ namespace Inventory.ViewModels
             }
         }
 
-        private DataRequest<Customer> BuildDataRequest()
+        private async Task<IList<CustomerModel>> GetItemsAsync()
         {
-            return new DataRequest<Customer>()
+            if (!ViewModelArgs.IsEmpty)
             {
-                Query = Query,
-                OrderBy = ViewModelArgs.OrderBy,
-                OrderByDesc = ViewModelArgs.OrderByDesc
-            };
+                DataRequest<Customer> request = BuildDataRequest();
+                return await CustomerService.GetCustomersAsync(request);
+            }
+            return new List<CustomerModel>();
         }
 
         private async void OnMessage(ViewModelBase sender, string message, object args)
@@ -244,6 +239,14 @@ namespace Inventory.ViewModels
                         await RefreshAsync();
                     });
                     break;
+            }
+        }
+
+        private async void OnOpenInNewView()
+        {
+            if (SelectedItem != null)
+            {
+                await NavigationService.CreateNewViewAsync<CustomerDetailsViewModel>(new CustomerDetailsArgs { CustomerID = SelectedItem.CustomerID });
             }
         }
     }

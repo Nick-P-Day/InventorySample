@@ -52,20 +52,20 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Grid BorderBrush="LightGray" 
-              BorderThickness="0,1,1,0"                                   
+        <Grid BorderBrush="LightGray"
+              BorderThickness="0,1,1,0"
               Background="{StaticResource DetailsViewBackgroundColor}">
             <views:OrderCard Margin="6" Item="{x:Bind ViewModel.OrderDetails.Item, Mode=OneWay}" />
         </Grid>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <controls:Details x:Name="details" Margin="6" Grid.RowSpan="{x:Bind GetRowSpan(ViewModel.OrderDetails.ItemIsNew), Mode=OneWay}"

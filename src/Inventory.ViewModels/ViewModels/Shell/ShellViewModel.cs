@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -20,44 +18,48 @@ namespace Inventory.ViewModels
 {
     public class ShellArgs
     {
-        public Type ViewModel { get; set; }
         public object Parameter { get; set; }
         public UserInfo UserInfo { get; set; }
+        public Type ViewModel { get; set; }
     }
 
     public class ShellViewModel : ViewModelBase
     {
+        private bool _isEnabled = true;
+
+        private bool _isError = false;
+
+        private bool _isLocked = false;
+
+        private string _message = "Ready";
+
         public ShellViewModel(ILoginService loginService, ICommonServices commonServices) : base(commonServices)
         {
             IsLocked = !loginService.IsAuthenticated;
         }
 
-        private bool _isLocked = false;
-        public bool IsLocked
-        {
-            get => _isLocked;
-            set => Set(ref _isLocked, value);
-        }
-
-        private bool _isEnabled = true;
         public bool IsEnabled
         {
             get => _isEnabled;
             set => Set(ref _isEnabled, value);
         }
 
-        private string _message = "Ready";
-        public string Message
-        {
-            get => _message;
-            set => Set(ref _message, value);
-        }
-
-        private bool _isError = false;
         public bool IsError
         {
             get => _isError;
             set => Set(ref _isError, value);
+        }
+
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set => Set(ref _isLocked, value);
+        }
+
+        public string Message
+        {
+            get => _message;
+            set => Set(ref _message, value);
         }
 
         public UserInfo UserInfo { get; protected set; }
@@ -74,14 +76,15 @@ namespace Inventory.ViewModels
             }
             return Task.CompletedTask;
         }
-        public virtual void Unload()
-        {
-        }
 
         public virtual void Subscribe()
         {
             MessageService.Subscribe<ILoginService, bool>(this, OnLoginMessage);
             MessageService.Subscribe<ViewModelBase, string>(this, OnMessage);
+        }
+
+        public virtual void Unload()
+        {
         }
 
         public virtual void Unsubscribe()

@@ -17,12 +17,12 @@
             <TextBlock Style="{StaticResource CardHeader}" Text="Order Date" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.OrderDate, Mode=OneWay, Converter={StaticResource DateTimeFormatConverter}}" />
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="Customer"  />
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="Customer" />
 
             <StackPanel Orientation="Horizontal" Margin="0,3,0,9">
-                <PersonPicture ProfilePicture="{x:Bind Item.Customer.PictureSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" 
-                           Initials="{x:Bind Item.Customer.Initials, Mode=OneWay}" 
+                <PersonPicture ProfilePicture="{x:Bind Item.Customer.PictureSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}"
+                           Initials="{x:Bind Item.Customer.Initials, Mode=OneWay}"
                            Width="{StaticResource CardPictureRadius}"
                            Height="{StaticResource CardPictureRadius}" />
                 <TextBlock Style="{StaticResource CardText}" VerticalAlignment="Center" Margin="9,0" Text="{x:Bind Item.Customer.FullName, Mode=OneWay}" />

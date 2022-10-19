@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.UI;
@@ -21,10 +19,14 @@ namespace Inventory.Controls
 {
     public class FormTextBox : TextBox, IFormControl
     {
-        public event EventHandler<FormVisualState> VisualStateChanged;
+        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
+
+        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
         private Border _borderElement = null;
+
         private Control _contentElement = null;
+
         private Border _displayContent = null;
 
         private bool _isInitialized = false;
@@ -36,39 +38,46 @@ namespace Inventory.Controls
             BeforeTextChanging += OnBeforeTextChanging;
         }
 
+        public event EventHandler<FormVisualState> VisualStateChanged;
+
         public FormVisualState VisualState { get; private set; }
 
         #region DataType
+        public static readonly DependencyProperty DataTypeProperty = DependencyProperty.Register(nameof(DataType), typeof(TextDataType), typeof(FormTextBox), new PropertyMetadata(TextDataType.String, OnPropertyChanged));
+
         public TextDataType DataType
         {
             get => (TextDataType)GetValue(DataTypeProperty);
             set => SetValue(DataTypeProperty, value);
         }
 
-        public static readonly DependencyProperty DataTypeProperty = DependencyProperty.Register(nameof(DataType), typeof(TextDataType), typeof(FormTextBox), new PropertyMetadata(TextDataType.String, OnPropertyChanged));
         #endregion
 
         #region Format
+        public static readonly DependencyProperty FormatProperty = DependencyProperty.Register(nameof(Format), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
+
         public string Format
         {
             get => (string)GetValue(FormatProperty);
             set => SetValue(FormatProperty, value);
         }
 
-        public static readonly DependencyProperty FormatProperty = DependencyProperty.Register(nameof(Format), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
         #endregion
 
         #region FormattedText
+        public static readonly DependencyProperty FormattedTextProperty = DependencyProperty.Register(nameof(FormattedText), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
+
         public string FormattedText
         {
             get => (string)GetValue(FormattedTextProperty);
             set => SetValue(FormattedTextProperty, value);
         }
 
-        public static readonly DependencyProperty FormattedTextProperty = DependencyProperty.Register(nameof(FormattedText), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
         #endregion
 
         #region Mode*
+        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormTextBox), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
+
         public FormEditMode Mode
         {
             get => (FormEditMode)GetValue(ModeProperty);
@@ -82,8 +91,22 @@ namespace Inventory.Controls
             control.UpdateVisualState();
         }
 
-        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormTextBox), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
         #endregion
+
+        public void SetVisualState(FormVisualState visualState)
+        {
+            if (Mode == FormEditMode.ReadOnly)
+            {
+                visualState = FormVisualState.Disabled;
+            }
+
+            if (visualState != VisualState)
+            {
+                VisualState = visualState;
+                UpdateVisualState();
+                VisualStateChanged?.Invoke(this, visualState);
+            }
+        }
 
         protected override void OnApplyTemplate()
         {
@@ -99,40 +122,6 @@ namespace Inventory.Controls
             base.OnApplyTemplate();
         }
 
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            FormTextBox control = d as FormTextBox;
-            control.ApplyTextFormat();
-        }
-
-        private void OnTextChanged(DependencyObject sender, DependencyProperty dp)
-        {
-            ApplyTextFormat();
-        }
-
-        private void ApplyTextFormat()
-        {
-            switch (DataType)
-            {
-                case TextDataType.Integer:
-                    Int64.TryParse(Text, out Int64 n);
-                    FormattedText = n.ToString(Format);
-                    break;
-                case TextDataType.Decimal:
-                    Decimal.TryParse(Text, out decimal m);
-                    FormattedText = m.ToString(Format);
-                    break;
-                case TextDataType.Double:
-                    Double.TryParse(Text, out double d);
-                    FormattedText = d.ToString(Format);
-                    break;
-                case TextDataType.String:
-                default:
-                    FormattedText = Text;
-                    break;
-            }
-        }
-
         protected override void OnGotFocus(RoutedEventArgs e)
         {
             switch (DataType)
@@ -141,14 +130,17 @@ namespace Inventory.Controls
                     Int64.TryParse(Text, out Int64 n);
                     Text = n == 0 ? "" : n.ToString();
                     break;
+
                 case TextDataType.Decimal:
                     Decimal.TryParse(Text, out decimal m);
                     Text = m == 0 ? "" : m.ToString();
                     break;
+
                 case TextDataType.Double:
                     Double.TryParse(Text, out double d);
                     Text = d == 0 ? "" : d.ToString();
                     break;
+
                 case TextDataType.String:
                 default:
                     break;
@@ -177,24 +169,59 @@ namespace Inventory.Controls
                         Text = "0";
                     }
                     break;
+
                 case TextDataType.Decimal:
                     if (!Decimal.TryParse(Text, out decimal m))
                     {
                         Text = "0";
                     }
                     break;
+
                 case TextDataType.Double:
                     if (!Double.TryParse(Text, out double d))
                     {
                         Text = "0";
                     }
                     break;
+
                 case TextDataType.String:
                 default:
                     break;
             }
 
             base.OnLostFocus(e);
+        }
+
+        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            FormTextBox control = d as FormTextBox;
+            control.ApplyTextFormat();
+        }
+
+        private void ApplyTextFormat()
+        {
+            switch (DataType)
+            {
+                case TextDataType.Integer:
+                    Int64.TryParse(Text, out Int64 n);
+                    FormattedText = n.ToString(Format);
+                    break;
+
+                case TextDataType.Decimal:
+                    Decimal.TryParse(Text, out decimal m);
+                    FormattedText = m.ToString(Format);
+                    break;
+
+                case TextDataType.Double:
+                    Double.TryParse(Text, out double d);
+                    FormattedText = d.ToString(Format);
+                    break;
+
+                case TextDataType.String:
+                default:
+                    FormattedText = Text;
+                    break;
+            }
         }
 
         private void OnBeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
@@ -210,13 +237,20 @@ namespace Inventory.Controls
                 case TextDataType.Integer:
                     args.Cancel = !Int64.TryParse(str, out Int64 n);
                     break;
+
                 case TextDataType.Decimal:
                     args.Cancel = !Decimal.TryParse(str, out decimal m);
                     break;
+
                 case TextDataType.Double:
                     args.Cancel = !Double.TryParse(str, out double d);
                     break;
             }
+        }
+
+        private void OnTextChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            ApplyTextFormat();
         }
 
         private void UpdateMode()
@@ -226,27 +260,14 @@ namespace Inventory.Controls
                 case FormEditMode.Auto:
                     VisualState = FormVisualState.Idle;
                     break;
+
                 case FormEditMode.ReadWrite:
                     VisualState = FormVisualState.Ready;
                     break;
+
                 case FormEditMode.ReadOnly:
                     VisualState = FormVisualState.Disabled;
                     break;
-            }
-        }
-
-        public void SetVisualState(FormVisualState visualState)
-        {
-            if (Mode == FormEditMode.ReadOnly)
-            {
-                visualState = FormVisualState.Disabled;
-            }
-
-            if (visualState != VisualState)
-            {
-                VisualState = visualState;
-                UpdateVisualState();
-                VisualStateChanged?.Invoke(this, visualState);
             }
         }
 
@@ -262,17 +283,20 @@ namespace Inventory.Controls
                         _displayContent.Background = TransparentBrush;
                         _displayContent.Visibility = Visibility.Visible;
                         break;
+
                     case FormVisualState.Ready:
                         _borderElement.Opacity = 1.0;
                         _contentElement.Visibility = Visibility.Collapsed;
                         _displayContent.Background = OpaqueBrush;
                         _displayContent.Visibility = Visibility.Visible;
                         break;
+
                     case FormVisualState.Focused:
                         _borderElement.Opacity = 1.0;
                         _contentElement.Visibility = Visibility.Visible;
                         _displayContent.Visibility = Visibility.Collapsed;
                         break;
+
                     case FormVisualState.Disabled:
                         _borderElement.Opacity = 0.40;
                         _contentElement.Visibility = Visibility.Visible;
@@ -283,8 +307,5 @@ namespace Inventory.Controls
                 }
             }
         }
-
-        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
-        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
     }
 }

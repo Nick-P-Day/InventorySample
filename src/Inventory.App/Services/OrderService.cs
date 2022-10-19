@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -29,17 +27,85 @@ namespace Inventory.Services
         public IDataServiceFactory DataServiceFactory { get; }
         public ILogService LogService { get; }
 
+        public static async Task<OrderModel> CreateOrderModelAsync(Order source, bool includeAllFields)
+        {
+            OrderModel model = new OrderModel()
+            {
+                OrderID = source.OrderID,
+                CustomerID = source.CustomerID,
+                OrderDate = source.OrderDate,
+                ShippedDate = source.ShippedDate,
+                DeliveredDate = source.DeliveredDate,
+                Status = source.Status,
+                PaymentType = source.PaymentType,
+                TrackingNumber = source.TrackingNumber,
+                ShipVia = source.ShipVia,
+                ShipAddress = source.ShipAddress,
+                ShipCity = source.ShipCity,
+                ShipRegion = source.ShipRegion,
+                ShipCountryCode = source.ShipCountryCode,
+                ShipPostalCode = source.ShipPostalCode,
+                ShipPhone = source.ShipPhone,
+            };
+            if (source.Customer != null)
+            {
+                model.Customer = await CustomerService.CreateCustomerModelAsync(source.Customer, includeAllFields);
+            }
+            return model;
+        }
+
+        public async Task<OrderModel> CreateNewOrderAsync(long customerID)
+        {
+            OrderModel model = new OrderModel
+            {
+                CustomerID = customerID,
+                OrderDate = DateTime.UtcNow,
+                Status = 0
+            };
+            if (customerID > 0)
+            {
+                using (IDataService dataService = DataServiceFactory.CreateDataService())
+                {
+                    var parent = await dataService.GetCustomerAsync(customerID);
+                    if (parent != null)
+                    {
+                        model.CustomerID = customerID;
+                        model.ShipAddress = parent.AddressLine1;
+                        model.ShipCity = parent.City;
+                        model.ShipRegion = parent.Region;
+                        model.ShipCountryCode = parent.CountryCode;
+                        model.ShipPostalCode = parent.PostalCode;
+                        model.Customer = await CustomerService.CreateCustomerModelAsync(parent, includeAllFields: true);
+                    }
+                }
+            }
+            return model;
+        }
+
+        public async Task<int> DeleteOrderAsync(OrderModel model)
+        {
+            Order order = new Order { OrderID = model.OrderID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                return await dataService.DeleteOrdersAsync(order);
+            }
+        }
+
+        public async Task<int> DeleteOrderRangeAsync(int index, int length, DataRequest<Order> request)
+        {
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                var items = await dataService.GetOrderKeysAsync(index, length, request);
+                return await dataService.DeleteOrdersAsync(items.ToArray());
+            }
+        }
+
         public async Task<OrderModel> GetOrderAsync(long id)
         {
             using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetOrderAsync(dataService, id);
             }
-        }
-        private static async Task<OrderModel> GetOrderAsync(IDataService dataService, long id)
-        {
-            var item = await dataService.GetOrderAsync(id);
-            return item != null ? await CreateOrderModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<OrderModel>> GetOrdersAsync(DataRequest<Order> request)
@@ -71,34 +137,6 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<OrderModel> CreateNewOrderAsync(long customerID)
-        {
-            OrderModel model = new OrderModel
-            {
-                CustomerID = customerID,
-                OrderDate = DateTime.UtcNow,
-                Status = 0
-            };
-            if (customerID > 0)
-            {
-                using (IDataService dataService = DataServiceFactory.CreateDataService())
-                {
-                    var parent = await dataService.GetCustomerAsync(customerID);
-                    if (parent != null)
-                    {
-                        model.CustomerID = customerID;
-                        model.ShipAddress = parent.AddressLine1;
-                        model.ShipCity = parent.City;
-                        model.ShipRegion = parent.Region;
-                        model.ShipCountryCode = parent.CountryCode;
-                        model.ShipPostalCode = parent.PostalCode;
-                        model.Customer = await CustomerService.CreateCustomerModelAsync(parent, includeAllFields: true);
-                    }
-                }
-            }
-            return model;
-        }
-
         public async Task<int> UpdateOrderAsync(OrderModel model)
         {
             long id = model.OrderID;
@@ -115,49 +153,10 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<int> DeleteOrderAsync(OrderModel model)
+        private static async Task<OrderModel> GetOrderAsync(IDataService dataService, long id)
         {
-            Order order = new Order { OrderID = model.OrderID };
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                return await dataService.DeleteOrdersAsync(order);
-            }
-        }
-
-        public async Task<int> DeleteOrderRangeAsync(int index, int length, DataRequest<Order> request)
-        {
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                var items = await dataService.GetOrderKeysAsync(index, length, request);
-                return await dataService.DeleteOrdersAsync(items.ToArray());
-            }
-        }
-
-        public static async Task<OrderModel> CreateOrderModelAsync(Order source, bool includeAllFields)
-        {
-            OrderModel model = new OrderModel()
-            {
-                OrderID = source.OrderID,
-                CustomerID = source.CustomerID,
-                OrderDate = source.OrderDate,
-                ShippedDate = source.ShippedDate,
-                DeliveredDate = source.DeliveredDate,
-                Status = source.Status,
-                PaymentType = source.PaymentType,
-                TrackingNumber = source.TrackingNumber,
-                ShipVia = source.ShipVia,
-                ShipAddress = source.ShipAddress,
-                ShipCity = source.ShipCity,
-                ShipRegion = source.ShipRegion,
-                ShipCountryCode = source.ShipCountryCode,
-                ShipPostalCode = source.ShipPostalCode,
-                ShipPhone = source.ShipPhone,
-            };
-            if (source.Customer != null)
-            {
-                model.Customer = await CustomerService.CreateCustomerModelAsync(source.Customer, includeAllFields);
-            }
-            return model;
+            var item = await dataService.GetOrderAsync(id);
+            return item != null ? await CreateOrderModelAsync(item, includeAllFields: true) : null;
         }
 
         private void UpdateOrderFromModel(Order target, OrderModel source)

@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -27,17 +25,46 @@ namespace Inventory.Services
 
         public IDataServiceFactory DataServiceFactory { get; }
 
+        public static async Task<OrderItemModel> CreateOrderItemModelAsync(OrderItem source, bool includeAllFields)
+        {
+            OrderItemModel model = new OrderItemModel()
+            {
+                OrderID = source.OrderID,
+                OrderLine = source.OrderLine,
+                ProductID = source.ProductID,
+                Quantity = source.Quantity,
+                UnitPrice = source.UnitPrice,
+                Discount = source.Discount,
+                TaxType = source.TaxType,
+                Product = await ProductService.CreateProductModelAsync(source.Product, includeAllFields)
+            };
+            return model;
+        }
+
+        public async Task<int> DeleteOrderItemAsync(OrderItemModel model)
+        {
+            OrderItem orderItem = new OrderItem { OrderID = model.OrderID, OrderLine = model.OrderLine };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                return await dataService.DeleteOrderItemsAsync(orderItem);
+            }
+        }
+
+        public async Task<int> DeleteOrderItemRangeAsync(int index, int length, DataRequest<OrderItem> request)
+        {
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                var items = await dataService.GetOrderItemKeysAsync(index, length, request);
+                return await dataService.DeleteOrderItemsAsync(items.ToArray());
+            }
+        }
+
         public async Task<OrderItemModel> GetOrderItemAsync(long orderID, int lineID)
         {
             using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetOrderItemAsync(dataService, orderID, lineID);
             }
-        }
-        private static async Task<OrderItemModel> GetOrderItemAsync(IDataService dataService, long orderID, int lineID)
-        {
-            var item = await dataService.GetOrderItemAsync(orderID, lineID);
-            return item != null ? await CreateOrderItemModelAsync(item, includeAllFields: true) : null;
         }
 
         public Task<IList<OrderItemModel>> GetOrderItemsAsync(DataRequest<OrderItem> request)
@@ -83,38 +110,10 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<int> DeleteOrderItemAsync(OrderItemModel model)
+        private static async Task<OrderItemModel> GetOrderItemAsync(IDataService dataService, long orderID, int lineID)
         {
-            OrderItem orderItem = new OrderItem { OrderID = model.OrderID, OrderLine = model.OrderLine };
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                return await dataService.DeleteOrderItemsAsync(orderItem);
-            }
-        }
-
-        public async Task<int> DeleteOrderItemRangeAsync(int index, int length, DataRequest<OrderItem> request)
-        {
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                var items = await dataService.GetOrderItemKeysAsync(index, length, request);
-                return await dataService.DeleteOrderItemsAsync(items.ToArray());
-            }
-        }
-
-        public static async Task<OrderItemModel> CreateOrderItemModelAsync(OrderItem source, bool includeAllFields)
-        {
-            OrderItemModel model = new OrderItemModel()
-            {
-                OrderID = source.OrderID,
-                OrderLine = source.OrderLine,
-                ProductID = source.ProductID,
-                Quantity = source.Quantity,
-                UnitPrice = source.UnitPrice,
-                Discount = source.Discount,
-                TaxType = source.TaxType,
-                Product = await ProductService.CreateProductModelAsync(source.Product, includeAllFields)
-            };
-            return model;
+            var item = await dataService.GetOrderItemAsync(orderID, lineID);
+            return item != null ? await CreateOrderItemModelAsync(item, includeAllFields: true) : null;
         }
 
         private void UpdateOrderItemFromModel(OrderItem target, OrderItemModel source)

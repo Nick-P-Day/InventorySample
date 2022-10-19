@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -29,17 +27,71 @@ namespace Inventory.Services
         public IDataServiceFactory DataServiceFactory { get; }
         public ILogService LogService { get; }
 
+        public static async Task<CustomerModel> CreateCustomerModelAsync(Customer source, bool includeAllFields)
+        {
+            CustomerModel model = new CustomerModel()
+            {
+                CustomerID = source.CustomerID,
+                Title = source.Title,
+                FirstName = source.FirstName,
+                MiddleName = source.MiddleName,
+                LastName = source.LastName,
+                Suffix = source.Suffix,
+                Gender = source.Gender,
+                EmailAddress = source.EmailAddress,
+                AddressLine1 = source.AddressLine1,
+                AddressLine2 = source.AddressLine2,
+                City = source.City,
+                Region = source.Region,
+                CountryCode = source.CountryCode,
+                PostalCode = source.PostalCode,
+                Phone = source.Phone,
+                CreatedOn = source.CreatedOn,
+                LastModifiedOn = source.LastModifiedOn,
+                Thumbnail = source.Thumbnail,
+                ThumbnailSource = await BitmapTools.LoadBitmapAsync(source.Thumbnail)
+            };
+            if (includeAllFields)
+            {
+                model.BirthDate = source.BirthDate;
+                model.Education = source.Education;
+                model.Occupation = source.Occupation;
+                model.YearlyIncome = source.YearlyIncome;
+                model.MaritalStatus = source.MaritalStatus;
+                model.TotalChildren = source.TotalChildren;
+                model.ChildrenAtHome = source.ChildrenAtHome;
+                model.IsHouseOwner = source.IsHouseOwner;
+                model.NumberCarsOwned = source.NumberCarsOwned;
+                model.Picture = source.Picture;
+                model.PictureSource = await BitmapTools.LoadBitmapAsync(source.Picture);
+            }
+            return model;
+        }
+
+        public async Task<int> DeleteCustomerAsync(CustomerModel model)
+        {
+            Customer customer = new Customer { CustomerID = model.CustomerID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                return await dataService.DeleteCustomersAsync(customer);
+            }
+        }
+
+        public async Task<int> DeleteCustomerRangeAsync(int index, int length, DataRequest<Customer> request)
+        {
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                var items = await dataService.GetCustomerKeysAsync(index, length, request);
+                return await dataService.DeleteCustomersAsync(items.ToArray());
+            }
+        }
+
         public async Task<CustomerModel> GetCustomerAsync(long id)
         {
             using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetCustomerAsync(dataService, id);
             }
-        }
-        private static async Task<CustomerModel> GetCustomerAsync(IDataService dataService, long id)
-        {
-            var item = await dataService.GetCustomerAsync(id);
-            return item != null ? await CreateCustomerModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<CustomerModel>> GetCustomersAsync(DataRequest<Customer> request)
@@ -87,63 +139,10 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<int> DeleteCustomerAsync(CustomerModel model)
+        private static async Task<CustomerModel> GetCustomerAsync(IDataService dataService, long id)
         {
-            Customer customer = new Customer { CustomerID = model.CustomerID };
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                return await dataService.DeleteCustomersAsync(customer);
-            }
-        }
-
-        public async Task<int> DeleteCustomerRangeAsync(int index, int length, DataRequest<Customer> request)
-        {
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                var items = await dataService.GetCustomerKeysAsync(index, length, request);
-                return await dataService.DeleteCustomersAsync(items.ToArray());
-            }
-        }
-
-        public static async Task<CustomerModel> CreateCustomerModelAsync(Customer source, bool includeAllFields)
-        {
-            CustomerModel model = new CustomerModel()
-            {
-                CustomerID = source.CustomerID,
-                Title = source.Title,
-                FirstName = source.FirstName,
-                MiddleName = source.MiddleName,
-                LastName = source.LastName,
-                Suffix = source.Suffix,
-                Gender = source.Gender,
-                EmailAddress = source.EmailAddress,
-                AddressLine1 = source.AddressLine1,
-                AddressLine2 = source.AddressLine2,
-                City = source.City,
-                Region = source.Region,
-                CountryCode = source.CountryCode,
-                PostalCode = source.PostalCode,
-                Phone = source.Phone,
-                CreatedOn = source.CreatedOn,
-                LastModifiedOn = source.LastModifiedOn,
-                Thumbnail = source.Thumbnail,
-                ThumbnailSource = await BitmapTools.LoadBitmapAsync(source.Thumbnail)
-            };
-            if (includeAllFields)
-            {
-                model.BirthDate = source.BirthDate;
-                model.Education = source.Education;
-                model.Occupation = source.Occupation;
-                model.YearlyIncome = source.YearlyIncome;
-                model.MaritalStatus = source.MaritalStatus;
-                model.TotalChildren = source.TotalChildren;
-                model.ChildrenAtHome = source.ChildrenAtHome;
-                model.IsHouseOwner = source.IsHouseOwner;
-                model.NumberCarsOwned = source.NumberCarsOwned;
-                model.Picture = source.Picture;
-                model.PictureSource = await BitmapTools.LoadBitmapAsync(source.Picture);
-            }
-            return model;
+            var item = await dataService.GetCustomerAsync(id);
+            return item != null ? await CreateCustomerModelAsync(item, includeAllFields: true) : null;
         }
 
         private void UpdateCustomerFromModel(Customer target, CustomerModel source)

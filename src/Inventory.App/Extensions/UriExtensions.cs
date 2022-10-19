@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Foundation;
@@ -18,12 +16,12 @@ namespace Inventory
 {
     public static class UriExtensions
     {
-        public static Int64 GetInt64Parameter(this Uri uri, string name)
+        public static Int32 GetInt32Parameter(this Uri uri, string name)
         {
             string value = GetParameter(uri, name);
             if (value != null)
             {
-                if (Int64.TryParse(value, out Int64 n))
+                if (Int32.TryParse(value, out Int32 n))
                 {
                     return n;
                 }
@@ -31,12 +29,12 @@ namespace Inventory
             return 0;
         }
 
-        public static Int32 GetInt32Parameter(this Uri uri, string name)
+        public static Int64 GetInt64Parameter(this Uri uri, string name)
         {
             string value = GetParameter(uri, name);
             if (value != null)
             {
-                if (Int32.TryParse(value, out Int32 n))
+                if (Int64.TryParse(value, out Int64 n))
                 {
                     return n;
                 }

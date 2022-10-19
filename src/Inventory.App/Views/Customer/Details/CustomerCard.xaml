@@ -14,7 +14,7 @@
         <StackPanel Margin="12,6">
             <Grid Margin="0,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <PersonPicture Margin="1"
@@ -31,29 +31,29 @@
                                       Visibility="{x:Bind ViewModel.IsEditMode, Mode=OneWay}">
                     <Grid Width="{StaticResource CardPictureRadius}" Height="{StaticResource CardPictureRadius}">
                         <Rectangle Fill="White" Opacity="0.75" />
-                        <TextBlock Text="Edit" 
-                               FontSize="13" 
-                               HorizontalAlignment="Center" 
-                               VerticalAlignment="Center" 
+                        <TextBlock Text="Edit"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
                                Visibility="{x:Bind ViewModel.IsEnabled, Mode=OneWay}" />
-                        <Image Source="{x:Bind ViewModel.NewPictureSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" 
-                           Stretch="UniformToFill" 
-                           HorizontalAlignment="Center" 
+                        <Image Source="{x:Bind ViewModel.NewPictureSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}"
+                           Stretch="UniformToFill"
+                           HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Visibility="{x:Bind ViewModel.NewPictureSource, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" />
                     </Grid>
                 </controls:RoundButton>
 
-                <TextBlock Grid.Column="1" 
+                <TextBlock Grid.Column="1"
                        Margin="12,0,0,0"
                        FontSize="18"
                        Text="{x:Bind Item.FullName, Mode=OneWay}"
                        VerticalAlignment="Center"
-                       Style="{StaticResource CardText}"/>
+                       Style="{StaticResource CardText}" />
             </Grid>
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="General"  />
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="General" />
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Customer ID" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.CustomerID, Mode=OneWay}" />
@@ -64,8 +64,8 @@
             <TextBlock Style="{StaticResource CardHeader}" Text="Last Update" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.LastModifiedOn, Mode=OneWay, Converter={StaticResource DateTimeFormatConverter}}" />
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="Contact"/>
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="Contact" />
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Email" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.EmailAddress, Mode=OneWay}" />
@@ -75,7 +75,6 @@
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Address" />
             <TextBlock Style="{StaticResource CardText}" Margin="0" Text="{x:Bind Item.FullAddress, Mode=OneWay}" />
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -10,7 +10,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
 
@@ -24,8 +24,8 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="foreground" Grid.Row="1" VerticalAlignment="Center">
                     <Grid GotFocus="OnForegroundFocus">
@@ -48,18 +48,18 @@
 
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
 
                 <HyperlinkButton Content="Sign in with another user" Foreground="#222" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"
                                  Visibility="{x:Bind ViewModel.IsLoginWithWindowsHello, Mode=OneWay}"
                                  Click="OnShowLoginWithPassword" Command="{x:Bind ViewModel.ShowLoginWithPasswordCommand}" />
                 <Border Grid.Row="1">
-                    <Image Margin="24" 
-                           Source="ms-appx:///Assets/AppLogo.png" 
-                           Width="320" 
-                           HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    <Image Margin="24"
+                           Source="ms-appx:///Assets/AppLogo.png"
+                           Width="320"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
                            Stretch="Uniform" />
                 </Border>
             </Grid>

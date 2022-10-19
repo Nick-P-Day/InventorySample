@@ -1,29 +1,44 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 namespace Inventory.Services
 {
     public class MessageService : IMessageService
     {
+        private List<Subscriber> _subscribers = new List<Subscriber>();
         private object _sync = new Object();
 
-        private List<Subscriber> _subscribers = new List<Subscriber>();
+        public void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
+        {
+            if (sender == null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            foreach (Subscriber subscriber in GetSubscribersSnapshot())
+            {
+                // Avoid sending message to self
+                if (subscriber.Target != sender)
+                {
+                    subscriber.TryInvoke(sender, message, args);
+                }
+            }
+        }
 
         public void Subscribe<TSender>(object target, Action<TSender, string, object> action) where TSender : class
         {
             Subscribe<TSender, Object>(target, action);
         }
+
         public void Subscribe<TSender, TArgs>(object target, Action<TSender, string, TArgs> action) where TSender : class
         {
             if (target == null)
@@ -68,6 +83,7 @@ namespace Inventory.Services
                 }
             }
         }
+
         public void Unsubscribe<TSender, TArgs>(object target) where TSender : class
         {
             if (target == null)
@@ -88,6 +104,7 @@ namespace Inventory.Services
                 }
             }
         }
+
         public void Unsubscribe(object target)
         {
             if (target == null)
@@ -101,23 +118,6 @@ namespace Inventory.Services
                 if (subscriber != null)
                 {
                     _subscribers.Remove(subscriber);
-                }
-            }
-        }
-
-        public void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
-        {
-            if (sender == null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
-
-            foreach (Subscriber subscriber in GetSubscribersSnapshot())
-            {
-                // Avoid sending message to self
-                if (subscriber.Target != sender)
-                {
-                    subscriber.TryInvoke(sender, message, args);
                 }
             }
         }
@@ -142,9 +142,8 @@ namespace Inventory.Services
                 _subscriptions = new Dictionary<Type, Subscriptions>();
             }
 
-            public object Target => _reference.Target;
-
             public bool IsEmpty => _subscriptions.Count == 0;
+            public object Target => _reference.Target;
 
             public void AddSubscription<TSender, TArgs>(Action<TSender, string, TArgs> action)
             {
@@ -160,6 +159,7 @@ namespace Inventory.Services
             {
                 _subscriptions.Remove(typeof(TSender));
             }
+
             public void RemoveSubscription<TSender, TArgs>()
             {
                 if (_subscriptions.TryGetValue(typeof(TSender), out Subscriptions subscriptions))

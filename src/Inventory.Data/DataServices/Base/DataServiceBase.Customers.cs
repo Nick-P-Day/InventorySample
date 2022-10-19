@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +20,31 @@ namespace Inventory.Data.Services
 {
     public partial class DataServiceBase
     {
+        public async Task<int> DeleteCustomersAsync(params Customer[] customers)
+        {
+            _dataSource.Customers.RemoveRange(customers);
+            return await _dataSource.SaveChangesAsync();
+        }
+
         public async Task<Customer> GetCustomerAsync(long id)
         {
             return await _dataSource.Customers.Where(r => r.CustomerID == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<IList<Customer>> GetCustomerKeysAsync(int skip, int take, DataRequest<Customer> request)
+        {
+            IQueryable<Customer> items = GetCustomers(request);
+
+            // Execute
+            List<Customer> records = await items.Skip(skip).Take(take)
+                .Select(r => new Customer
+                {
+                    CustomerID = r.CustomerID,
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            return records;
         }
 
         public async Task<IList<Customer>> GetCustomersAsync(int skip, int take, DataRequest<Customer> request)
@@ -58,51 +78,6 @@ namespace Inventory.Data.Services
                 .ToListAsync();
 
             return records;
-        }
-
-        public async Task<IList<Customer>> GetCustomerKeysAsync(int skip, int take, DataRequest<Customer> request)
-        {
-            IQueryable<Customer> items = GetCustomers(request);
-
-            // Execute
-            List<Customer> records = await items.Skip(skip).Take(take)
-                .Select(r => new Customer
-                {
-                    CustomerID = r.CustomerID,
-                })
-                .AsNoTracking()
-                .ToListAsync();
-
-            return records;
-        }
-
-        private IQueryable<Customer> GetCustomers(DataRequest<Customer> request)
-        {
-            IQueryable<Customer> items = _dataSource.Customers;
-
-            // Query
-            if (!String.IsNullOrEmpty(request.Query))
-            {
-                items = items.Where(r => r.SearchTerms.Contains(request.Query.ToLower()));
-            }
-
-            // Where
-            if (request.Where != null)
-            {
-                items = items.Where(request.Where);
-            }
-
-            // Order By
-            if (request.OrderBy != null)
-            {
-                items = items.OrderBy(request.OrderBy);
-            }
-            if (request.OrderByDesc != null)
-            {
-                items = items.OrderByDescending(request.OrderByDesc);
-            }
-
-            return items;
         }
 
         public async Task<int> GetCustomersCountAsync(DataRequest<Customer> request)
@@ -142,10 +117,33 @@ namespace Inventory.Data.Services
             return res;
         }
 
-        public async Task<int> DeleteCustomersAsync(params Customer[] customers)
+        private IQueryable<Customer> GetCustomers(DataRequest<Customer> request)
         {
-            _dataSource.Customers.RemoveRange(customers);
-            return await _dataSource.SaveChangesAsync();
+            IQueryable<Customer> items = _dataSource.Customers;
+
+            // Query
+            if (!String.IsNullOrEmpty(request.Query))
+            {
+                items = items.Where(r => r.SearchTerms.Contains(request.Query.ToLower()));
+            }
+
+            // Where
+            if (request.Where != null)
+            {
+                items = items.Where(request.Where);
+            }
+
+            // Order By
+            if (request.OrderBy != null)
+            {
+                items = items.OrderBy(request.OrderBy);
+            }
+            if (request.OrderByDesc != null)
+            {
+                items = items.OrderByDescending(request.OrderByDesc);
+            }
+
+            return items;
         }
     }
 }

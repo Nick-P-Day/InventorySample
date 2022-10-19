@@ -12,14 +12,14 @@
         <DataTemplate x:Key="HeaderTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="10*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Customer ID" Style="{StaticResource ColumnHeaderStyle}" />
                 <TextBlock Grid.Column="1" Text="Order ID" Style="{StaticResource ColumnHeaderStyle}" />
@@ -36,14 +36,14 @@
             <Grid Height="32">
                 <Grid Visibility="{x:Bind IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="8*"/>
-                        <ColumnDefinition Width="8*"/>
-                        <ColumnDefinition Width="8*"/>
-                        <ColumnDefinition Width="8*"/>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*" />
+                        <ColumnDefinition Width="10*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="10*" />
+                        <ColumnDefinition Width="10*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{x:Bind CustomerID}" Style="{StaticResource ColumnValueStyle}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind OrderID}" Style="{StaticResource ColumnValueStyle}" />

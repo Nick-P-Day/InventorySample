@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -33,6 +31,12 @@ namespace Inventory.Views
 
         public ShellViewModel ViewModel { get; private set; }
 
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await ViewModel.LoadAsync(e.Parameter as ShellArgs);
+            ViewModel.Subscribe();
+        }
+
         private void InitializeContext()
         {
             IContextService context = ServiceLocator.Current.GetService<IContextService>();
@@ -47,10 +51,10 @@ namespace Inventory.Views
             appView.Consolidated += OnViewConsolidated;
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        private async void OnUnlockClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            await ViewModel.LoadAsync(e.Parameter as ShellArgs);
-            ViewModel.Subscribe();
+            IContextService context = ServiceLocator.Current.GetService<IContextService>();
+            await ApplicationViewSwitcher.SwitchAsync(context.MainViewID);
         }
 
         private void OnViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
@@ -61,12 +65,6 @@ namespace Inventory.Views
             ApplicationView appView = ApplicationView.GetForCurrentView();
             appView.Consolidated -= OnViewConsolidated;
             ServiceLocator.DisposeCurrent();
-        }
-
-        private async void OnUnlockClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            IContextService context = ServiceLocator.Current.GetService<IContextService>();
-            await ApplicationViewSwitcher.SwitchAsync(context.MainViewID);
         }
     }
 }

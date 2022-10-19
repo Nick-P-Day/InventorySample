@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.UI.Xaml;
@@ -28,6 +26,8 @@ namespace Inventory.Controls
         }
 
         #region Orientation
+        public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(IconLabel), new PropertyMetadata(Orientation.Horizontal, OrientationChanged));
+
         public Orientation Orientation
         {
             get => (Orientation)GetValue(OrientationProperty);
@@ -40,30 +40,33 @@ namespace Inventory.Controls
             control.UpdateControl();
         }
 
-        public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(IconLabel), new PropertyMetadata(Orientation.Horizontal, OrientationChanged));
         #endregion
 
         #region Glyph
+        public static readonly DependencyProperty GlyphProperty = DependencyProperty.Register("Glyph", typeof(string), typeof(IconLabel), new PropertyMetadata(null));
+
         public string Glyph
         {
             get => (string)GetValue(GlyphProperty);
             set => SetValue(GlyphProperty, value);
         }
 
-        public static readonly DependencyProperty GlyphProperty = DependencyProperty.Register("Glyph", typeof(string), typeof(IconLabel), new PropertyMetadata(null));
         #endregion
 
         #region GlyphSize
+        public static readonly DependencyProperty GlyphSizeProperty = DependencyProperty.Register("GlyphSize", typeof(double), typeof(IconLabel), new PropertyMetadata(0.0));
+
         public double GlyphSize
         {
             get => (double)GetValue(GlyphSizeProperty);
             set => SetValue(GlyphSizeProperty, value);
         }
 
-        public static readonly DependencyProperty GlyphSizeProperty = DependencyProperty.Register("GlyphSize", typeof(double), typeof(IconLabel), new PropertyMetadata(0.0));
         #endregion
 
         #region Label
+        public static readonly DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(IconLabel), new PropertyMetadata(null, LabelChanged));
+
         public string Label
         {
             get => (string)GetValue(LabelProperty);
@@ -76,8 +79,17 @@ namespace Inventory.Controls
             control.UpdateControl();
         }
 
-        public static readonly DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(IconLabel), new PropertyMetadata(null, LabelChanged));
         #endregion
+
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            _icon = base.GetTemplateChild("icon") as FontIcon;
+            _text = base.GetTemplateChild("text") as TextBlock;
+
+            UpdateControl();
+        }
 
         private void UpdateControl()
         {
@@ -88,21 +100,12 @@ namespace Inventory.Controls
                     case Orientation.Horizontal:
                         _text.Margin = String.IsNullOrEmpty(Label) ? new Thickness(0) : new Thickness(12, 0, 0, 0);
                         break;
+
                     case Orientation.Vertical:
                         _text.Margin = new Thickness(0);
                         break;
                 }
             }
-        }
-
-        protected override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            _icon = base.GetTemplateChild("icon") as FontIcon;
-            _text = base.GetTemplateChild("text") as TextBlock;
-
-            UpdateControl();
         }
     }
 }

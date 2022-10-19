@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Models;
@@ -30,20 +28,14 @@ namespace Inventory.ViewModels
             OrderItemList = new OrderItemListViewModel(orderItemService, commonServices);
         }
 
-        public IOrderService OrderService { get; }
-
-        public OrderListViewModel OrderList { get; set; }
         public OrderDetailsViewModel OrderDetails { get; set; }
         public OrderItemListViewModel OrderItemList { get; set; }
+        public OrderListViewModel OrderList { get; set; }
+        public IOrderService OrderService { get; }
 
         public async Task LoadAsync(OrderListArgs args)
         {
             await OrderList.LoadAsync(args);
-        }
-        public void Unload()
-        {
-            OrderDetails.CancelEdit();
-            OrderList.Unload();
         }
 
         public void Subscribe()
@@ -53,23 +45,19 @@ namespace Inventory.ViewModels
             OrderDetails.Subscribe();
             OrderItemList.Subscribe();
         }
+
+        public void Unload()
+        {
+            OrderDetails.CancelEdit();
+            OrderList.Unload();
+        }
+
         public void Unsubscribe()
         {
             MessageService.Unsubscribe(this);
             OrderList.Unsubscribe();
             OrderDetails.Unsubscribe();
             OrderItemList.Unsubscribe();
-        }
-
-        private async void OnMessage(OrderListViewModel viewModel, string message, object args)
-        {
-            if (viewModel == OrderList && message == "ItemSelected")
-            {
-                await ContextService.RunAsync(() =>
-                {
-                    OnItemSelected();
-                });
-            }
         }
 
         private async void OnItemSelected()
@@ -90,6 +78,17 @@ namespace Inventory.ViewModels
                 }
             }
             OrderDetails.Item = selected;
+        }
+
+        private async void OnMessage(OrderListViewModel viewModel, string message, object args)
+        {
+            if (viewModel == OrderList && message == "ItemSelected")
+            {
+                await ContextService.RunAsync(() =>
+                {
+                    OnItemSelected();
+                });
+            }
         }
 
         private async Task PopulateDetails(OrderModel selected)

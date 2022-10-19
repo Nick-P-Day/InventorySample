@@ -33,12 +33,12 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Grid BorderBrush="LightGray" 
-              BorderThickness="0,1,1,0"                                   
+        <Grid BorderBrush="LightGray"
+              BorderThickness="0,1,1,0"
               Background="{StaticResource DetailsViewBackgroundColor}">
             <views:ProductCard Margin="6" ViewModel="{x:Bind ViewModel}" Item="{x:Bind ViewModel.Item, Mode=OneWay}" />
         </Grid>

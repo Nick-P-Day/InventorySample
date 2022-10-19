@@ -24,8 +24,8 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <!--AppLogs-->
@@ -36,11 +36,11 @@
             </Grid>
 
             <!--Details-->
-            <Grid Grid.Row="1" 
+            <Grid Grid.Row="1"
                   BorderBrush="LightGray"
-                  BorderThickness="0,1,0,0" 
+                  BorderThickness="0,1,0,0"
                   Visibility="{x:Bind ViewModel.AppLogList.IsMultipleSelection, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                <controls:Section IsEnabled="{x:Bind ViewModel.AppLogDetails.IsEnabled, Mode=OneWay}" 
+                <controls:Section IsEnabled="{x:Bind ViewModel.AppLogDetails.IsEnabled, Mode=OneWay}"
                                   Background="{StaticResource DetailsViewBackgroundColor}"
                                   Visibility="{x:Bind ViewModel.AppLogDetails.IsDataAvailable, Mode=OneWay}">
                     <views:AppLogsDetails Grid.Row="1" ViewModel="{x:Bind ViewModel.AppLogDetails}" />

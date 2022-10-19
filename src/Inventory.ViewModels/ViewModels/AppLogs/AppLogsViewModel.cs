@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Models;
@@ -27,16 +25,12 @@ namespace Inventory.ViewModels
             AppLogDetails = new AppLogDetailsViewModel(commonServices);
         }
 
-        public AppLogListViewModel AppLogList { get; }
         public AppLogDetailsViewModel AppLogDetails { get; }
+        public AppLogListViewModel AppLogList { get; }
 
         public async Task LoadAsync(AppLogListArgs args)
         {
             await AppLogList.LoadAsync(args);
-        }
-        public void Unload()
-        {
-            AppLogList.Unload();
         }
 
         public void Subscribe()
@@ -45,22 +39,17 @@ namespace Inventory.ViewModels
             AppLogList.Subscribe();
             AppLogDetails.Subscribe();
         }
+
+        public void Unload()
+        {
+            AppLogList.Unload();
+        }
+
         public void Unsubscribe()
         {
             MessageService.Unsubscribe(this);
             AppLogList.Unsubscribe();
             AppLogDetails.Unsubscribe();
-        }
-
-        private async void OnMessage(AppLogListViewModel viewModel, string message, object args)
-        {
-            if (viewModel == AppLogList && message == "ItemSelected")
-            {
-                await ContextService.RunAsync(() =>
-                {
-                    OnItemSelected();
-                });
-            }
         }
 
         private async void OnItemSelected()
@@ -78,6 +67,17 @@ namespace Inventory.ViewModels
                 }
             }
             AppLogDetails.Item = selected;
+        }
+
+        private async void OnMessage(AppLogListViewModel viewModel, string message, object args)
+        {
+            if (viewModel == AppLogList && message == "ItemSelected")
+            {
+                await ContextService.RunAsync(() =>
+                {
+                    OnItemSelected();
+                });
+            }
         }
 
         private async Task PopulateDetails(AppLogModel selected)

@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Views;
@@ -25,22 +23,19 @@ namespace Inventory.Services
             DialogService = dialogService;
         }
 
-        public IDialogService DialogService { get; }
-
-        public string Version => AppSettings.Current.Version;
-
-        public string DbVersion => AppSettings.Current.DbVersion;
-
-        public string UserName
-        {
-            get => AppSettings.Current.UserName;
-            set => AppSettings.Current.UserName = value;
-        }
-
         public DataProviderType DataProvider
         {
             get => AppSettings.Current.DataProvider;
             set => AppSettings.Current.DataProvider = value;
+        }
+
+        public string DbVersion => AppSettings.Current.DbVersion;
+        public IDialogService DialogService { get; }
+
+        public bool IsRandomErrorsEnabled
+        {
+            get => AppSettings.Current.IsRandomErrorsEnabled;
+            set => AppSettings.Current.IsRandomErrorsEnabled = value;
         }
 
         public string PatternConnectionString => $"Data Source={AppSettings.DatabasePatternFileName}";
@@ -51,10 +46,27 @@ namespace Inventory.Services
             set => AppSettings.Current.SQLServerConnectionString = value;
         }
 
-        public bool IsRandomErrorsEnabled
+        public string UserName
         {
-            get => AppSettings.Current.IsRandomErrorsEnabled;
-            set => AppSettings.Current.IsRandomErrorsEnabled = value;
+            get => AppSettings.Current.UserName;
+            set => AppSettings.Current.UserName = value;
+        }
+
+        public string Version => AppSettings.Current.Version;
+
+        public async Task<Result> CreateDabaseAsync(string connectionString)
+        {
+            CreateDatabaseView dialog = new CreateDatabaseView(connectionString);
+            var res = await dialog.ShowAsync();
+            switch (res)
+            {
+                case ContentDialogResult.Secondary:
+                    return Result.Ok("Operation canceled by user");
+
+                default:
+                    break;
+            }
+            return dialog.Result;
         }
 
         public async Task<Result> ResetLocalDataProviderAsync()
@@ -91,20 +103,7 @@ namespace Inventory.Services
             {
                 case ContentDialogResult.Secondary:
                     return Result.Ok("Operation canceled by user");
-                default:
-                    break;
-            }
-            return dialog.Result;
-        }
 
-        public async Task<Result> CreateDabaseAsync(string connectionString)
-        {
-            CreateDatabaseView dialog = new CreateDatabaseView(connectionString);
-            var res = await dialog.ShowAsync();
-            switch (res)
-            {
-                case ContentDialogResult.Secondary:
-                    return Result.Ok("Operation canceled by user");
                 default:
                     break;
             }

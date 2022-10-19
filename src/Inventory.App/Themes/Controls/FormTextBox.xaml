@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Inventory.Controls">
 
@@ -190,14 +190,14 @@
                             IsTabStop="False"
                             AutomationProperties.AccessibilityView="Raw"
                             ZoomMode="Disabled" />
-                        
-                        <!--Display content with formatted text-->                  
+
+                        <!--Display content with formatted text-->
                         <Border x:Name="DisplayContent" Grid.Row="2" Background="White" BorderThickness="{TemplateBinding BorderThickness}">
                             <TextBlock Padding="{TemplateBinding Padding}"
                                        Text="{TemplateBinding FormattedText}"
                                        TextWrapping="{TemplateBinding TextWrapping}"
                                        FontSize="{TemplateBinding FontSize}"
-                                       FontFamily="{TemplateBinding FontFamily}"/>
+                                       FontFamily="{TemplateBinding FontFamily}" />
                         </Border>
 
                         <TextBlock x:Name="PlaceholderTextContentPresenter"
@@ -208,7 +208,7 @@
                             Grid.ColumnSpan="2"
                             Text="{TemplateBinding PlaceholderText}"
                             TextWrapping="{TemplateBinding TextWrapping}"
-                            TextAlignment="{TemplateBinding TextAlignment}"  
+                            TextAlignment="{TemplateBinding TextAlignment}"
                             IsHitTestVisible="False" />
                         <Button x:Name="DeleteButton"
                             Grid.Row="1"
@@ -227,5 +227,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

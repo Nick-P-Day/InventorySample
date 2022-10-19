@@ -9,22 +9,22 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" BorderThickness="0,0,1,0" BorderBrush="LightGray">
         <StackPanel>
 
-            <TextBlock Style="{StaticResource CardSection}" Text="Order"  />
+            <TextBlock Style="{StaticResource CardSection}" Text="Order" />
             <TextBlock Style="{StaticResource CardHeader}" Text="Order ID" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.OrderID, Mode=OneWay}" />
-            
+
             <TextBlock Style="{StaticResource CardHeader}" Text="Order Line" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.OrderLine, Mode=OneWay}" />
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="Product"  />
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="Product" />
 
             <StackPanel Orientation="Horizontal" Margin="0,0">
-                <Image Source="{x:Bind Item.Product.ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" 
+                <Image Source="{x:Bind Item.Product.ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}"
                            Margin="0,3,9,12" Height="56"
-                           Stretch="Uniform" HorizontalAlignment="Center" 
+                           Stretch="Uniform" HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
-                <TextBlock Text="{x:Bind Item.Product.Name, Mode=OneWay}" 
+                <TextBlock Text="{x:Bind Item.Product.Name, Mode=OneWay}"
                            VerticalAlignment="Center"
                            Style="{StaticResource CardSuperHeader}"
                            TextAlignment="Center" />
@@ -38,7 +38,6 @@
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Total" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.Total, Mode=OneWay}" />
-          
         </StackPanel>
     </ScrollViewer>
 </UserControl>

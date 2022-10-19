@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -25,25 +23,14 @@ namespace Inventory.Services
             DataServiceFactory = dataServiceFactory;
         }
 
-        public ILogService LogService { get; }
-        public IDataServiceFactory DataServiceFactory { get; }
-
         public IList<CategoryModel> Categories { get; private set; }
         public IList<CountryCodeModel> CountryCodes { get; private set; }
+        public IDataServiceFactory DataServiceFactory { get; }
+        public ILogService LogService { get; }
         public IList<OrderStatusModel> OrderStatus { get; private set; }
         public IList<PaymentTypeModel> PaymentTypes { get; private set; }
         public IList<ShipperModel> Shippers { get; private set; }
         public IList<TaxTypeModel> TaxTypes { get; private set; }
-
-        public async Task InitializeAsync()
-        {
-            Categories = await GetCategoriesAsync();
-            CountryCodes = await GetCountryCodesAsync();
-            OrderStatus = await GetOrderStatusAsync();
-            PaymentTypes = await GetPaymentTypesAsync();
-            Shippers = await GetShippersAsync();
-            TaxTypes = await GetTaxTypesAsync();
-        }
 
         public string GetCategory(int id)
         {
@@ -74,9 +61,20 @@ namespace Inventory.Services
         {
             return TaxTypes.Where(r => r.TaxTypeID == id).Select(r => $"{r.Rate} %").FirstOrDefault();
         }
+
         public decimal GetTaxRate(int id)
         {
             return TaxTypes.Where(r => r.TaxTypeID == id).Select(r => r.Rate).FirstOrDefault();
+        }
+
+        public async Task InitializeAsync()
+        {
+            Categories = await GetCategoriesAsync();
+            CountryCodes = await GetCountryCodesAsync();
+            OrderStatus = await GetOrderStatusAsync();
+            PaymentTypes = await GetPaymentTypesAsync();
+            Shippers = await GetShippersAsync();
+            TaxTypes = await GetTaxTypesAsync();
         }
 
         private async Task<IList<CategoryModel>> GetCategoriesAsync()

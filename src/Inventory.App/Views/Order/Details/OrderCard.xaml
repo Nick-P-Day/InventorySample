@@ -14,17 +14,17 @@
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Status" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.StatusDesc, Mode=OneWay}" />
-            
+
             <TextBlock Style="{StaticResource CardHeader}" Text="Order Date" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.OrderDate, Mode=OneWay, Converter={StaticResource DateTimeFormatConverter}}" />
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="Customer"  />
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="Customer" />
 
             <StackPanel Orientation="Horizontal" Margin="0,6,0,9">
-                <PersonPicture ProfilePicture="{x:Bind Item.Customer.ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" 
-                           Initials="{x:Bind Item.Customer.Initials, Mode=OneWay}" 
-                           Width="{StaticResource CardPictureRadius}" 
+                <PersonPicture ProfilePicture="{x:Bind Item.Customer.ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}"
+                           Initials="{x:Bind Item.Customer.Initials, Mode=OneWay}"
+                           Width="{StaticResource CardPictureRadius}"
                            Height="{StaticResource CardPictureRadius}" />
                 <TextBlock Style="{StaticResource CardText}" VerticalAlignment="Center" Margin="9,0" Text="{x:Bind Item.Customer.FullName, Mode=OneWay}" />
             </StackPanel>
@@ -38,8 +38,8 @@
             <TextBlock Style="{StaticResource CardHeader}" Text="Phone" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.Customer.Phone, Mode=OneWay}" />
 
-            <Rectangle Style="{StaticResource CardSeparator}"/>
-            <TextBlock Style="{StaticResource CardSection}" Text="Shipment"  />
+            <Rectangle Style="{StaticResource CardSeparator}" />
+            <TextBlock Style="{StaticResource CardSection}" Text="Shipment" />
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Payment Type" />
             <TextBlock Style="{StaticResource CardText}" Text="{x:Bind Item.PaymentTypeDesc, Mode=OneWay}" />

@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -23,6 +21,12 @@ namespace Inventory.ViewModels
 {
     public class DashboardViewModel : ViewModelBase
     {
+        private IList<CustomerModel> _customers = null;
+
+        private IList<OrderModel> _orders = null;
+
+        private IList<ProductModel> _products = null;
+
         public DashboardViewModel(ICustomerService customerService, IOrderService orderService, IProductService productService, ICommonServices commonServices) : base(commonServices)
         {
             CustomerService = customerService;
@@ -30,29 +34,49 @@ namespace Inventory.ViewModels
             ProductService = productService;
         }
 
-        public ICustomerService CustomerService { get; }
-        public IOrderService OrderService { get; }
-        public IProductService ProductService { get; }
-
-        private IList<CustomerModel> _customers = null;
         public IList<CustomerModel> Customers
         {
             get => _customers;
             set => Set(ref _customers, value);
         }
 
-        private IList<ProductModel> _products = null;
+        public ICustomerService CustomerService { get; }
+
+        public IList<OrderModel> Orders
+        {
+            get => _orders;
+            set => Set(ref _orders, value);
+        }
+
+        public IOrderService OrderService { get; }
+
         public IList<ProductModel> Products
         {
             get => _products;
             set => Set(ref _products, value);
         }
 
-        private IList<OrderModel> _orders = null;
-        public IList<OrderModel> Orders
+        public IProductService ProductService { get; }
+
+        public void ItemSelected(string item)
         {
-            get => _orders;
-            set => Set(ref _orders, value);
+            switch (item)
+            {
+                case "Customers":
+                    NavigationService.Navigate<CustomersViewModel>(new CustomerListArgs { OrderByDesc = r => r.CreatedOn });
+                    break;
+
+                case "Orders":
+                    NavigationService.Navigate<OrdersViewModel>(new OrderListArgs { OrderByDesc = r => r.OrderDate });
+                    break;
+
+                case "Products":
+                    NavigationService.Navigate<ProductsViewModel>(new ProductListArgs { OrderByDesc = r => r.ListPrice });
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         public async Task LoadAsync()
@@ -63,6 +87,7 @@ namespace Inventory.ViewModels
             await LoadProductsAsync();
             EndStatusMessage("Dashboard loaded");
         }
+
         public void Unload()
         {
             Customers = null;
@@ -115,24 +140,6 @@ namespace Inventory.ViewModels
             catch (Exception ex)
             {
                 LogException("Dashboard", "Load Products", ex);
-            }
-        }
-
-        public void ItemSelected(string item)
-        {
-            switch (item)
-            {
-                case "Customers":
-                    NavigationService.Navigate<CustomersViewModel>(new CustomerListArgs { OrderByDesc = r => r.CreatedOn });
-                    break;
-                case "Orders":
-                    NavigationService.Navigate<OrdersViewModel>(new OrderListArgs { OrderByDesc = r => r.OrderDate });
-                    break;
-                case "Products":
-                    NavigationService.Navigate<ProductsViewModel>(new ProductListArgs { OrderByDesc = r => r.ListPrice });
-                    break;
-                default:
-                    break;
             }
         }
     }

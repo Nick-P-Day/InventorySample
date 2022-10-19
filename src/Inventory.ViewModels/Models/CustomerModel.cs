@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -19,54 +17,80 @@ namespace Inventory.Models
 {
     public class CustomerModel : ObservableObject
     {
+        public string AddressLine1 { get; set; }
+
+        public string AddressLine2 { get; set; }
+
+        public DateTimeOffset? BirthDate { get; set; }
+
+        public int? ChildrenAtHome { get; set; }
+
+        public string City { get; set; }
+
+        public string CountryCode { get; set; }
+
+        public string CountryName => LookupTablesProxy.Instance.GetCountry(CountryCode);
+
+        public DateTimeOffset CreatedOn { get; set; }
+
+        public long CustomerID { get; set; }
+
+        public string Education { get; set; }
+
+        public string EmailAddress { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string FullAddress => $"{AddressLine1} {AddressLine2}\n{City}, {Region} {PostalCode}\n{CountryName}";
+
+        public string FullName => $"{FirstName} {LastName}";
+
+        public string Gender { get; set; }
+
+        public string Initials => String.Format("{0}{1}", $"{FirstName} "[0], $"{LastName} "[0]).Trim().ToUpper();
+
+        public bool? IsHouseOwner { get; set; }
+
+        public bool IsNew => CustomerID <= 0;
+
+        public DateTimeOffset? LastModifiedOn { get; set; }
+
+        public string LastName { get; set; }
+
+        public string MaritalStatus { get; set; }
+
+        public string MiddleName { get; set; }
+
+        public int? NumberCarsOwned { get; set; }
+
+        public string Occupation { get; set; }
+
+        public string Phone { get; set; }
+
+        public byte[] Picture { get; set; }
+
+        public object PictureSource { get; set; }
+
+        public string PostalCode { get; set; }
+
+        public string Region { get; set; }
+
+        public string Suffix { get; set; }
+
+        public byte[] Thumbnail { get; set; }
+
+        public object ThumbnailSource { get; set; }
+
+        public string Title { get; set; }
+
+        public int? TotalChildren { get; set; }
+
+        public decimal? YearlyIncome { get; set; }
+
         public static CustomerModel CreateEmpty()
         {
             return new CustomerModel { CustomerID = -1, IsEmpty = true };
         }
-
-        public long CustomerID { get; set; }
-
-        public string Title { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string Suffix { get; set; }
-        public string Gender { get; set; }
-
-        public string EmailAddress { get; set; }
-        public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
-        public string City { get; set; }
-        public string Region { get; set; }
-        public string CountryCode { get; set; }
-        public string PostalCode { get; set; }
-        public string Phone { get; set; }
-
-        public DateTimeOffset? BirthDate { get; set; }
-        public string Education { get; set; }
-        public string Occupation { get; set; }
-        public decimal? YearlyIncome { get; set; }
-        public string MaritalStatus { get; set; }
-        public int? TotalChildren { get; set; }
-        public int? ChildrenAtHome { get; set; }
-        public bool? IsHouseOwner { get; set; }
-        public int? NumberCarsOwned { get; set; }
-
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset? LastModifiedOn { get; set; }
-
-        public byte[] Picture { get; set; }
-        public object PictureSource { get; set; }
-
-        public byte[] Thumbnail { get; set; }
-        public object ThumbnailSource { get; set; }
-
-        public bool IsNew => CustomerID <= 0;
-        public string FullName => $"{FirstName} {LastName}";
-        public string Initials => String.Format("{0}{1}", $"{FirstName} "[0], $"{LastName} "[0]).Trim().ToUpper();
-        public string CountryName => LookupTablesProxy.Instance.GetCountry(CountryCode);
-
-        public string FullAddress => $"{AddressLine1} {AddressLine2}\n{City}, {Region} {PostalCode}\n{CountryName}";
 
         public override void Merge(ObservableObject source)
         {

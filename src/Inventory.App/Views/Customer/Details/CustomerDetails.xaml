@@ -11,10 +11,10 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600">
 
     <UserControl.Resources>
-        <converters:BindingTypeConverter x:Key="BindingTypeConverter"/>
+        <converters:BindingTypeConverter x:Key="BindingTypeConverter" />
         <DataTemplate x:Key="DetailsTemplate" x:DataType="viewmodels:CustomerDetailsViewModel">
             <controls:FluidGrid Columns="2" ColumnSpacing="12" Margin="12,18,6,6" RowSpacing="12">
-                <TextBlock Style="{StaticResource FormsSection}" controls:FluidGrid.ColumnSpan="2" Text="Personal Information"/>
+                <TextBlock Style="{StaticResource FormsSection}" controls:FluidGrid.ColumnSpan="2" Text="Personal Information" />
                 <controls:FormTextBox Header="First Name" Text="{x:Bind EditableItem.FirstName, Mode=TwoWay}" />
                 <controls:FormTextBox Header="Last Name" Text="{x:Bind EditableItem.LastName, Mode=TwoWay}" />
                 <controls:FluidGrid Columns="2" ColumnSpacing="6" RowSpacing="12" MinColumnWidth="60">
@@ -33,7 +33,7 @@
                 <controls:FormTextBox Header="Postal Code" Text="{x:Bind EditableItem.PostalCode, Mode=TwoWay}" />
                 <controls:FormComboBox Header="Country" ItemsSource="{x:Bind LookupTables.CountryCodes}" SelectedValue="{x:Bind EditableItem.CountryCode, Mode=TwoWay}" SelectedValuePath="CountryCodeID" DisplayMemberPath="Name" />
 
-                <TextBlock  Style="{StaticResource FormsSection}" controls:FluidGrid.ColumnSpan="2" Text="Customer Demographic"/>
+                <TextBlock  Style="{StaticResource FormsSection}" controls:FluidGrid.ColumnSpan="2" Text="Customer Demographic" />
                 <controls:FormCalendarDatePicker Header="Birth Date" Date="{x:Bind EditableItem.BirthDate, Mode=TwoWay}" />
                 <controls:FormTextBox Header="Education" Text="{x:Bind EditableItem.Education, Mode=TwoWay}" />
                 <controls:FluidGrid Columns="2" ColumnSpacing="6" RowSpacing="12" MinColumnWidth="80">
@@ -50,8 +50,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Border BorderBrush="LightGray" BorderThickness="0,1,1,0" Background="{StaticResource DetailsViewBackgroundColor}">

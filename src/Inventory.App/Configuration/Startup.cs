@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -43,6 +41,13 @@ namespace Inventory
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(500, 500));
         }
 
+        private static async Task ConfigureLookupTables()
+        {
+            ILookupTables lookupTables = ServiceLocator.Current.GetService<ILookupTables>();
+            await lookupTables.InitializeAsync();
+            LookupTablesProxy.Instance = lookupTables;
+        }
+
         private static void ConfigureNavigation()
         {
             NavigationService.Register<LoginViewModel, LoginView>();
@@ -69,6 +74,11 @@ namespace Inventory
             NavigationService.Register<SettingsViewModel, SettingsView>();
         }
 
+        private static async Task EnsureDatabaseAsync()
+        {
+            await EnsureSQLiteDatabaseAsync();
+        }
+
         private static async Task EnsureLogDbAsync()
         {
             StorageFolder localFolder = ApplicationData.Current.LocalFolder;
@@ -79,11 +89,6 @@ namespace Inventory
                 var targetLogFile = await appLogFolder.CreateFileAsync(AppSettings.AppLogName, CreationCollisionOption.ReplaceExisting);
                 await sourceLogFile.CopyAndReplaceAsync(targetLogFile);
             }
-        }
-
-        private static async Task EnsureDatabaseAsync()
-        {
-            await EnsureSQLiteDatabaseAsync();
         }
 
         private static async Task EnsureSQLiteDatabaseAsync()
@@ -109,13 +114,6 @@ namespace Inventory
                 var targetFile = await databaseFolder.CreateFileAsync(AppSettings.DatabaseName, CreationCollisionOption.ReplaceExisting);
                 await sourceFile.CopyAndReplaceAsync(targetFile);
             }
-        }
-
-        private static async Task ConfigureLookupTables()
-        {
-            ILookupTables lookupTables = ServiceLocator.Current.GetService<ILookupTables>();
-            await lookupTables.InitializeAsync();
-            LookupTablesProxy.Instance = lookupTables;
         }
     }
 }

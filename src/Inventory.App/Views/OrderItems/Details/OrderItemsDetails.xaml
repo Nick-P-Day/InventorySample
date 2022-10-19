@@ -28,8 +28,8 @@
 
     <Grid ColumnSpacing="6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="360"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="360" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Grid Background="WhiteSmoke">

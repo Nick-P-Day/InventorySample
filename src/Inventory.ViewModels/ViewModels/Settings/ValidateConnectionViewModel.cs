@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data.Services;
@@ -24,24 +22,22 @@ namespace Inventory.ViewModels
 {
     public class ValidateConnectionViewModel : ViewModelBase
     {
+        private string _message = null;
+
+        private string _primaryButtonText;
+
+        private string _progressStatus = null;
+
+        private string _secondaryButtonText = "Cancel";
+
         public ValidateConnectionViewModel(ISettingsService settingsService, ICommonServices commonServices) : base(commonServices)
         {
             SettingsService = settingsService;
             Result = Result.Error("Operation cancelled");
         }
 
-        public ISettingsService SettingsService { get; }
+        public bool HasMessage => _message != null;
 
-        public Result Result { get; private set; }
-
-        private string _progressStatus = null;
-        public string ProgressStatus
-        {
-            get => _progressStatus;
-            set => Set(ref _progressStatus, value);
-        }
-
-        private string _message = null;
         public string Message
         {
             get => _message;
@@ -54,21 +50,27 @@ namespace Inventory.ViewModels
             }
         }
 
-        public bool HasMessage => _message != null;
-
-        private string _primaryButtonText;
         public string PrimaryButtonText
         {
             get => _primaryButtonText;
             set => Set(ref _primaryButtonText, value);
         }
 
-        private string _secondaryButtonText = "Cancel";
+        public string ProgressStatus
+        {
+            get => _progressStatus;
+            set => Set(ref _progressStatus, value);
+        }
+
+        public Result Result { get; private set; }
+
         public string SecondaryButtonText
         {
             get => _secondaryButtonText;
             set => Set(ref _secondaryButtonText, value);
         }
+
+        public ISettingsService SettingsService { get; }
 
         public async Task ExecuteAsync(string connectionString)
         {

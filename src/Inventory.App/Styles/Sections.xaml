@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Inventory.Controls">
 
@@ -12,9 +12,9 @@
                     <Border x:Name="container" BorderThickness="0">
                         <Grid x:Name="content">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <ContentPresenter Grid.Row="1" />
                             <ContentControl Grid.Row="2" Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}" HorizontalContentAlignment="Stretch" />

@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Inventory.Styles">
     <Style TargetType="PivotHeaderItem">
@@ -64,8 +64,6 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderThickness">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="0,0,0,2" />
                                         </ObjectAnimationUsingKeyFrames>
-
-
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="UnselectedPointerOver">
@@ -121,7 +119,6 @@
                                 </VisualState>
                                 <VisualState x:Name="Unfocused" />
                             </VisualStateGroup>
-
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.RenderTransform>
@@ -137,7 +134,7 @@
                             FontFamily="{TemplateBinding FontFamily}"
                             FontWeight="{TemplateBinding FontWeight}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             OpticalMarginAlignment="TrimSideBearings" />
                         <Rectangle x:Name="FocusPipe"
                             Fill="{ThemeResource PivotHeaderItemFocusPipeFill}"

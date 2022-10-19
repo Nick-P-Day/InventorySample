@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.UI;
@@ -22,7 +20,9 @@ namespace Inventory.Controls
 {
     public class FormCalendarDatePicker : CalendarDatePicker, IFormControl
     {
-        public event EventHandler<FormVisualState> VisualStateChanged;
+        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
+
+        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
         private Border _backgroundBorder = null;
 
@@ -33,9 +33,13 @@ namespace Inventory.Controls
             DefaultStyleKey = typeof(FormCalendarDatePicker);
         }
 
+        public event EventHandler<FormVisualState> VisualStateChanged;
+
         public FormVisualState VisualState { get; private set; }
 
         #region Mode*
+        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormCalendarDatePicker), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
+
         public FormEditMode Mode
         {
             get => (FormEditMode)GetValue(ModeProperty);
@@ -49,8 +53,22 @@ namespace Inventory.Controls
             control.UpdateVisualState();
         }
 
-        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormCalendarDatePicker), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
         #endregion
+
+        public void SetVisualState(FormVisualState visualState)
+        {
+            if (Mode == FormEditMode.ReadOnly)
+            {
+                visualState = FormVisualState.Disabled;
+            }
+
+            if (visualState != VisualState)
+            {
+                VisualState = visualState;
+                UpdateVisualState();
+                VisualStateChanged?.Invoke(this, visualState);
+            }
+        }
 
         protected override void OnApplyTemplate()
         {
@@ -81,27 +99,14 @@ namespace Inventory.Controls
                 case FormEditMode.Auto:
                     VisualState = FormVisualState.Idle;
                     break;
+
                 case FormEditMode.ReadWrite:
                     VisualState = FormVisualState.Ready;
                     break;
+
                 case FormEditMode.ReadOnly:
                     VisualState = FormVisualState.Disabled;
                     break;
-            }
-        }
-
-        public void SetVisualState(FormVisualState visualState)
-        {
-            if (Mode == FormEditMode.ReadOnly)
-            {
-                visualState = FormVisualState.Disabled;
-            }
-
-            if (visualState != VisualState)
-            {
-                VisualState = visualState;
-                UpdateVisualState();
-                VisualStateChanged?.Invoke(this, visualState);
             }
         }
 
@@ -115,14 +120,17 @@ namespace Inventory.Controls
                         _backgroundBorder.Opacity = 0.40;
                         _backgroundBorder.Background = TransparentBrush;
                         break;
+
                     case FormVisualState.Ready:
                         _backgroundBorder.Opacity = 1.0;
                         _backgroundBorder.Background = OpaqueBrush;
                         break;
+
                     case FormVisualState.Focused:
                         _backgroundBorder.Opacity = 1.0;
                         _backgroundBorder.Background = OpaqueBrush;
                         break;
+
                     case FormVisualState.Disabled:
                         _backgroundBorder.Opacity = 0.40;
                         _backgroundBorder.Background = TransparentBrush;
@@ -132,8 +140,5 @@ namespace Inventory.Controls
                 }
             }
         }
-
-        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
-        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
     }
 }

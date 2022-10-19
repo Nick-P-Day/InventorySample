@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Foundation;
@@ -23,126 +21,146 @@ namespace Inventory.Controls
 {
     public class FormAutoSuggestBox : Control, IFormControl
     {
-        public event EventHandler<FormVisualState> VisualStateChanged;
+        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
+
+        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
+
+        private AutoSuggestBox _autoSuggestBox = null;
 
         private Border _borderElement;
-        private AutoSuggestBox _autoSuggestBox = null;
+
         private Border _displayContent = null;
 
         private bool _isInitialized = false;
-
-        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxTextChangedEventArgs> TextChanged;
-        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxSuggestionChosenEventArgs> SuggestionChosen;
-        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxQuerySubmittedEventArgs> QuerySubmitted;
 
         public FormAutoSuggestBox()
         {
             DefaultStyleKey = typeof(FormAutoSuggestBox);
         }
 
+        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxQuerySubmittedEventArgs> QuerySubmitted;
+
+        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxSuggestionChosenEventArgs> SuggestionChosen;
+
+        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxTextChangedEventArgs> TextChanged;
+
+        public event EventHandler<FormVisualState> VisualStateChanged;
+
         public FormVisualState VisualState { get; private set; }
 
         #region Header
+        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public string Header
         {
             get => (string)GetValue(HeaderProperty);
             set => SetValue(HeaderProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region HeaderTemplate
+        public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.Register(nameof(HeaderTemplate), typeof(DataTemplate), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public DataTemplate HeaderTemplate
         {
             get => (DataTemplate)GetValue(HeaderTemplateProperty);
             set => SetValue(HeaderTemplateProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.Register(nameof(HeaderTemplate), typeof(DataTemplate), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region Text
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public string Text
         {
             get => (string)GetValue(TextProperty);
             set => SetValue(TextProperty, value);
         }
 
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region TextMemberPath
+        public static readonly DependencyProperty TextMemberPathProperty = DependencyProperty.Register(nameof(TextMemberPath), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public string TextMemberPath
         {
             get => (string)GetValue(TextMemberPathProperty);
             set => SetValue(TextMemberPathProperty, value);
         }
 
-        public static readonly DependencyProperty TextMemberPathProperty = DependencyProperty.Register(nameof(TextMemberPath), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region DisplayText
+        public static readonly DependencyProperty DisplayTextProperty = DependencyProperty.Register(nameof(DisplayText), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public string DisplayText
         {
             get => (string)GetValue(DisplayTextProperty);
             set => SetValue(DisplayTextProperty, value);
         }
 
-        public static readonly DependencyProperty DisplayTextProperty = DependencyProperty.Register(nameof(DisplayText), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region ItemsSource
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public object ItemsSource
         {
             get => (object)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region ItemTemplate
+        public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public DataTemplate ItemTemplate
         {
             get => (DataTemplate)GetValue(ItemTemplateProperty);
             set => SetValue(ItemTemplateProperty, value);
         }
 
-        public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region ItemContainerStyle
+        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.Register(nameof(ItemContainerStyle), typeof(Style), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public Style ItemContainerStyle
         {
             get => (Style)GetValue(ItemContainerStyleProperty);
             set => SetValue(ItemContainerStyleProperty, value);
         }
 
-        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.Register(nameof(ItemContainerStyle), typeof(Style), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region PlaceholderText
+        public static readonly DependencyProperty PlaceholderTextProperty = DependencyProperty.Register(nameof(PlaceholderText), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public string PlaceholderText
         {
             get => (string)GetValue(PlaceholderTextProperty);
             set => SetValue(PlaceholderTextProperty, value);
         }
 
-        public static readonly DependencyProperty PlaceholderTextProperty = DependencyProperty.Register(nameof(PlaceholderText), typeof(string), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region AutoMaximizeSuggestionArea
+        public static readonly DependencyProperty AutoMaximizeSuggestionAreaProperty = DependencyProperty.Register(nameof(AutoMaximizeSuggestionArea), typeof(bool), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
+
         public bool AutoMaximizeSuggestionArea
         {
             get => (bool)GetValue(AutoMaximizeSuggestionAreaProperty);
             set => SetValue(AutoMaximizeSuggestionAreaProperty, value);
         }
 
-        public static readonly DependencyProperty AutoMaximizeSuggestionAreaProperty = DependencyProperty.Register(nameof(AutoMaximizeSuggestionArea), typeof(bool), typeof(FormAutoSuggestBox), new PropertyMetadata(null));
         #endregion
 
         #region Mode*
+        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormAutoSuggestBox), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
+
         public FormEditMode Mode
         {
             get => (FormEditMode)GetValue(ModeProperty);
@@ -156,8 +174,22 @@ namespace Inventory.Controls
             control.UpdateVisualState();
         }
 
-        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(nameof(Mode), typeof(FormEditMode), typeof(FormAutoSuggestBox), new PropertyMetadata(FormEditMode.Auto, ModeChanged));
         #endregion
+
+        public void SetVisualState(FormVisualState visualState)
+        {
+            if (Mode == FormEditMode.ReadOnly)
+            {
+                visualState = FormVisualState.Disabled;
+            }
+
+            if (visualState != VisualState)
+            {
+                VisualState = visualState;
+                UpdateVisualState();
+                VisualStateChanged?.Invoke(this, visualState);
+            }
+        }
 
         protected override void OnApplyTemplate()
         {
@@ -175,18 +207,6 @@ namespace Inventory.Controls
             UpdateVisualState();
 
             base.OnApplyTemplate();
-        }
-
-        protected override void OnPointerEntered(PointerRoutedEventArgs e)
-        {
-            VisualStateManager.GoToState(this, "PointerOver", false);
-            base.OnPointerEntered(e);
-        }
-
-        protected override void OnPointerExited(PointerRoutedEventArgs e)
-        {
-            VisualStateManager.GoToState(this, "Normal", false);
-            base.OnPointerExited(e);
         }
 
         protected override void OnGotFocus(RoutedEventArgs e)
@@ -213,6 +233,18 @@ namespace Inventory.Controls
             base.OnLostFocus(e);
         }
 
+        protected override void OnPointerEntered(PointerRoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "PointerOver", false);
+            base.OnPointerEntered(e);
+        }
+
+        protected override void OnPointerExited(PointerRoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "Normal", false);
+            base.OnPointerExited(e);
+        }
+
         private void UpdateMode()
         {
             switch (Mode)
@@ -220,27 +252,14 @@ namespace Inventory.Controls
                 case FormEditMode.Auto:
                     VisualState = FormVisualState.Idle;
                     break;
+
                 case FormEditMode.ReadWrite:
                     VisualState = FormVisualState.Ready;
                     break;
+
                 case FormEditMode.ReadOnly:
                     VisualState = FormVisualState.Disabled;
                     break;
-            }
-        }
-
-        public void SetVisualState(FormVisualState visualState)
-        {
-            if (Mode == FormEditMode.ReadOnly)
-            {
-                visualState = FormVisualState.Disabled;
-            }
-
-            if (visualState != VisualState)
-            {
-                VisualState = visualState;
-                UpdateVisualState();
-                VisualStateChanged?.Invoke(this, visualState);
             }
         }
 
@@ -256,16 +275,19 @@ namespace Inventory.Controls
                         _displayContent.Background = TransparentBrush;
                         _displayContent.Visibility = Visibility.Visible;
                         break;
+
                     case FormVisualState.Ready:
                         _borderElement.Opacity = 1.00;
                         _autoSuggestBox.Opacity = 0.0;
                         _displayContent.Background = OpaqueBrush;
                         _displayContent.Visibility = Visibility.Visible;
                         break;
+
                     case FormVisualState.Focused:
                         _autoSuggestBox.Opacity = 1.0;
                         _displayContent.Visibility = Visibility.Collapsed;
                         break;
+
                     case FormVisualState.Disabled:
                         _borderElement.Opacity = 0.40;
                         _autoSuggestBox.Opacity = 0.0;
@@ -276,8 +298,5 @@ namespace Inventory.Controls
                 }
             }
         }
-
-        private readonly Brush TransparentBrush = new SolidColorBrush(Colors.Transparent);
-        private readonly Brush OpaqueBrush = new SolidColorBrush(Colors.White);
     }
 }

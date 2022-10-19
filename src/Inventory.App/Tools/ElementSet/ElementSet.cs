@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.UI.Xaml;
@@ -26,6 +24,7 @@ namespace Inventory
         public ElementSet()
         {
         }
+
         public ElementSet(IEnumerable<T> enumerable)
         {
             Enumerable = enumerable;
@@ -33,20 +32,26 @@ namespace Inventory
 
         public IEnumerable<T> Enumerable { get; private set; }
 
-        public IEnumerator<T> GetEnumerator()
+        public static ElementSet<S> Children<S>(DependencyObject source, string category) where S : FrameworkElement
         {
-            return Enumerable.GetEnumerator();
+            return new ElementSet<S>(GetChildren<S>(source, v => v.IsCategory(category)));
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public static ElementSet<S> Children<S>(object source, Func<S, bool> predicate = null) where S : UIElement
         {
-            return Enumerable.GetEnumerator();
+            return new ElementSet<S>(GetChildren<S>(source, predicate));
+        }
+
+        public static ElementSet<S> Children<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
+        {
+            return new ElementSet<S>(GetChildren<S>(source, predicate));
         }
 
         public T FirstOrDefault()
         {
             return Enumerable.FirstOrDefault();
         }
+
         public S FirstOrDefault<S>() where S : FrameworkElement
         {
             foreach (var item in Enumerable)
@@ -81,23 +86,19 @@ namespace Inventory
             return this;
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            return Enumerable.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Enumerable.GetEnumerator();
+        }
+
         public ElementSet<T> Reverse()
         {
             return new ElementSet<T>(Enumerable.Reverse());
-        }
-
-        public static ElementSet<S> Children<S>(DependencyObject source, string category) where S : FrameworkElement
-        {
-            return new ElementSet<S>(GetChildren<S>(source, v => v.IsCategory(category)));
-        }
-
-        public static ElementSet<S> Children<S>(object source, Func<S, bool> predicate = null) where S : UIElement
-        {
-            return new ElementSet<S>(GetChildren<S>(source, predicate));
-        }
-        public static ElementSet<S> Children<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
-        {
-            return new ElementSet<S>(GetChildren<S>(source, predicate));
         }
 
         private static IEnumerable<S> GetChildren<S>(object source, Func<S, bool> predicate = null) where S : UIElement

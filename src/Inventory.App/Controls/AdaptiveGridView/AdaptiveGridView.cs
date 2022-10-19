@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Foundation.Collections;
@@ -20,28 +18,30 @@ using Windows.UI.Xaml.Data;
 namespace Inventory.Controls
 {
     /// <summary>
-    /// The AdaptiveGridView control allows to present information within a Grid View perfectly adjusting the
-    /// total display available space. It reacts to changes in the layout as well as the content so it can adapt
-    /// to different form factors automatically.
+    ///   The AdaptiveGridView control allows to present information within a
+    ///   Grid View perfectly adjusting the total display available space. It
+    ///   reacts to changes in the layout as well as the content so it can adapt
+    ///   to different form factors automatically.
     /// </summary>
     /// <remarks>
-    /// The number and the width of items are calculated based on the
-    /// screen resolution in order to fully leverage the available screen space. The property ItemsHeight define
-    /// the items fixed height and the property DesiredWidth sets the minimum width for the elements to add a
-    /// new column.</remarks>
+    ///   The number and the width of items are calculated based on the screen
+    ///   resolution in order to fully leverage the available screen space. The
+    ///   property ItemsHeight define the items fixed height and the property
+    ///   DesiredWidth sets the minimum width for the elements to add a new column.
+    /// </remarks>
     public partial class AdaptiveGridView : GridView
     {
         private bool _isLoaded;
-        private ScrollMode _savedVerticalScrollMode;
-        private ScrollMode _savedHorizontalScrollMode;
-        private ScrollBarVisibility _savedVerticalScrollBarVisibility;
-        private ScrollBarVisibility _savedHorizontalScrollBarVisibility;
-        private Orientation _savedOrientation;
-        private bool _needToRestoreScrollStates;
         private bool _needContainerMarginForLayout;
+        private bool _needToRestoreScrollStates;
+        private ScrollBarVisibility _savedHorizontalScrollBarVisibility;
+        private ScrollMode _savedHorizontalScrollMode;
+        private Orientation _savedOrientation;
+        private ScrollBarVisibility _savedVerticalScrollBarVisibility;
+        private ScrollMode _savedVerticalScrollMode;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdaptiveGridView"/> class.
+        ///   Initializes a new instance of the <see cref="AdaptiveGridView"/> class.
         /// </summary>
         public AdaptiveGridView()
         {
@@ -57,10 +57,61 @@ namespace Inventory.Controls
         }
 
         /// <summary>
-        /// Prepares the specified element to display the specified item.
+        ///   Calculates the width of the grid items.
         /// </summary>
-        /// <param name="obj">The element that's used to display the specified item.</param>
-        /// <param name="item">The item to display.</param>
+        /// <param name="containerWidth"> The width of the container control. </param>
+        /// <returns> The calculated item width. </returns>
+        protected virtual double CalculateItemWidth(double containerWidth)
+        {
+            if (double.IsNaN(DesiredWidth))
+            {
+                return DesiredWidth;
+            }
+
+            var columns = CalculateColumns(containerWidth, DesiredWidth);
+
+            // If there's less items than there's columns, reduce the column
+            // count (if requested);
+            if (Items != null && Items.Count > 0 && Items.Count < columns && StretchContentForSingleRow)
+            {
+                columns = Items.Count;
+            }
+
+            // subtract the margin from the width so we place the correct width
+            // for placement
+            Thickness fallbackThickness = default(Thickness);
+            Thickness itemMargin = AdaptiveHeightValueConverter.GetItemMargin(this, fallbackThickness);
+            if (itemMargin == fallbackThickness)
+            {
+                // No style explicitly defined, or no items or no container for
+                // the items We need to get an actual margin for proper layout
+                _needContainerMarginForLayout = true;
+            }
+
+            return (containerWidth / columns) - itemMargin.Left - itemMargin.Right;
+        }
+
+        /// <summary>
+        ///   Invoked whenever application code or internal processes (such as a
+        ///   rebuilding layout pass) call ApplyTemplate. In simplest terms,
+        ///   this means the method is called just before a UI element displays
+        ///   in your app. Override this method to influence the default
+        ///   post-template logic of a class.
+        /// </summary>
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            OnOneRowModeEnabledChanged(this, OneRowModeEnabled);
+        }
+
+        /// <summary>
+        ///   Prepares the specified element to display the specified item.
+        /// </summary>
+        /// <param name="obj">
+        ///   The element that's used to display the specified item.
+        /// </param>
+        /// <param name="item"> The item to display. </param>
         protected override void PrepareContainerForItemOverride(DependencyObject obj, object item)
         {
             base.PrepareContainerForItemOverride(obj, item);
@@ -95,106 +146,6 @@ namespace Inventory.Controls
                 _needContainerMarginForLayout = false;
                 RecalculateLayout(ActualWidth);
             }
-        }
-
-        /// <summary>
-        /// Calculates the width of the grid items.
-        /// </summary>
-        /// <param name="containerWidth">The width of the container control.</param>
-        /// <returns>The calculated item width.</returns>
-        protected virtual double CalculateItemWidth(double containerWidth)
-        {
-            if (double.IsNaN(DesiredWidth))
-            {
-                return DesiredWidth;
-            }
-
-            var columns = CalculateColumns(containerWidth, DesiredWidth);
-
-            // If there's less items than there's columns, reduce the column count (if requested);
-            if (Items != null && Items.Count > 0 && Items.Count < columns && StretchContentForSingleRow)
-            {
-                columns = Items.Count;
-            }
-
-            // subtract the margin from the width so we place the correct width for placement
-            Thickness fallbackThickness = default(Thickness);
-            Thickness itemMargin = AdaptiveHeightValueConverter.GetItemMargin(this, fallbackThickness);
-            if (itemMargin == fallbackThickness)
-            {
-                // No style explicitly defined, or no items or no container for the items
-                // We need to get an actual margin for proper layout
-                _needContainerMarginForLayout = true;
-            }
-
-            return (containerWidth / columns) - itemMargin.Left - itemMargin.Right;
-        }
-
-        /// <summary>
-        /// Invoked whenever application code or internal processes (such as a rebuilding layout pass) call
-        /// ApplyTemplate. In simplest terms, this means the method is called just before a UI element displays
-        /// in your app. Override this method to influence the default post-template logic of a class.
-        /// </summary>
-        protected override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            OnOneRowModeEnabledChanged(this, OneRowModeEnabled);
-        }
-
-        private void ItemsOnVectorChanged(IObservableVector<object> sender, IVectorChangedEventArgs @event)
-        {
-            if (!double.IsNaN(ActualWidth))
-            {
-                // If the item count changes, check if more or less columns needs to be rendered,
-                // in case we were having fewer items than columns.
-                RecalculateLayout(ActualWidth);
-            }
-        }
-
-        private void OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            var cmd = ItemClickCommand;
-            if (cmd != null)
-            {
-                if (cmd.CanExecute(e.ClickedItem))
-                {
-                    cmd.Execute(e.ClickedItem);
-                }
-            }
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // If we are in center alignment, we only care about relayout if the number of columns we can display changes
-            // Fixes #1737
-            if (HorizontalAlignment != HorizontalAlignment.Stretch)
-            {
-                var prevColumns = CalculateColumns(e.PreviousSize.Width, DesiredWidth);
-                var newColumns = CalculateColumns(e.NewSize.Width, DesiredWidth);
-
-                // If the width of the internal list view changes, check if more or less columns needs to be rendered.
-                if (prevColumns != newColumns)
-                {
-                    RecalculateLayout(e.NewSize.Width);
-                }
-            }
-            else if (e.PreviousSize.Width != e.NewSize.Width)
-            {
-                // We need to recalculate width as our size changes to adjust internal items.
-                RecalculateLayout(e.NewSize.Width);
-            }
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            _isLoaded = true;
-            DetermineOneRowMode();
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            _isLoaded = false;
         }
 
         private void DetermineOneRowMode()
@@ -254,6 +205,63 @@ namespace Inventory.Controls
                     ScrollViewer.SetHorizontalScrollMode(this, _savedHorizontalScrollMode);
                 }
             }
+        }
+
+        private void ItemsOnVectorChanged(IObservableVector<object> sender, IVectorChangedEventArgs @event)
+        {
+            if (!double.IsNaN(ActualWidth))
+            {
+                // If the item count changes, check if more or less columns
+                // needs to be rendered, in case we were having fewer items than columns.
+                RecalculateLayout(ActualWidth);
+            }
+        }
+
+        private void OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            var cmd = ItemClickCommand;
+            if (cmd != null)
+            {
+                if (cmd.CanExecute(e.ClickedItem))
+                {
+                    cmd.Execute(e.ClickedItem);
+                }
+            }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _isLoaded = true;
+            DetermineOneRowMode();
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // If we are in center alignment, we only care about relayout if the
+            // number of columns we can display changes Fixes #1737
+            if (HorizontalAlignment != HorizontalAlignment.Stretch)
+            {
+                var prevColumns = CalculateColumns(e.PreviousSize.Width, DesiredWidth);
+                var newColumns = CalculateColumns(e.NewSize.Width, DesiredWidth);
+
+                // If the width of the internal list view changes, check if more
+                // or less columns needs to be rendered.
+                if (prevColumns != newColumns)
+                {
+                    RecalculateLayout(e.NewSize.Width);
+                }
+            }
+            else if (e.PreviousSize.Width != e.NewSize.Width)
+            {
+                // We need to recalculate width as our size changes to adjust
+                // internal items.
+                RecalculateLayout(e.NewSize.Width);
+            }
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _isLoaded = false;
         }
 
         private void RecalculateLayout(double containerWidth)

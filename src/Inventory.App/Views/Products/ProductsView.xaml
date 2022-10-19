@@ -22,11 +22,11 @@
           BorderThickness="1,0,0,0">
         <controls:WindowTitle Prefix="Products" Title="{x:Bind ViewModel.ProductList.Title, Mode=OneWay}" />
 
-        <Grid 
+        <Grid
               Grid.RowSpan="{x:Bind GetRowSpan(ViewModel.ProductList.IsMultipleSelection), Mode=OneWay}">
-            <controls:Section Header="{x:Bind ViewModel.ProductList.Title, Mode=OneWay}" 
-                              HeaderTemplate="{StaticResource ListHeaderTemplate}" 
-                              HeaderButtonGlyph="&#xE2B4;" HeaderButtonClick="OpenInNewView" 
+            <controls:Section Header="{x:Bind ViewModel.ProductList.Title, Mode=OneWay}"
+                              HeaderTemplate="{StaticResource ListHeaderTemplate}"
+                              HeaderButtonGlyph="&#xE2B4;" HeaderButtonClick="OpenInNewView"
                               IsButtonVisible="{x:Bind ViewModel.IsMainView}">
                 <views:ProductsList ViewModel="{x:Bind ViewModel.ProductList}" />
             </controls:Section>

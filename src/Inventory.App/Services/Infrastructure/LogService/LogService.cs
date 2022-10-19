@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -25,36 +23,31 @@ namespace Inventory.Services
         }
 
         public IMessageService MessageService { get; }
-        public async Task WriteAsync(LogType type, string source, string action, Exception ex)
+
+        public async Task<int> CreateLogAsync(AppLog appLog)
         {
-            await WriteAsync(LogType.Error, source, action, ex.Message, ex.ToString());
-            Exception deepException = ex.InnerException;
-            while (deepException != null)
+            using (AppLogDb ds = CreateDataSource())
             {
-                await WriteAsync(LogType.Error, source, action, deepException.Message, deepException.ToString());
-                deepException = deepException.InnerException;
+                return await ds.CreateLogAsync(appLog);
             }
         }
-        public async Task WriteAsync(LogType type, string source, string action, string message, string description)
-        {
-            AppLog appLog = new AppLog
-            {
-                User = AppSettings.Current.UserName ?? "App",
-                Type = type,
-                Source = source,
-                Action = action,
-                Message = message,
-                Description = description,
-                IsRead = type != LogType.Error
-            };
 
-            await CreateLogAsync(appLog);
-            MessageService.Send(this, "LogAdded", appLog);
+        public async Task<int> DeleteLogAsync(AppLogModel model)
+        {
+            AppLog appLog = new AppLog { Id = model.Id };
+            using (AppLogDb ds = CreateDataSource())
+            {
+                return await ds.DeleteLogsAsync(appLog);
+            }
         }
 
-        private AppLogDb CreateDataSource()
+        public async Task<int> DeleteLogRangeAsync(int index, int length, DataRequest<AppLog> request)
         {
-            return new AppLogDb(AppSettings.Current.AppLogConnectionString);
+            using (AppLogDb ds = CreateDataSource())
+            {
+                var items = await ds.GetLogKeysAsync(index, length, request);
+                return await ds.DeleteLogsAsync(items.ToArray());
+            }
         }
 
         public async Task<AppLogModel> GetLogAsync(long id)
@@ -95,38 +88,40 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<int> CreateLogAsync(AppLog appLog)
-        {
-            using (AppLogDb ds = CreateDataSource())
-            {
-                return await ds.CreateLogAsync(appLog);
-            }
-        }
-
-        public async Task<int> DeleteLogAsync(AppLogModel model)
-        {
-            AppLog appLog = new AppLog { Id = model.Id };
-            using (AppLogDb ds = CreateDataSource())
-            {
-                return await ds.DeleteLogsAsync(appLog);
-            }
-        }
-
-        public async Task<int> DeleteLogRangeAsync(int index, int length, DataRequest<AppLog> request)
-        {
-            using (AppLogDb ds = CreateDataSource())
-            {
-                var items = await ds.GetLogKeysAsync(index, length, request);
-                return await ds.DeleteLogsAsync(items.ToArray());
-            }
-        }
-
         public async Task MarkAllAsReadAsync()
         {
             using (AppLogDb ds = CreateDataSource())
             {
                 await ds.MarkAllAsReadAsync();
             }
+        }
+
+        public async Task WriteAsync(LogType type, string source, string action, Exception ex)
+        {
+            await WriteAsync(LogType.Error, source, action, ex.Message, ex.ToString());
+            Exception deepException = ex.InnerException;
+            while (deepException != null)
+            {
+                await WriteAsync(LogType.Error, source, action, deepException.Message, deepException.ToString());
+                deepException = deepException.InnerException;
+            }
+        }
+
+        public async Task WriteAsync(LogType type, string source, string action, string message, string description)
+        {
+            AppLog appLog = new AppLog
+            {
+                User = AppSettings.Current.UserName ?? "App",
+                Type = type,
+                Source = source,
+                Action = action,
+                Message = message,
+                Description = description,
+                IsRead = type != LogType.Error
+            };
+
+            await CreateLogAsync(appLog);
+            MessageService.Send(this, "LogAdded", appLog);
         }
 
         private AppLogModel CreateAppLogModel(AppLog source)
@@ -143,6 +138,11 @@ namespace Inventory.Services
                 Message = source.Message,
                 Description = source.Description,
             };
+        }
+
+        private AppLogDb CreateDataSource()
+        {
+            return new AppLogDb(AppSettings.Current.AppLogConnectionString);
         }
     }
 }

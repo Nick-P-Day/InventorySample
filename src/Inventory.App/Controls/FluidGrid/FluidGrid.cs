@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.UI.Xaml;
@@ -20,46 +18,52 @@ namespace Inventory.Controls
     public class FluidGrid : Panel
     {
         #region Columns
+        public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register(nameof(Columns), typeof(int), typeof(FluidGrid), new PropertyMetadata(2));
+
         public int Columns
         {
             get => (int)GetValue(ColumnsProperty);
             set => SetValue(ColumnsProperty, value);
         }
 
-        public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register(nameof(Columns), typeof(int), typeof(FluidGrid), new PropertyMetadata(2));
         #endregion
 
         #region ColumnWidth
+        public static readonly DependencyProperty ColumnWidthProperty = DependencyProperty.Register(nameof(ColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
+
         public double ColumnWidth
         {
             get => (double)GetValue(ColumnWidthProperty);
             set => SetValue(ColumnWidthProperty, value);
         }
 
-        public static readonly DependencyProperty ColumnWidthProperty = DependencyProperty.Register(nameof(ColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
         #endregion
 
         #region MinColumnWidth
+        public static readonly DependencyProperty MinColumnWidthProperty = DependencyProperty.Register(nameof(MinColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(180.0));
+
         public double MinColumnWidth
         {
             get => (double)GetValue(MinColumnWidthProperty);
             set => SetValue(MinColumnWidthProperty, value);
         }
 
-        public static readonly DependencyProperty MinColumnWidthProperty = DependencyProperty.Register(nameof(MinColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(180.0));
         #endregion
 
         #region MaxColumnWidth
+        public static readonly DependencyProperty MaxColumnWidthProperty = DependencyProperty.Register(nameof(MaxColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(360.0));
+
         public double MaxColumnWidth
         {
             get => (double)GetValue(MaxColumnWidthProperty);
             set => SetValue(MaxColumnWidthProperty, value);
         }
 
-        public static readonly DependencyProperty MaxColumnWidthProperty = DependencyProperty.Register(nameof(MaxColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(360.0));
         #endregion
 
         #region ColumnSpan
+        public static readonly DependencyProperty ColumnSpanProperty = DependencyProperty.RegisterAttached("ColumnSpan", typeof(int), typeof(FluidGrid), new PropertyMetadata(1));
+
         public static int GetColumnSpan(UIElement element)
         {
             return (int)element.GetValue(ColumnSpanProperty);
@@ -70,66 +74,29 @@ namespace Inventory.Controls
             element.SetValue(ColumnSpanProperty, value);
         }
 
-        public static readonly DependencyProperty ColumnSpanProperty = DependencyProperty.RegisterAttached("ColumnSpan", typeof(int), typeof(FluidGrid), new PropertyMetadata(1));
         #endregion
 
         #region ColumnSpacing
+        public static readonly DependencyProperty ColumnSpacingProperty = DependencyProperty.Register(nameof(ColumnSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
+
         public double ColumnSpacing
         {
             get => (double)GetValue(ColumnSpacingProperty);
             set => SetValue(ColumnSpacingProperty, value);
         }
 
-        public static readonly DependencyProperty ColumnSpacingProperty = DependencyProperty.Register(nameof(ColumnSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
         #endregion
 
         #region RowSpacing
+        public static readonly DependencyProperty RowSpacingProperty = DependencyProperty.Register(nameof(RowSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
+
         public double RowSpacing
         {
             get => (double)GetValue(RowSpacingProperty);
             set => SetValue(RowSpacingProperty, value);
         }
 
-        public static readonly DependencyProperty RowSpacingProperty = DependencyProperty.Register(nameof(RowSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
         #endregion
-
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            var countWidth = InferColumns(availableSize.Width);
-            int count = countWidth.Item1;
-            double width = countWidth.Item2;
-
-            foreach (FrameworkElement item in Children)
-            {
-                int span = GetActualColumnSpan(item, count);
-                item.Measure(new Size((width * span) + (ColumnSpacing * (span - 1)), availableSize.Height));
-            }
-
-            int x = 0;
-            int y = 0;
-            double[] rowHeights = new double[Children.Count];
-
-            foreach (FrameworkElement item in Children)
-            {
-                int span = GetActualColumnSpan(item, count);
-                if (x > 0 && x + span > count)
-                {
-                    x = 0;
-                    y++;
-                }
-                rowHeights[y] = Math.Max(rowHeights[y], item.DesiredSize.Height);
-                x += span;
-            }
-
-            double height = 0;
-            for (int n = 0; n < rowHeights.Length; n++)
-            {
-                height += rowHeights[n];
-            }
-            height += RowSpacing * y;
-
-            return new Size((count * width) + (ColumnSpacing * (count - 1)), height);
-        }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
@@ -174,6 +141,44 @@ namespace Inventory.Controls
             }
 
             return finalSize;
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var countWidth = InferColumns(availableSize.Width);
+            int count = countWidth.Item1;
+            double width = countWidth.Item2;
+
+            foreach (FrameworkElement item in Children)
+            {
+                int span = GetActualColumnSpan(item, count);
+                item.Measure(new Size((width * span) + (ColumnSpacing * (span - 1)), availableSize.Height));
+            }
+
+            int x = 0;
+            int y = 0;
+            double[] rowHeights = new double[Children.Count];
+
+            foreach (FrameworkElement item in Children)
+            {
+                int span = GetActualColumnSpan(item, count);
+                if (x > 0 && x + span > count)
+                {
+                    x = 0;
+                    y++;
+                }
+                rowHeights[y] = Math.Max(rowHeights[y], item.DesiredSize.Height);
+                x += span;
+            }
+
+            double height = 0;
+            for (int n = 0; n < rowHeights.Length; n++)
+            {
+                height += rowHeights[n];
+            }
+            height += RowSpacing * y;
+
+            return new Size((count * width) + (ColumnSpacing * (count - 1)), height);
         }
 
         private int GetActualColumnSpan(FrameworkElement element, int count)

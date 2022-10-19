@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -29,17 +27,62 @@ namespace Inventory.Services
         public IDataServiceFactory DataServiceFactory { get; }
         public ILogService LogService { get; }
 
+        public static async Task<ProductModel> CreateProductModelAsync(Product source, bool includeAllFields)
+        {
+            ProductModel model = new ProductModel()
+            {
+                ProductID = source.ProductID,
+                CategoryID = source.CategoryID,
+                Name = source.Name,
+                Description = source.Description,
+                Size = source.Size,
+                Color = source.Color,
+                ListPrice = source.ListPrice,
+                DealerPrice = source.DealerPrice,
+                TaxType = source.TaxType,
+                Discount = source.Discount,
+                DiscountStartDate = source.DiscountStartDate,
+                DiscountEndDate = source.DiscountEndDate,
+                StockUnits = source.StockUnits,
+                SafetyStockLevel = source.SafetyStockLevel,
+                CreatedOn = source.CreatedOn,
+                LastModifiedOn = source.LastModifiedOn,
+                Thumbnail = source.Thumbnail,
+                ThumbnailSource = await BitmapTools.LoadBitmapAsync(source.Thumbnail)
+            };
+
+            if (includeAllFields)
+            {
+                model.Picture = source.Picture;
+                model.PictureSource = await BitmapTools.LoadBitmapAsync(source.Picture);
+            }
+            return model;
+        }
+
+        public async Task<int> DeleteProductAsync(ProductModel model)
+        {
+            Product product = new Product { ProductID = model.ProductID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                return await dataService.DeleteProductsAsync(product);
+            }
+        }
+
+        public async Task<int> DeleteProductRangeAsync(int index, int length, DataRequest<Product> request)
+        {
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
+            {
+                var items = await dataService.GetProductKeysAsync(index, length, request);
+                return await dataService.DeleteProductsAsync(items.ToArray());
+            }
+        }
+
         public async Task<ProductModel> GetProductAsync(string id)
         {
             using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetProductAsync(dataService, id);
             }
-        }
-        private static async Task<ProductModel> GetProductAsync(IDataService dataService, string id)
-        {
-            var item = await dataService.GetProductAsync(id);
-            return item != null ? await CreateProductModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<ProductModel>> GetProductsAsync(DataRequest<Product> request)
@@ -87,54 +130,10 @@ namespace Inventory.Services
             }
         }
 
-        public async Task<int> DeleteProductAsync(ProductModel model)
+        private static async Task<ProductModel> GetProductAsync(IDataService dataService, string id)
         {
-            Product product = new Product { ProductID = model.ProductID };
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                return await dataService.DeleteProductsAsync(product);
-            }
-        }
-
-        public async Task<int> DeleteProductRangeAsync(int index, int length, DataRequest<Product> request)
-        {
-            using (IDataService dataService = DataServiceFactory.CreateDataService())
-            {
-                var items = await dataService.GetProductKeysAsync(index, length, request);
-                return await dataService.DeleteProductsAsync(items.ToArray());
-            }
-        }
-
-        public static async Task<ProductModel> CreateProductModelAsync(Product source, bool includeAllFields)
-        {
-            ProductModel model = new ProductModel()
-            {
-                ProductID = source.ProductID,
-                CategoryID = source.CategoryID,
-                Name = source.Name,
-                Description = source.Description,
-                Size = source.Size,
-                Color = source.Color,
-                ListPrice = source.ListPrice,
-                DealerPrice = source.DealerPrice,
-                TaxType = source.TaxType,
-                Discount = source.Discount,
-                DiscountStartDate = source.DiscountStartDate,
-                DiscountEndDate = source.DiscountEndDate,
-                StockUnits = source.StockUnits,
-                SafetyStockLevel = source.SafetyStockLevel,
-                CreatedOn = source.CreatedOn,
-                LastModifiedOn = source.LastModifiedOn,
-                Thumbnail = source.Thumbnail,
-                ThumbnailSource = await BitmapTools.LoadBitmapAsync(source.Thumbnail)
-            };
-
-            if (includeAllFields)
-            {
-                model.Picture = source.Picture;
-                model.PictureSource = await BitmapTools.LoadBitmapAsync(source.Picture);
-            }
-            return model;
+            var item = await dataService.GetProductAsync(id);
+            return item != null ? await CreateProductModelAsync(item, includeAllFields: true) : null;
         }
 
         private void UpdateProductFromModel(Product target, ProductModel source)

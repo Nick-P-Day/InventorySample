@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Models;
@@ -29,19 +27,13 @@ namespace Inventory.ViewModels
             ProductDetails = new ProductDetailsViewModel(ProductService, filePickerService, commonServices);
         }
 
-        public IProductService ProductService { get; }
-
-        public ProductListViewModel ProductList { get; set; }
         public ProductDetailsViewModel ProductDetails { get; set; }
+        public ProductListViewModel ProductList { get; set; }
+        public IProductService ProductService { get; }
 
         public async Task LoadAsync(ProductListArgs args)
         {
             await ProductList.LoadAsync(args);
-        }
-        public void Unload()
-        {
-            ProductDetails.CancelEdit();
-            ProductList.Unload();
         }
 
         public void Subscribe()
@@ -50,22 +42,18 @@ namespace Inventory.ViewModels
             ProductList.Subscribe();
             ProductDetails.Subscribe();
         }
+
+        public void Unload()
+        {
+            ProductDetails.CancelEdit();
+            ProductList.Unload();
+        }
+
         public void Unsubscribe()
         {
             MessageService.Unsubscribe(this);
             ProductList.Unsubscribe();
             ProductDetails.Unsubscribe();
-        }
-
-        private async void OnMessage(ProductListViewModel viewModel, string message, object args)
-        {
-            if (viewModel == ProductList && message == "ItemSelected")
-            {
-                await ContextService.RunAsync(() =>
-                {
-                    OnItemSelected();
-                });
-            }
         }
 
         private async void OnItemSelected()
@@ -84,6 +72,17 @@ namespace Inventory.ViewModels
                 }
             }
             ProductDetails.Item = selected;
+        }
+
+        private async void OnMessage(ProductListViewModel viewModel, string message, object args)
+        {
+            if (viewModel == ProductList && message == "ItemSelected")
+            {
+                await ContextService.RunAsync(() =>
+                {
+                    OnItemSelected();
+                });
+            }
         }
 
         private async Task PopulateDetails(ProductModel selected)

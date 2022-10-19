@@ -12,8 +12,8 @@
         <Style x:Key="GridItemStyle" TargetType="GridViewItem">
             <Setter Property="Margin" Value="6" />
             <Setter Property="Background" Value="White" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="LightGray" />
         </Style>
@@ -24,40 +24,39 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="1" Margin="12,0" Text="Dashboard" FontSize="22" Foreground="Gray" />
 
-
-            <GridView Grid.Row="2" 
-                      Margin="6" 
+            <GridView Grid.Row="2"
+                      Margin="6"
                       ItemContainerStyle="{StaticResource GridItemStyle}"
-                      SelectionMode="None" 
+                      SelectionMode="None"
                       IsItemClickEnabled="True" ItemClick="OnItemClick">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <controls:WrapPanel />
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
-                <views:CustomersPane Margin="12" 
+                <views:CustomersPane Margin="12"
                                          Width="600"
                                          Height="250"
-                                         ItemsSource="{x:Bind ViewModel.Customers, Mode=OneWay}" 
+                                         ItemsSource="{x:Bind ViewModel.Customers, Mode=OneWay}"
                                          Tag="Customers" />
 
-                <views:ProductsPane Margin="12" 
+                <views:ProductsPane Margin="12"
                                         Width="400"
                                         Height="250"
-                                        ItemsSource="{x:Bind ViewModel.Products, Mode=OneWay}" 
+                                        ItemsSource="{x:Bind ViewModel.Products, Mode=OneWay}"
                                         Tag="Products" />
 
-                <views:OrdersPane Margin="12" 
+                <views:OrdersPane Margin="12"
                                       Width="400"
                                       Height="250"
-                                      ItemsSource="{x:Bind ViewModel.Orders, Mode=OneWay}" 
+                                      ItemsSource="{x:Bind ViewModel.Orders, Mode=OneWay}"
                                       Tag="Orders" />
             </GridView>
         </Grid>

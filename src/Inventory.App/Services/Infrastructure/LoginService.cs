@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Security.Credentials;
@@ -21,6 +19,10 @@ namespace Inventory.Services
 {
     public class LoginService : ILoginService
     {
+        private const int NTE_NO_KEY = unchecked((int)0x8009000D);
+
+        private const int NTE_PERM = unchecked((int)0x80090010);
+
         public LoginService(IMessageService messageService, IDialogService dialogService)
         {
             IsAuthenticated = false;
@@ -28,10 +30,9 @@ namespace Inventory.Services
             DialogService = dialogService;
         }
 
-        public IMessageService MessageService { get; }
         public IDialogService DialogService { get; }
-
         public bool IsAuthenticated { get; set; }
+        public IMessageService MessageService { get; }
 
         public bool IsWindowsHelloEnabled(string userName)
         {
@@ -45,10 +46,15 @@ namespace Inventory.Services
             return false;
         }
 
+        public void Logoff()
+        {
+            UpdateAuthenticationStatus(false);
+        }
+
         public Task<bool> SignInWithPasswordAsync(string userName, string password)
         {
-            // Perform authentication here.
-            // This sample accepts any user name and password.
+            // Perform authentication here. This sample accepts any user name
+            // and password.
             UpdateAuthenticationStatus(true);
             return Task.FromResult(true);
         }
@@ -76,17 +82,6 @@ namespace Inventory.Services
             return Result.Error("Windows Hello", "Windows Hello is not enabled for current user.");
         }
 
-        public void Logoff()
-        {
-            UpdateAuthenticationStatus(false);
-        }
-
-        private void UpdateAuthenticationStatus(bool isAuthenticated)
-        {
-            IsAuthenticated = isAuthenticated;
-            MessageService.Send(this, "AuthenticationChanged", IsAuthenticated);
-        }
-
         public async Task TrySetupWindowsHelloAsync(string userName)
         {
             if (await KeyCredentialManager.IsSupportedAsync())
@@ -102,51 +97,16 @@ namespace Inventory.Services
             }
         }
 
-        private async Task SetupWindowsHelloAsync(string userName)
+        private static Task<bool> RegisterPassportCredentialWithServerAsync(IBuffer publicKey)
         {
-            var publicKey = await CreatePassportKeyCredentialAsync(userName);
-            if (publicKey != null)
-            {
-                if (await RegisterPassportCredentialWithServerAsync(publicKey))
-                {
-                    // When communicating with the server in the future, we pass a hash of the
-                    // public key in order to identify which key the server should use to verify the challenge.
-                    HashAlgorithmProvider hashProvider = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
-                    IBuffer publicKeyHash = hashProvider.HashData(publicKey);
-                    AppSettings.Current.WindowsHelloPublicKeyHint = CryptographicBuffer.EncodeToBase64String(publicKeyHash);
-                }
-            }
-            else
-            {
-                await TryDeleteCredentialAccountAsync(userName);
-            }
+            // TODO: Register the public key and attestation of the key
+            // credential with the server In a real-world scenario, this would
+            // likely also include:
+            // - Certificate chain for attestation endorsement if available
+            // - Status code of the Key Attestation result : Included /
+            // retrieved later / retry type
+            return Task.FromResult(true);
         }
-
-        private async Task<IBuffer> CreatePassportKeyCredentialAsync(string userName)
-        {
-            // Create a new KeyCredential for the user on the device
-            var keyCreationResult = await KeyCredentialManager.RequestCreateAsync(userName, KeyCredentialCreationOption.ReplaceExisting);
-
-            if (keyCreationResult.Status == KeyCredentialStatus.Success)
-            {
-                // User has autheniticated with Windows Hello and the key credential is created
-                var credential = keyCreationResult.Credential;
-                return credential.RetrievePublicKey();
-            }
-            else if (keyCreationResult.Status == KeyCredentialStatus.NotFound)
-            {
-                await DialogService.ShowAsync("Windows Hello", "To proceed, Windows Hello needs to be configured in Windows Settings (Accounts -> Sign-in options)");
-            }
-            else if (keyCreationResult.Status == KeyCredentialStatus.UnknownError)
-            {
-                await DialogService.ShowAsync("Windows Hello Error", "The key credential could not be created. Please try again.");
-            }
-
-            return null;
-        }
-
-        private const int NTE_NO_KEY = unchecked((int)0x8009000D);
-        private const int NTE_PERM = unchecked((int)0x80090010);
 
         private static async Task<bool> TryDeleteCredentialAccountAsync(string userName)
         {
@@ -163,9 +123,11 @@ namespace Inventory.Services
                     case NTE_NO_KEY:
                         // Key is already deleted. Ignore this error.
                         break;
+
                     case NTE_PERM:
                         // Access is denied. Ignore this error. We tried our best.
                         break;
+
                     default:
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         break;
@@ -174,14 +136,55 @@ namespace Inventory.Services
             return false;
         }
 
-        private static Task<bool> RegisterPassportCredentialWithServerAsync(IBuffer publicKey)
+        private async Task<IBuffer> CreatePassportKeyCredentialAsync(string userName)
         {
-            // TODO:
-            // Register the public key and attestation of the key credential with the server
-            // In a real-world scenario, this would likely also include:
-            //      - Certificate chain for attestation endorsement if available
-            //      - Status code of the Key Attestation result : Included / retrieved later / retry type
-            return Task.FromResult(true);
+            // Create a new KeyCredential for the user on the device
+            var keyCreationResult = await KeyCredentialManager.RequestCreateAsync(userName, KeyCredentialCreationOption.ReplaceExisting);
+
+            if (keyCreationResult.Status == KeyCredentialStatus.Success)
+            {
+                // User has autheniticated with Windows Hello and the key
+                // credential is created
+                var credential = keyCreationResult.Credential;
+                return credential.RetrievePublicKey();
+            }
+            else if (keyCreationResult.Status == KeyCredentialStatus.NotFound)
+            {
+                await DialogService.ShowAsync("Windows Hello", "To proceed, Windows Hello needs to be configured in Windows Settings (Accounts -> Sign-in options)");
+            }
+            else if (keyCreationResult.Status == KeyCredentialStatus.UnknownError)
+            {
+                await DialogService.ShowAsync("Windows Hello Error", "The key credential could not be created. Please try again.");
+            }
+
+            return null;
+        }
+
+        private async Task SetupWindowsHelloAsync(string userName)
+        {
+            var publicKey = await CreatePassportKeyCredentialAsync(userName);
+            if (publicKey != null)
+            {
+                if (await RegisterPassportCredentialWithServerAsync(publicKey))
+                {
+                    // When communicating with the server in the future, we pass
+                    // a hash of the public key in order to identify which key
+                    // the server should use to verify the challenge.
+                    HashAlgorithmProvider hashProvider = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
+                    IBuffer publicKeyHash = hashProvider.HashData(publicKey);
+                    AppSettings.Current.WindowsHelloPublicKeyHint = CryptographicBuffer.EncodeToBase64String(publicKeyHash);
+                }
+            }
+            else
+            {
+                await TryDeleteCredentialAccountAsync(userName);
+            }
+        }
+
+        private void UpdateAuthenticationStatus(bool isAuthenticated)
+        {
+            IsAuthenticated = isAuthenticated;
+            MessageService.Send(this, "AuthenticationChanged", IsAuthenticated);
         }
     }
 }

@@ -12,11 +12,11 @@
         <DataTemplate x:Key="ItemTemplate" x:DataType="models:ProductModel">
             <Grid BorderThickness="1" BorderBrush="Gainsboro" Background="White">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="10*"/>
-                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="10*" />
+                    <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
                 <Grid>
-                    <Image Source="{x:Bind ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}" 
+                    <Image Source="{x:Bind ThumbnailSource, Mode=OneWay, Converter={StaticResource ObjectToImageConverter}}"
                            Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
                 <Grid Grid.Row="1" Background="WhiteSmoke">

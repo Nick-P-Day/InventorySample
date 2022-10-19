@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="ToolBarButtonCollapsedStyle" TargetType="AppBarButton" BasedOn="{StaticResource ToolBarButtonStyle}">
@@ -214,12 +214,12 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Viewbox x:Name="ContentViewbox" Height="20" Margin="0,14,0,4" HorizontalAlignment="Stretch" AutomationProperties.AccessibilityView="Raw" >
-                                <ContentPresenter x:Name="Content" Height="20" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}"/>
+                            <Viewbox x:Name="ContentViewbox" Height="20" Margin="0,14,0,4" HorizontalAlignment="Stretch" AutomationProperties.AccessibilityView="Raw">
+                                <ContentPresenter x:Name="Content" Height="20" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}" />
                             </Viewbox>
                             <TextBlock x:Name="TextLabel" Grid.Row="1" Text="{TemplateBinding Label}" Foreground="{TemplateBinding Foreground}" FontSize="12" FontFamily="{TemplateBinding FontFamily}" TextAlignment="Center" TextWrapping="Wrap" Margin="2,0,2,6" AutomationProperties.AccessibilityView="Raw" />
                             <TextBlock x:Name="OverflowTextLabel" Text="{TemplateBinding Label}" Foreground="{TemplateBinding Foreground}" FontSize="15" FontFamily="{TemplateBinding FontFamily}" TextAlignment="Left" TextTrimming="Clip" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="12,0,12,0" Padding="0,5,0,7" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" />
-                            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+                            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.RowSpan="2" Grid.ColumnSpan="2" />
                         </Grid>
                     </Grid>
                 </ControlTemplate>

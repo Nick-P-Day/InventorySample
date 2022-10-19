@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.ViewModels;
@@ -18,12 +16,12 @@ using Windows.ApplicationModel.Activation;
 namespace Inventory.Services
 {
     #region ActivationInfo
+
     public class ActivationInfo
     {
-        public static ActivationInfo CreateDefault()
-        {
-            return Create<DashboardViewModel>();
-        }
+        public object EntryArgs { get; set; }
+
+        public Type EntryViewModel { get; set; }
 
         public static ActivationInfo Create<TViewModel>(object entryArgs = null) where TViewModel : ViewModelBase
         {
@@ -34,9 +32,12 @@ namespace Inventory.Services
             };
         }
 
-        public Type EntryViewModel { get; set; }
-        public object EntryArgs { get; set; }
+        public static ActivationInfo CreateDefault()
+        {
+            return Create<DashboardViewModel>();
+        }
     }
+
     #endregion
 
     public static class ActivationService
@@ -68,6 +69,7 @@ namespace Inventory.Services
                             return ActivationInfo.Create<CustomerDetailsViewModel>(new CustomerDetailsArgs { CustomerID = customerID });
                         }
                         return ActivationInfo.Create<CustomersViewModel>(new CustomerListArgs());
+
                     case "order":
                     case "orders":
                         long orderID = args.Uri.GetInt64Parameter("id");
@@ -76,6 +78,7 @@ namespace Inventory.Services
                             return ActivationInfo.Create<OrderDetailsViewModel>(new OrderDetailsArgs { OrderID = orderID });
                         }
                         return ActivationInfo.Create<OrdersViewModel>(new OrderListArgs());
+
                     case "product":
                     case "products":
                         string productID = args.Uri.GetParameter("id");

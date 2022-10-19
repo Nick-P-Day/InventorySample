@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Models;
@@ -23,18 +21,45 @@ namespace Inventory.ViewModels
 {
     public abstract partial class GenericDetailsViewModel<TModel> : ViewModelBase where TModel : ObservableObject, new()
     {
+        private TModel _editableItem = null;
+
+        private bool _isEditMode = false;
+
+        private bool _isEnabled = true;
+
+        private TModel _item = null;
+
         public GenericDetailsViewModel(ICommonServices commonServices) : base(commonServices)
         {
         }
 
-        public ILookupTables LookupTables => LookupTablesProxy.Instance;
+        public ICommand BackCommand => new RelayCommand(OnBack);
+        public ICommand CancelCommand => new RelayCommand(OnCancel);
+        public bool CanGoBack => !IsMainView && NavigationService.CanGoBack;
+        public ICommand DeleteCommand => new RelayCommand(OnDelete);
 
+        public TModel EditableItem
+        {
+            get => _editableItem;
+            set => Set(ref _editableItem, value);
+        }
+
+        public ICommand EditCommand => new RelayCommand(OnEdit);
         public bool IsDataAvailable => _item != null;
         public bool IsDataUnavailable => !IsDataAvailable;
 
-        public bool CanGoBack => !IsMainView && NavigationService.CanGoBack;
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            set => Set(ref _isEditMode, value);
+        }
 
-        private TModel _item = null;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => Set(ref _isEnabled, value);
+        }
+
         public TModel Item
         {
             get => _item;
@@ -51,44 +76,10 @@ namespace Inventory.ViewModels
             }
         }
 
-        private TModel _editableItem = null;
-        public TModel EditableItem
-        {
-            get => _editableItem;
-            set => Set(ref _editableItem, value);
-        }
+        public abstract bool ItemIsNew { get; }
+        public ILookupTables LookupTables => LookupTablesProxy.Instance;
+        public ICommand SaveCommand => new RelayCommand(OnSave);
 
-        private bool _isEditMode = false;
-        public bool IsEditMode
-        {
-            get => _isEditMode;
-            set => Set(ref _isEditMode, value);
-        }
-
-        private bool _isEnabled = true;
-        public bool IsEnabled
-        {
-            get => _isEnabled;
-            set => Set(ref _isEnabled, value);
-        }
-
-        public ICommand BackCommand => new RelayCommand(OnBack);
-        protected virtual void OnBack()
-        {
-            StatusReady();
-            if (NavigationService.CanGoBack)
-            {
-                NavigationService.GoBack();
-            }
-        }
-
-        public ICommand EditCommand => new RelayCommand(OnEdit);
-        protected virtual void OnEdit()
-        {
-            StatusReady();
-            BeginEdit();
-            MessageService.Send(this, "BeginEdit", Item);
-        }
         public virtual void BeginEdit()
         {
             if (!IsEditMode)
@@ -101,13 +92,6 @@ namespace Inventory.ViewModels
             }
         }
 
-        public ICommand CancelCommand => new RelayCommand(OnCancel);
-        protected virtual void OnCancel()
-        {
-            StatusReady();
-            CancelEdit();
-            MessageService.Send(this, "CancelEdit", Item);
-        }
         public virtual void CancelEdit()
         {
             if (ItemIsNew)
@@ -132,20 +116,23 @@ namespace Inventory.ViewModels
             IsEditMode = false;
         }
 
-        public ICommand SaveCommand => new RelayCommand(OnSave);
-        protected virtual async void OnSave()
+        public virtual async Task DeleteAsync()
         {
-            StatusReady();
-            Result result = Validate(EditableItem);
-            if (result.IsOk)
+            TModel model = Item;
+            if (model != null)
             {
-                await SaveAsync();
-            }
-            else
-            {
-                await DialogService.ShowAsync(result.Message, $"{result.Description} Please, correct the error and try again.");
+                IsEnabled = false;
+                if (await DeleteItemAsync(model))
+                {
+                    MessageService.Send(this, "ItemDeleted", model);
+                }
+                else
+                {
+                    IsEnabled = true;
+                }
             }
         }
+
         public virtual async Task SaveAsync()
         {
             IsEnabled = false;
@@ -172,32 +159,6 @@ namespace Inventory.ViewModels
             IsEnabled = true;
         }
 
-        public ICommand DeleteCommand => new RelayCommand(OnDelete);
-        protected virtual async void OnDelete()
-        {
-            StatusReady();
-            if (await ConfirmDeleteAsync())
-            {
-                await DeleteAsync();
-            }
-        }
-        public virtual async Task DeleteAsync()
-        {
-            TModel model = Item;
-            if (model != null)
-            {
-                IsEnabled = false;
-                if (await DeleteItemAsync(model))
-                {
-                    MessageService.Send(this, "ItemDeleted", model);
-                }
-                else
-                {
-                    IsEnabled = true;
-                }
-            }
-        }
-
         public virtual Result Validate(TModel model)
         {
             foreach (IValidationConstraint<TModel> constraint in GetValidationConstraints(model))
@@ -210,15 +171,61 @@ namespace Inventory.ViewModels
             return Result.Ok();
         }
 
+        protected abstract Task<bool> ConfirmDeleteAsync();
+
+        protected abstract Task<bool> DeleteItemAsync(TModel model);
+
         protected virtual IEnumerable<IValidationConstraint<TModel>> GetValidationConstraints(TModel model)
         {
             return Enumerable.Empty<IValidationConstraint<TModel>>();
         }
 
-        public abstract bool ItemIsNew { get; }
+        protected virtual void OnBack()
+        {
+            StatusReady();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+        }
+
+        protected virtual void OnCancel()
+        {
+            StatusReady();
+            CancelEdit();
+            MessageService.Send(this, "CancelEdit", Item);
+        }
+
+        protected virtual async void OnDelete()
+        {
+            StatusReady();
+            if (await ConfirmDeleteAsync())
+            {
+                await DeleteAsync();
+            }
+        }
+
+        protected virtual void OnEdit()
+        {
+            StatusReady();
+            BeginEdit();
+            MessageService.Send(this, "BeginEdit", Item);
+        }
+
+        protected virtual async void OnSave()
+        {
+            StatusReady();
+            Result result = Validate(EditableItem);
+            if (result.IsOk)
+            {
+                await SaveAsync();
+            }
+            else
+            {
+                await DialogService.ShowAsync(result.Message, $"{result.Description} Please, correct the error and try again.");
+            }
+        }
 
         protected abstract Task<bool> SaveItemAsync(TModel model);
-        protected abstract Task<bool> DeleteItemAsync(TModel model);
-        protected abstract Task<bool> ConfirmDeleteAsync();
     }
 }

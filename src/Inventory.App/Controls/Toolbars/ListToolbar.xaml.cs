@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Windows.Foundation;
@@ -20,9 +18,6 @@ namespace Inventory.Controls
 {
     public sealed partial class ListToolbar : UserControl
     {
-        public event ToolbarButtonClickEventHandler ButtonClick;
-        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxQuerySubmittedEventArgs> QuerySubmitted;
-
         public ListToolbar()
         {
             InitializeComponent();
@@ -31,17 +26,24 @@ namespace Inventory.Controls
             UpdateControl();
         }
 
+        public event ToolbarButtonClickEventHandler ButtonClick;
+
+        public event TypedEventHandler<AutoSuggestBox, AutoSuggestBoxQuerySubmittedEventArgs> QuerySubmitted;
+
         #region NewLabel
+        public static readonly DependencyProperty NewLabelProperty = DependencyProperty.Register(nameof(NewLabel), typeof(string), typeof(ListToolbar), new PropertyMetadata("New"));
+
         public string NewLabel
         {
             get => (string)GetValue(NewLabelProperty);
             set => SetValue(NewLabelProperty, value);
         }
 
-        public static readonly DependencyProperty NewLabelProperty = DependencyProperty.Register(nameof(NewLabel), typeof(string), typeof(ListToolbar), new PropertyMetadata("New"));
         #endregion
 
         #region ToolbarMode
+        public static readonly DependencyProperty ToolbarModeProperty = DependencyProperty.Register("ToolbarMode", typeof(ListToolbarMode), typeof(ListToolbar), new PropertyMetadata(ListToolbarMode.Default, ToolbarModeChanged));
+
         public ListToolbarMode ToolbarMode
         {
             get => (ListToolbarMode)GetValue(ToolbarModeProperty);
@@ -54,10 +56,11 @@ namespace Inventory.Controls
             control.UpdateControl();
         }
 
-        public static readonly DependencyProperty ToolbarModeProperty = DependencyProperty.Register("ToolbarMode", typeof(ListToolbarMode), typeof(ListToolbar), new PropertyMetadata(ListToolbarMode.Default, ToolbarModeChanged));
         #endregion
 
         #region DefaultCommands*
+        public static readonly DependencyProperty DefaultCommandsProperty = DependencyProperty.Register(nameof(DefaultCommands), typeof(string), typeof(ListToolbar), new PropertyMetadata("new,select,refresh,search", DefaultCommandsChanged));
+
         public string DefaultCommands
         {
             get => (string)GetValue(DefaultCommandsProperty);
@@ -70,33 +73,49 @@ namespace Inventory.Controls
             control.UpdateControl();
         }
 
-        public static readonly DependencyProperty DefaultCommandsProperty = DependencyProperty.Register(nameof(DefaultCommands), typeof(string), typeof(ListToolbar), new PropertyMetadata("new,select,refresh,search", DefaultCommandsChanged));
         #endregion
 
         #region Query
+        public static readonly DependencyProperty QueryProperty = DependencyProperty.Register("Query", typeof(string), typeof(ListToolbar), new PropertyMetadata(null));
+
         public string Query
         {
             get => (string)GetValue(QueryProperty);
             set => SetValue(QueryProperty, value);
         }
 
-        public static readonly DependencyProperty QueryProperty = DependencyProperty.Register("Query", typeof(string), typeof(ListToolbar), new PropertyMetadata(null));
         #endregion
 
-        private void UpdateControl()
+        private void OnButtonClick(object sender, RoutedEventArgs e)
         {
-            switch (ToolbarMode)
+            if (e.OriginalSource is AppBarButton button)
             {
-                default:
-                case ListToolbarMode.Default:
-                    ShowCategory(DefaultCommands.Split(','));
-                    break;
-                case ListToolbarMode.Cancel:
-                    ShowCategory("cancel");
-                    break;
-                case ListToolbarMode.CancelDelete:
-                    ShowCategory("cancel", "delete");
-                    break;
+                switch (button.Name)
+                {
+                    case "buttonNew":
+                        RaiseButtonClick(ToolbarButton.New);
+                        break;
+
+                    case "buttonEdit":
+                        RaiseButtonClick(ToolbarButton.Edit);
+                        break;
+
+                    case "buttonDelete":
+                        RaiseButtonClick(ToolbarButton.Delete);
+                        break;
+
+                    case "buttonCancel":
+                        RaiseButtonClick(ToolbarButton.Cancel);
+                        break;
+
+                    case "buttonSelect":
+                        RaiseButtonClick(ToolbarButton.Select);
+                        break;
+
+                    case "buttonRefresh":
+                        RaiseButtonClick(ToolbarButton.Refresh);
+                        break;
+                }
             }
         }
 
@@ -106,10 +125,20 @@ namespace Inventory.Controls
             ElementSet.Children<AppBarButton>(commandBar.Content).Click += OnButtonClick;
         }
 
+        private void OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            QuerySubmitted?.Invoke(sender, args);
+        }
+
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             ElementSet.Children<AppBarButton>(commandBar.PrimaryCommands).Click -= OnButtonClick;
             ElementSet.Children<AppBarButton>(commandBar.Content).Click -= OnButtonClick;
+        }
+
+        private void RaiseButtonClick(ToolbarButton toolbarButton)
+        {
+            ButtonClick?.Invoke(this, new ToolbarButtonClickEventArgs(toolbarButton));
         }
 
         private void ShowCategory(params string[] categories)
@@ -121,42 +150,23 @@ namespace Inventory.Controls
             search.Show(search.IsCategory(categories));
         }
 
-        private void OnButtonClick(object sender, RoutedEventArgs e)
+        private void UpdateControl()
         {
-            if (e.OriginalSource is AppBarButton button)
+            switch (ToolbarMode)
             {
-                switch (button.Name)
-                {
-                    case "buttonNew":
-                        RaiseButtonClick(ToolbarButton.New);
-                        break;
-                    case "buttonEdit":
-                        RaiseButtonClick(ToolbarButton.Edit);
-                        break;
-                    case "buttonDelete":
-                        RaiseButtonClick(ToolbarButton.Delete);
-                        break;
-                    case "buttonCancel":
-                        RaiseButtonClick(ToolbarButton.Cancel);
-                        break;
-                    case "buttonSelect":
-                        RaiseButtonClick(ToolbarButton.Select);
-                        break;
-                    case "buttonRefresh":
-                        RaiseButtonClick(ToolbarButton.Refresh);
-                        break;
-                }
+                default:
+                case ListToolbarMode.Default:
+                    ShowCategory(DefaultCommands.Split(','));
+                    break;
+
+                case ListToolbarMode.Cancel:
+                    ShowCategory("cancel");
+                    break;
+
+                case ListToolbarMode.CancelDelete:
+                    ShowCategory("cancel", "delete");
+                    break;
             }
-        }
-
-        private void RaiseButtonClick(ToolbarButton toolbarButton)
-        {
-            ButtonClick?.Invoke(this, new ToolbarButtonClickEventArgs(toolbarButton));
-        }
-
-        private void OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-        {
-            QuerySubmitted?.Invoke(sender, args);
         }
     }
 }

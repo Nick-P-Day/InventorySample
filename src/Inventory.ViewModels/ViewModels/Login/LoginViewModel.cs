@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Services;
@@ -21,55 +19,61 @@ namespace Inventory.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
+        private bool _isBusy = false;
+
+        private bool _isLoginWithPassword = false;
+
+        private bool _isLoginWithWindowsHello = false;
+
+        private string _password = "UserPassword";
+
+        private string _userName = null;
+
         public LoginViewModel(ILoginService loginService, ISettingsService settingsService, ICommonServices commonServices) : base(commonServices)
         {
             LoginService = loginService;
             SettingsService = settingsService;
         }
 
-        public ILoginService LoginService { get; }
-        public ISettingsService SettingsService { get; }
-
-        private ShellArgs ViewModelArgs { get; set; }
-
-        private bool _isBusy = false;
         public bool IsBusy
         {
             get => _isBusy;
             set => Set(ref _isBusy, value);
         }
 
-        private bool _isLoginWithPassword = false;
         public bool IsLoginWithPassword
         {
             get => _isLoginWithPassword;
             set => Set(ref _isLoginWithPassword, value);
         }
 
-        private bool _isLoginWithWindowsHello = false;
         public bool IsLoginWithWindowsHello
         {
             get => _isLoginWithWindowsHello;
             set => Set(ref _isLoginWithWindowsHello, value);
         }
 
-        private string _userName = null;
-        public string UserName
-        {
-            get => _userName;
-            set => Set(ref _userName, value);
-        }
+        public ILoginService LoginService { get; }
+        public ICommand LoginWithPasswordCommand => new RelayCommand(LoginWithPassword);
+        public ICommand LoginWithWindowHelloCommand => new RelayCommand(LoginWithWindowHello);
 
-        private string _password = "UserPassword";
         public string Password
         {
             get => _password;
             set => Set(ref _password, value);
         }
 
+        public ISettingsService SettingsService { get; }
+
         public ICommand ShowLoginWithPasswordCommand => new RelayCommand(ShowLoginWithPassword);
-        public ICommand LoginWithPasswordCommand => new RelayCommand(LoginWithPassword);
-        public ICommand LoginWithWindowHelloCommand => new RelayCommand(LoginWithWindowHello);
+
+        public string UserName
+        {
+            get => _userName;
+            set => Set(ref _userName, value);
+        }
+
+        private ShellArgs ViewModelArgs { get; set; }
 
         public Task LoadAsync(ShellArgs args)
         {
@@ -93,12 +97,6 @@ namespace Inventory.ViewModels
             {
                 LoginWithWindowHello();
             }
-        }
-
-        private void ShowLoginWithPassword()
-        {
-            IsLoginWithWindowsHello = false;
-            IsLoginWithPassword = true;
         }
 
         public async void LoginWithPassword()
@@ -147,6 +145,12 @@ namespace Inventory.ViewModels
                 };
             }
             NavigationService.Navigate<MainShellViewModel>(ViewModelArgs);
+        }
+
+        private void ShowLoginWithPassword()
+        {
+            IsLoginWithWindowsHello = false;
+            IsLoginWithPassword = true;
         }
 
         private Result ValidateInput()

@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Microsoft.EntityFrameworkCore;
@@ -22,23 +20,17 @@ namespace Inventory.Data.Services
 {
     public partial class DataServiceBase
     {
+        public async Task<int> DeleteOrdersAsync(params Order[] orders)
+        {
+            _dataSource.Orders.RemoveRange(orders);
+            return await _dataSource.SaveChangesAsync();
+        }
+
         public async Task<Order> GetOrderAsync(long id)
         {
             return await _dataSource.Orders.Where(r => r.OrderID == id)
                 .Include(r => r.Customer)
                 .FirstOrDefaultAsync();
-        }
-
-        public async Task<IList<Order>> GetOrdersAsync(int skip, int take, DataRequest<Order> request)
-        {
-            IQueryable<Order> items = GetOrders(request);
-
-            // Execute
-            List<Order> records = await items.Skip(skip).Take(take)
-                .AsNoTracking()
-                .ToListAsync();
-
-            return records;
         }
 
         public async Task<IList<Order>> GetOrderKeysAsync(int skip, int take, DataRequest<Order> request)
@@ -57,33 +49,16 @@ namespace Inventory.Data.Services
             return records;
         }
 
-        private IQueryable<Order> GetOrders(DataRequest<Order> request)
+        public async Task<IList<Order>> GetOrdersAsync(int skip, int take, DataRequest<Order> request)
         {
-            IQueryable<Order> items = _dataSource.Orders;
+            IQueryable<Order> items = GetOrders(request);
 
-            // Query
-            if (!String.IsNullOrEmpty(request.Query))
-            {
-                items = items.Where(r => r.SearchTerms.Contains(request.Query.ToLower()));
-            }
+            // Execute
+            List<Order> records = await items.Skip(skip).Take(take)
+                .AsNoTracking()
+                .ToListAsync();
 
-            // Where
-            if (request.Where != null)
-            {
-                items = items.Where(request.Where);
-            }
-
-            // Order By
-            if (request.OrderBy != null)
-            {
-                items = items.OrderBy(request.OrderBy);
-            }
-            if (request.OrderByDesc != null)
-            {
-                items = items.OrderByDescending(request.OrderByDesc);
-            }
-
-            return items;
+            return records;
         }
 
         public async Task<int> GetOrdersCountAsync(DataRequest<Order> request)
@@ -122,10 +97,33 @@ namespace Inventory.Data.Services
             return await _dataSource.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteOrdersAsync(params Order[] orders)
+        private IQueryable<Order> GetOrders(DataRequest<Order> request)
         {
-            _dataSource.Orders.RemoveRange(orders);
-            return await _dataSource.SaveChangesAsync();
+            IQueryable<Order> items = _dataSource.Orders;
+
+            // Query
+            if (!String.IsNullOrEmpty(request.Query))
+            {
+                items = items.Where(r => r.SearchTerms.Contains(request.Query.ToLower()));
+            }
+
+            // Where
+            if (request.Where != null)
+            {
+                items = items.Where(request.Where);
+            }
+
+            // Order By
+            if (request.OrderBy != null)
+            {
+                items = items.OrderBy(request.OrderBy);
+            }
+            if (request.OrderByDesc != null)
+            {
+                items = items.OrderByDescending(request.OrderByDesc);
+            }
+
+            return items;
         }
     }
 }

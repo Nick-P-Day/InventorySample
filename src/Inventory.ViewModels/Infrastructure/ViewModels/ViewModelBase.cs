@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -34,14 +32,61 @@ namespace Inventory.ViewModels
         }
 
         public IContextService ContextService { get; }
-        public INavigationService NavigationService { get; }
-        public IMessageService MessageService { get; }
         public IDialogService DialogService { get; }
-        public ILogService LogService { get; }
-
         public bool IsMainView => ContextService.IsMainView;
-
+        public ILogService LogService { get; }
+        public IMessageService MessageService { get; }
+        public INavigationService NavigationService { get; }
         public virtual string Title => String.Empty;
+
+        public void DisableAllViews(string message)
+        {
+            MessageService.Send(this, "DisableAllViews", message);
+        }
+
+        public void DisableOtherViews(string message)
+        {
+            MessageService.Send(this, "DisableOtherViews", message);
+        }
+
+        public void DisableThisView(string message)
+        {
+            MessageService.Send(this, "DisableThisView", message);
+        }
+
+        public void EnableAllViews(string message = null)
+        {
+            message = message ?? "Ready";
+            MessageService.Send(this, "EnableAllViews", message);
+        }
+
+        public void EnableOtherViews(string message = null)
+        {
+            message = message ?? "Ready";
+            MessageService.Send(this, "EnableOtherViews", message);
+        }
+
+        public void EnableThisView(string message = null)
+        {
+            message = message ?? "Ready";
+            MessageService.Send(this, "EnableThisView", message);
+        }
+
+        public void EndStatusMessage(string message)
+        {
+            _stopwatch.Stop();
+            StatusMessage($"{message} ({_stopwatch.Elapsed.TotalSeconds:#0.000} seconds)");
+        }
+
+        public async void LogError(string source, string action, string message, string description)
+        {
+            await LogService.WriteAsync(LogType.Error, source, action, message, description);
+        }
+
+        public void LogException(string source, string action, Exception exception)
+        {
+            LogError(source, action, exception.Message, exception.ToString());
+        }
 
         public async void LogInformation(string source, string action, string message, string description)
         {
@@ -53,70 +98,28 @@ namespace Inventory.ViewModels
             await LogService.WriteAsync(LogType.Warning, source, action, message, description);
         }
 
-        public void LogException(string source, string action, Exception exception)
-        {
-            LogError(source, action, exception.Message, exception.ToString());
-        }
-        public async void LogError(string source, string action, string message, string description)
-        {
-            await LogService.WriteAsync(LogType.Error, source, action, message, description);
-        }
-
         public void StartStatusMessage(string message)
         {
             StatusMessage(message);
             _stopwatch.Reset();
             _stopwatch.Start();
         }
-        public void EndStatusMessage(string message)
-        {
-            _stopwatch.Stop();
-            StatusMessage($"{message} ({_stopwatch.Elapsed.TotalSeconds:#0.000} seconds)");
-        }
 
-        public void StatusReady()
-        {
-            MessageService.Send(this, "StatusMessage", "Ready");
-        }
-        public void StatusMessage(string message)
-        {
-            Microsoft.AppCenter.Analytics.Analytics.TrackEvent(message);
-            MessageService.Send(this, "StatusMessage", message);
-        }
         public void StatusError(string message)
         {
             Microsoft.AppCenter.Analytics.Analytics.TrackEvent(message);
             MessageService.Send(this, "StatusError", message);
         }
 
-        public void EnableThisView(string message = null)
+        public void StatusMessage(string message)
         {
-            message = message ?? "Ready";
-            MessageService.Send(this, "EnableThisView", message);
-        }
-        public void DisableThisView(string message)
-        {
-            MessageService.Send(this, "DisableThisView", message);
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent(message);
+            MessageService.Send(this, "StatusMessage", message);
         }
 
-        public void EnableOtherViews(string message = null)
+        public void StatusReady()
         {
-            message = message ?? "Ready";
-            MessageService.Send(this, "EnableOtherViews", message);
-        }
-        public void DisableOtherViews(string message)
-        {
-            MessageService.Send(this, "DisableOtherViews", message);
-        }
-
-        public void EnableAllViews(string message = null)
-        {
-            message = message ?? "Ready";
-            MessageService.Send(this, "EnableAllViews", message);
-        }
-        public void DisableAllViews(string message)
-        {
-            MessageService.Send(this, "DisableAllViews", message);
+            MessageService.Send(this, "StatusMessage", "Ready");
         }
     }
 }

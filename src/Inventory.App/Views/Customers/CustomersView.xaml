@@ -24,15 +24,15 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <!--Customers-->
             <Grid Grid.RowSpan="{x:Bind GetRowSpan(ViewModel.CustomerList.IsMultipleSelection), Mode=OneWay}">
-                <controls:Section Header="{x:Bind ViewModel.CustomerList.Title, Mode=OneWay}" 
+                <controls:Section Header="{x:Bind ViewModel.CustomerList.Title, Mode=OneWay}"
                                   HeaderTemplate="{StaticResource ListHeaderTemplate}"
-                                  HeaderButtonGlyph="&#xE2B4;" 
+                                  HeaderButtonGlyph="&#xE2B4;"
                                   HeaderButtonClick="OpenInNewView"
                                   IsButtonVisible="{x:Bind ViewModel.IsMainView}">
                     <views:CustomersList ViewModel="{x:Bind ViewModel.CustomerList}" />
@@ -40,13 +40,13 @@
             </Grid>
 
             <!--Details-->
-            <Grid Grid.Row="1" 
+            <Grid Grid.Row="1"
                   BorderBrush="LightGray"
                   BorderThickness="0,1,0,0"
                   Visibility="{x:Bind ViewModel.CustomerList.IsMultipleSelection, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                <controls:Section IsEnabled="{x:Bind ViewModel.CustomerDetails.IsEnabled, Mode=OneWay}" 
-                                  HeaderButtonGlyph="&#xE2B4;" 
-                                  HeaderButtonClick="OpenDetailsInNewView" 
+                <controls:Section IsEnabled="{x:Bind ViewModel.CustomerDetails.IsEnabled, Mode=OneWay}"
+                                  HeaderButtonGlyph="&#xE2B4;"
+                                  HeaderButtonClick="OpenDetailsInNewView"
                                   Background="{StaticResource DetailsViewBackgroundColor}"
                                   Visibility="{x:Bind ViewModel.CustomerDetails.IsDataAvailable, Mode=OneWay}">
 
@@ -61,7 +61,7 @@
                 </controls:Section>
 
                 <!--Empty Details-->
-                <controls:Section Header="No item selected" 
+                <controls:Section Header="No item selected"
                                   Visibility="{x:Bind ViewModel.CustomerDetails.IsDataUnavailable, Mode=OneWay}" />
             </Grid>
         </Grid>

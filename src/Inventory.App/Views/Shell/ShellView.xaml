@@ -9,15 +9,15 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
                 <Frame x:Name="frame" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
-                            <NavigationThemeTransition/>
+                            <NavigationThemeTransition />
                         </TransitionCollection>
                     </Frame.ContentTransitions>
                 </Frame>
@@ -31,8 +31,8 @@
 
         <Grid RequestedTheme="Dark" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{x:Bind ViewModel.IsLocked, Mode=OneWay}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/SplashScreen.scale-200.png" Width="640" />

@@ -11,7 +11,7 @@
         <StackPanel>
             <Grid Margin="0,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <PersonPicture Margin="1"
@@ -41,12 +41,12 @@
                     </Grid>
                 </controls:RoundButton>
 
-                <TextBlock Grid.Column="1" 
+                <TextBlock Grid.Column="1"
                        Margin="12,0,0,0"
                        FontSize="18"
                        Text="{x:Bind Item.FullName, Mode=OneWay}"
                        VerticalAlignment="Center"
-                       Style="{StaticResource CardText}"/>
+                       Style="{StaticResource CardText}" />
             </Grid>
 
             <TextBlock Style="{StaticResource CardHeader}" Text="Email" />

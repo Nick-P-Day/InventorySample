@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.Data;
@@ -25,27 +23,30 @@ using System.Windows.Input;
 namespace Inventory.ViewModels
 {
     #region OrderItemListArgs
+
     public class OrderItemListArgs
     {
-        public static OrderItemListArgs CreateEmpty()
-        {
-            return new OrderItemListArgs { IsEmpty = true };
-        }
-
         public OrderItemListArgs()
         {
             OrderBy = r => r.OrderLine;
         }
 
-        public long OrderID { get; set; }
-
         public bool IsEmpty { get; set; }
+
+        public Expression<Func<OrderItem, object>> OrderBy { get; set; }
+
+        public Expression<Func<OrderItem, object>> OrderByDesc { get; set; }
+
+        public long OrderID { get; set; }
 
         public string Query { get; set; }
 
-        public Expression<Func<OrderItem, object>> OrderBy { get; set; }
-        public Expression<Func<OrderItem, object>> OrderByDesc { get; set; }
+        public static OrderItemListArgs CreateEmpty()
+        {
+            return new OrderItemListArgs { IsEmpty = true };
+        }
     }
+
     #endregion
 
     public class OrderItemListViewModel : GenericListViewModel<OrderItemModel>
@@ -55,9 +56,21 @@ namespace Inventory.ViewModels
             OrderItemService = orderItemService;
         }
 
+        public ICommand OpenInNewViewCommand => new RelayCommand(OnOpenInNewView);
         public IOrderItemService OrderItemService { get; }
 
         public OrderItemListArgs ViewModelArgs { get; private set; }
+
+        public OrderItemListArgs CreateArgs()
+        {
+            return new OrderItemListArgs
+            {
+                Query = Query,
+                OrderBy = ViewModelArgs.OrderBy,
+                OrderByDesc = ViewModelArgs.OrderByDesc,
+                OrderID = ViewModelArgs.OrderID
+            };
+        }
 
         public async Task LoadAsync(OrderItemListArgs args, bool silent = false)
         {
@@ -76,31 +89,6 @@ namespace Inventory.ViewModels
                     EndStatusMessage("OrderItems loaded");
                 }
             }
-        }
-        public void Unload()
-        {
-            ViewModelArgs.Query = Query;
-        }
-
-        public void Subscribe()
-        {
-            MessageService.Subscribe<OrderItemListViewModel>(this, OnMessage);
-            MessageService.Subscribe<OrderItemDetailsViewModel>(this, OnMessage);
-        }
-        public void Unsubscribe()
-        {
-            MessageService.Unsubscribe(this);
-        }
-
-        public OrderItemListArgs CreateArgs()
-        {
-            return new OrderItemListArgs
-            {
-                Query = Query,
-                OrderBy = ViewModelArgs.OrderBy,
-                OrderByDesc = ViewModelArgs.OrderByDesc,
-                OrderID = ViewModelArgs.OrderID
-            };
         }
 
         public async Task<bool> RefreshAsync()
@@ -133,46 +121,20 @@ namespace Inventory.ViewModels
             return isOk;
         }
 
-        private async Task<IList<OrderItemModel>> GetItemsAsync()
+        public void Subscribe()
         {
-            if (!ViewModelArgs.IsEmpty)
-            {
-                DataRequest<OrderItem> request = BuildDataRequest();
-                return await OrderItemService.GetOrderItemsAsync(request);
-            }
-            return new List<OrderItemModel>();
+            MessageService.Subscribe<OrderItemListViewModel>(this, OnMessage);
+            MessageService.Subscribe<OrderItemDetailsViewModel>(this, OnMessage);
         }
 
-        public ICommand OpenInNewViewCommand => new RelayCommand(OnOpenInNewView);
-        private async void OnOpenInNewView()
+        public void Unload()
         {
-            if (SelectedItem != null)
-            {
-                await NavigationService.CreateNewViewAsync<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = SelectedItem.OrderID, OrderLine = SelectedItem.OrderLine });
-            }
+            ViewModelArgs.Query = Query;
         }
 
-        protected override async void OnNew()
+        public void Unsubscribe()
         {
-            if (IsMainView)
-            {
-                await NavigationService.CreateNewViewAsync<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = ViewModelArgs.OrderID });
-            }
-            else
-            {
-                NavigationService.Navigate<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = ViewModelArgs.OrderID });
-            }
-
-            StatusReady();
-        }
-
-        protected override async void OnRefresh()
-        {
-            StartStatusMessage("Loading order items...");
-            if (await RefreshAsync())
-            {
-                EndStatusMessage("Order items loaded");
-            }
+            MessageService.Unsubscribe(this);
         }
 
         protected override async void OnDeleteSelection()
@@ -214,20 +176,26 @@ namespace Inventory.ViewModels
             }
         }
 
-        private async Task DeleteItemsAsync(IEnumerable<OrderItemModel> models)
+        protected override async void OnNew()
         {
-            foreach (OrderItemModel model in models)
+            if (IsMainView)
             {
-                await OrderItemService.DeleteOrderItemAsync(model);
+                await NavigationService.CreateNewViewAsync<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = ViewModelArgs.OrderID });
             }
+            else
+            {
+                NavigationService.Navigate<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = ViewModelArgs.OrderID });
+            }
+
+            StatusReady();
         }
 
-        private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
+        protected override async void OnRefresh()
         {
-            DataRequest<OrderItem> request = BuildDataRequest();
-            foreach (IndexRange range in ranges)
+            StartStatusMessage("Loading order items...");
+            if (await RefreshAsync())
             {
-                await OrderItemService.DeleteOrderItemRangeAsync(range.Index, range.Length, request);
+                EndStatusMessage("Order items loaded");
             }
         }
 
@@ -246,6 +214,33 @@ namespace Inventory.ViewModels
             return request;
         }
 
+        private async Task DeleteItemsAsync(IEnumerable<OrderItemModel> models)
+        {
+            foreach (OrderItemModel model in models)
+            {
+                await OrderItemService.DeleteOrderItemAsync(model);
+            }
+        }
+
+        private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
+        {
+            DataRequest<OrderItem> request = BuildDataRequest();
+            foreach (IndexRange range in ranges)
+            {
+                await OrderItemService.DeleteOrderItemRangeAsync(range.Index, range.Length, request);
+            }
+        }
+
+        private async Task<IList<OrderItemModel>> GetItemsAsync()
+        {
+            if (!ViewModelArgs.IsEmpty)
+            {
+                DataRequest<OrderItem> request = BuildDataRequest();
+                return await OrderItemService.GetOrderItemsAsync(request);
+            }
+            return new List<OrderItemModel>();
+        }
+
         private async void OnMessage(ViewModelBase sender, string message, object args)
         {
             switch (message)
@@ -259,6 +254,14 @@ namespace Inventory.ViewModels
                         await RefreshAsync();
                     });
                     break;
+            }
+        }
+
+        private async void OnOpenInNewView()
+        {
+            if (SelectedItem != null)
+            {
+                await NavigationService.CreateNewViewAsync<OrderItemDetailsViewModel>(new OrderItemDetailsArgs { OrderID = SelectedItem.OrderID, OrderLine = SelectedItem.OrderLine });
             }
         }
     }

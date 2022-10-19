@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <TextBlock Text="{x:Bind UserName}" HorizontalAlignment="Center" FontSize="22" />
 
         <Button HorizontalAlignment="Center" Grid.Row="1" BorderThickness="0" Background="Transparent" Command="{x:Bind LoginWithWindowHelloCommand}">

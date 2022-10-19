@@ -1,15 +1,13 @@
 ﻿#region copyright
-// ******************************************************************
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
-// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
-// ******************************************************************
+// ****************************************************************** Copyright
+// (c) Microsoft. All rights reserved. This code is licensed under the MIT
+// License (MIT). THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+// EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+// OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER
+// DEALINGS IN THE CODE. ******************************************************************
 #endregion
 
 using Inventory.ViewModels;
@@ -33,18 +31,17 @@ namespace Inventory.Services
 
         public static int MainViewId { get; }
 
-        public static void Register<TViewModel, TView>() where TView : Page
-        {
-            if (!_viewModelMap.TryAdd(typeof(TViewModel), typeof(TView)))
-            {
-                throw new InvalidOperationException($"ViewModel already registered '{typeof(TViewModel).FullName}'");
-            }
-        }
+        public bool CanGoBack => Frame.CanGoBack;
+
+        public Frame Frame { get; private set; }
+
+        public bool IsMainView => CoreApplication.GetCurrentView().IsMain;
 
         public static Type GetView<TViewModel>()
         {
             return GetView(typeof(TViewModel));
         }
+
         public static Type GetView(Type viewModel)
         {
             return _viewModelMap.TryGetValue(viewModel, out Type view)
@@ -58,37 +55,25 @@ namespace Inventory.Services
             return type ?? throw new InvalidOperationException($"View not registered for ViewModel '{view.FullName}'");
         }
 
-        public bool IsMainView => CoreApplication.GetCurrentView().IsMain;
-
-        public Frame Frame { get; private set; }
-
-        public bool CanGoBack => Frame.CanGoBack;
-
-        public void GoBack()
+        public static void Register<TViewModel, TView>() where TView : Page
         {
-            Frame.GoBack();
+            if (!_viewModelMap.TryAdd(typeof(TViewModel), typeof(TView)))
+            {
+                throw new InvalidOperationException($"ViewModel already registered '{typeof(TViewModel).FullName}'");
+            }
         }
 
-        public void Initialize(object frame)
+        public async Task CloseViewAsync()
         {
-            Frame = frame as Frame;
-        }
-
-        public bool Navigate<TViewModel>(object parameter = null)
-        {
-            return Navigate(typeof(TViewModel), parameter);
-        }
-        public bool Navigate(Type viewModelType, object parameter = null)
-        {
-            return Frame == null
-                ? throw new InvalidOperationException("Navigation frame not initialized.")
-                : Frame.Navigate(GetView(viewModelType), parameter);
+            int currentId = ApplicationView.GetForCurrentView().Id;
+            await ApplicationViewSwitcher.SwitchAsync(MainViewId, currentId, ApplicationViewSwitchingOptions.ConsolidateViews);
         }
 
         public async Task<int> CreateNewViewAsync<TViewModel>(object parameter = null)
         {
             return await CreateNewViewAsync(typeof(TViewModel), parameter);
         }
+
         public async Task<int> CreateNewViewAsync(Type viewModelType, object parameter = null)
         {
             int viewId = 0;
@@ -113,10 +98,26 @@ namespace Inventory.Services
             return await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewId) ? viewId : 0;
         }
 
-        public async Task CloseViewAsync()
+        public void GoBack()
         {
-            int currentId = ApplicationView.GetForCurrentView().Id;
-            await ApplicationViewSwitcher.SwitchAsync(MainViewId, currentId, ApplicationViewSwitchingOptions.ConsolidateViews);
+            Frame.GoBack();
+        }
+
+        public void Initialize(object frame)
+        {
+            Frame = frame as Frame;
+        }
+
+        public bool Navigate<TViewModel>(object parameter = null)
+        {
+            return Navigate(typeof(TViewModel), parameter);
+        }
+
+        public bool Navigate(Type viewModelType, object parameter = null)
+        {
+            return Frame == null
+                ? throw new InvalidOperationException("Navigation frame not initialized.")
+                : Frame.Navigate(GetView(viewModelType), parameter);
         }
     }
 }

@@ -8,7 +8,6 @@ using Windows.UI.Xaml.Controls;
 
 namespace Inventory.Views.SplashScreen
 {
-
     public sealed partial class ExtendedSplash : Page
     {
         internal Rect splashImageRect; // Rect to store splash screen image coordinates.
@@ -20,8 +19,10 @@ namespace Inventory.Views.SplashScreen
         {
             this.InitializeComponent();
 
-            // Listen for window resize events to reposition the extended splash screen image accordingly.
-            // This is important to ensure that the extended splash screen is formatted properly in response to snapping, unsnapping, rotation, etc...
+            // Listen for window resize events to reposition the extended splash
+            // screen image accordingly. This is important to ensure that the
+            // extended splash screen is formatted properly in response to
+            // snapping, unsnapping, rotation, etc...
             Window.Current.SizeChanged += new WindowSizeChangedEventHandler(ExtendedSplash_OnResize);
 
             splashScreen = e.SplashScreen;
@@ -62,10 +63,10 @@ namespace Inventory.Views.SplashScreen
             Window.Current.Content = rootFrame;
 
             Window.Current.Activate();
-
         }
 
-        // Position the extended splash screen image in the same location as the system splash screen image.
+        // Position the extended splash screen image in the same location as the
+        // system splash screen image.
         private void Resize()
         {
             if (splashScreen == null)
@@ -73,8 +74,9 @@ namespace Inventory.Views.SplashScreen
                 return;
             }
 
-            // The splash image's not always perfectly centered. Therefore we need to set our image's position 
-            // to match the original one to obtain a clean transition between both splash screens.
+            // The splash image's not always perfectly centered. Therefore we
+            // need to set our image's position to match the original one to
+            // obtain a clean transition between both splash screens.
 
             this.splashImage.Height = splashScreen.ImageLocation.Height;
             this.splashImage.Width = splashScreen.ImageLocation.Width;
@@ -88,7 +90,9 @@ namespace Inventory.Views.SplashScreen
 
         private void ExtendedSplash_OnResize(Object sender, WindowSizeChangedEventArgs e)
         {
-            // Safely update the extended splash screen image coordinates. This function will be fired in response to snapping, unsnapping, rotation, etc...
+            // Safely update the extended splash screen image coordinates. This
+            // function will be fired in response to snapping, unsnapping,
+            // rotation, etc...
             if (splashScreen != null)
             {
                 // Update the coordinates of the splash screen image.
