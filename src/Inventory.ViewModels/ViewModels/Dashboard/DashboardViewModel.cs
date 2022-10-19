@@ -12,13 +12,12 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
@@ -75,7 +74,7 @@ namespace Inventory.ViewModels
         {
             try
             {
-                var request = new DataRequest<Customer>
+                DataRequest<Customer> request = new DataRequest<Customer>
                 {
                     OrderByDesc = r => r.CreatedOn
                 };
@@ -91,7 +90,7 @@ namespace Inventory.ViewModels
         {
             try
             {
-                var request = new DataRequest<Order>
+                DataRequest<Order> request = new DataRequest<Order>
                 {
                     OrderByDesc = r => r.OrderDate
                 };
@@ -107,7 +106,7 @@ namespace Inventory.ViewModels
         {
             try
             {
-                var request = new DataRequest<Product>
+                DataRequest<Product> request = new DataRequest<Product>
                 {
                     OrderByDesc = r => r.CreatedOn
                 };

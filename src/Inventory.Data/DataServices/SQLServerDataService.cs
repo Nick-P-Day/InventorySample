@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 namespace Inventory.Data.Services
 {
     public class SQLServerDataService : DataServiceBase

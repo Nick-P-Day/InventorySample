@@ -12,12 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Inventory.Animations;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-using Inventory.Animations;
 
 namespace Inventory.Controls
 {
@@ -37,13 +34,13 @@ namespace Inventory.Controls
         #region Header
         public object Header
         {
-            get { return (object)GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => (object)GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         private static void HeaderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as Section;
+            Section control = d as Section;
             control.UpdateControl();
         }
 
@@ -53,8 +50,8 @@ namespace Inventory.Controls
         #region HeaderTemplate
         public DataTemplate HeaderTemplate
         {
-            get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
-            set { SetValue(HeaderTemplateProperty, value); }
+            get => (DataTemplate)GetValue(HeaderTemplateProperty);
+            set => SetValue(HeaderTemplateProperty, value);
         }
 
         public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.Register("HeaderTemplate", typeof(DataTemplate), typeof(Section), new PropertyMetadata(null));
@@ -63,13 +60,13 @@ namespace Inventory.Controls
         #region HeaderButtonGlyph
         public string HeaderButtonGlyph
         {
-            get { return (string)GetValue(HeaderButtonGlyphProperty); }
-            set { SetValue(HeaderButtonGlyphProperty, value); }
+            get => (string)GetValue(HeaderButtonGlyphProperty);
+            set => SetValue(HeaderButtonGlyphProperty, value);
         }
 
         private static void HeaderButtonGlyphChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as Section;
+            Section control = d as Section;
             control.UpdateControl();
         }
 
@@ -79,13 +76,13 @@ namespace Inventory.Controls
         #region HeaderButtonLabel
         public string HeaderButtonLabel
         {
-            get { return (string)GetValue(HeaderButtonLabelProperty); }
-            set { SetValue(HeaderButtonLabelProperty, value); }
+            get => (string)GetValue(HeaderButtonLabelProperty);
+            set => SetValue(HeaderButtonLabelProperty, value);
         }
 
         private static void HeaderButtonLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as Section;
+            Section control = d as Section;
             control.UpdateControl();
         }
 
@@ -95,13 +92,13 @@ namespace Inventory.Controls
         #region IsButtonVisible
         public bool IsButtonVisible
         {
-            get { return (bool)GetValue(IsButtonVisibleProperty); }
-            set { SetValue(IsButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsButtonVisibleProperty);
+            set => SetValue(IsButtonVisibleProperty, value);
         }
 
         private static void IsButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as Section;
+            Section control = d as Section;
             control.UpdateControl();
         }
 
@@ -111,8 +108,8 @@ namespace Inventory.Controls
         #region Footer
         public object Footer
         {
-            get { return (object)GetValue(FooterProperty); }
-            set { SetValue(FooterProperty, value); }
+            get => (object)GetValue(FooterProperty);
+            set => SetValue(FooterProperty, value);
         }
 
         public static readonly DependencyProperty FooterProperty = DependencyProperty.Register("Footer", typeof(object), typeof(Section), new PropertyMetadata(null));
@@ -121,8 +118,8 @@ namespace Inventory.Controls
         #region FooterTemplate
         public DataTemplate FooterTemplate
         {
-            get { return (DataTemplate)GetValue(FooterTemplateProperty); }
-            set { SetValue(FooterTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FooterTemplateProperty);
+            set => SetValue(FooterTemplateProperty, value);
         }
 
         public static readonly DependencyProperty FooterTemplateProperty = DependencyProperty.Register("FooterTemplate", typeof(DataTemplate), typeof(Section), new PropertyMetadata(null));

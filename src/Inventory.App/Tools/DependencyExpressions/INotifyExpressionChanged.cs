@@ -12,9 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.ComponentModel;
-
 namespace Inventory
 {
     public interface INotifyExpressionChanged : INotifyPropertyChanged

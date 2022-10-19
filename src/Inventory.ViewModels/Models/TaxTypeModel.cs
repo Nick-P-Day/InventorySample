@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 namespace Inventory.Models
 {
     public class TaxTypeModel : ObservableObject

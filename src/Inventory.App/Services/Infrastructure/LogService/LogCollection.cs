@@ -12,10 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Models;
 
@@ -29,7 +25,7 @@ namespace Inventory.Services
         {
         }
 
-        private AppLogModel _defaultItem = AppLogModel.CreateEmpty();
+        private readonly AppLogModel _defaultItem = AppLogModel.CreateEmpty();
         protected override AppLogModel DefaultItem => _defaultItem;
 
         public async Task LoadAsync(DataRequest<AppLog> dataRequest)

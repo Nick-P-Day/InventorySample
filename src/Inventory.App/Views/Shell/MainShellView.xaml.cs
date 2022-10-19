@@ -12,18 +12,14 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-
+using Inventory.Services;
+using Inventory.ViewModels;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Windows.UI.ViewManagement;
-using Windows.UI.Core;
-using Windows.ApplicationModel.Core;
-
-using Inventory.ViewModels;
-using Inventory.Services;
 
 namespace Inventory.Views
 {
@@ -45,7 +41,7 @@ namespace Inventory.Views
 
         private void InitializeContext()
         {
-            var context = ServiceLocator.Current.GetService<IContextService>();
+            IContextService context = ServiceLocator.Current.GetService<IContextService>();
             context.Initialize(Dispatcher, ApplicationView.GetForCurrentView().Id, CoreApplication.GetCurrentView().IsMain);
         }
 
@@ -111,10 +107,10 @@ namespace Inventory.Views
 
         private async void OnLogoff(object sender, RoutedEventArgs e)
         {
-            var dialogService = ServiceLocator.Current.GetService<IDialogService>();
+            IDialogService dialogService = ServiceLocator.Current.GetService<IDialogService>();
             if (await dialogService.ShowAsync("Confirm logoff", "Are you sure you want to logoff?", "Ok", "Cancel"))
             {
-                var loginService = ServiceLocator.Current.GetService<ILoginService>();
+                ILoginService loginService = ServiceLocator.Current.GetService<ILoginService>();
                 loginService.Logoff();
                 if (Frame.CanGoBack)
                 {

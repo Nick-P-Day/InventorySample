@@ -12,13 +12,12 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
@@ -58,18 +57,18 @@ namespace Inventory.ViewModels
 
         public override async Task LoadAsync(ShellArgs args)
         {
-            Items =  GetItems().ToArray();
+            Items = GetItems().ToArray();
             await UpdateAppLogBadge();
             await base.LoadAsync(args);
         }
 
-        override public void Subscribe()
+        public override void Subscribe()
         {
             MessageService.Subscribe<ILogService, AppLog>(this, OnLogServiceMessage);
             base.Subscribe();
         }
 
-        override public void Unsubscribe()
+        public override void Unsubscribe()
         {
             base.Unsubscribe();
         }

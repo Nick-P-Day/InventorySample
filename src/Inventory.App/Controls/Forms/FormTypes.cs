@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml;
 
 namespace Inventory.Controls

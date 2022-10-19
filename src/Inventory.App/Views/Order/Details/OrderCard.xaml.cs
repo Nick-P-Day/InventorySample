@@ -12,12 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Inventory.Models;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-using Inventory.Models;
 
 namespace Inventory.Views
 {
@@ -31,8 +28,8 @@ namespace Inventory.Views
         #region Item
         public OrderModel Item
         {
-            get { return (OrderModel)GetValue(ItemProperty); }
-            set { SetValue(ItemProperty, value); }
+            get => (OrderModel)GetValue(ItemProperty);
+            set => SetValue(ItemProperty, value);
         }
 
         public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(nameof(Item), typeof(OrderModel), typeof(OrderCard), new PropertyMetadata(null));

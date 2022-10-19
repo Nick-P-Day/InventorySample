@@ -12,34 +12,28 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-
+using Inventory.ViewModels;
+using Inventory.Views;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.ViewManagement;
-using Windows.ApplicationModel.Core;
-
-using Inventory.Views;
-using Inventory.ViewModels;
 
 namespace Inventory.Services
 {
     public partial class NavigationService : INavigationService
     {
-        static private readonly ConcurrentDictionary<Type, Type> _viewModelMap = new ConcurrentDictionary<Type, Type>();
+        private static readonly ConcurrentDictionary<Type, Type> _viewModelMap = new ConcurrentDictionary<Type, Type>();
 
         static NavigationService()
         {
             MainViewId = ApplicationView.GetForCurrentView().Id;
         }
 
-        static public int MainViewId { get; }
+        public static int MainViewId { get; }
 
-        static public void Register<TViewModel, TView>() where TView : Page
+        public static void Register<TViewModel, TView>() where TView : Page
         {
             if (!_viewModelMap.TryAdd(typeof(TViewModel), typeof(TView)))
             {
@@ -47,27 +41,21 @@ namespace Inventory.Services
             }
         }
 
-        static public Type GetView<TViewModel>()
+        public static Type GetView<TViewModel>()
         {
             return GetView(typeof(TViewModel));
         }
-        static public Type GetView(Type viewModel)
+        public static Type GetView(Type viewModel)
         {
-            if (_viewModelMap.TryGetValue(viewModel, out Type view))
-            {
-                return view;
-            }
-            throw new InvalidOperationException($"View not registered for ViewModel '{viewModel.FullName}'");
+            return _viewModelMap.TryGetValue(viewModel, out Type view)
+                ? view
+                : throw new InvalidOperationException($"View not registered for ViewModel '{viewModel.FullName}'");
         }
 
-        static public Type GetViewModel(Type view)
+        public static Type GetViewModel(Type view)
         {
             var type = _viewModelMap.Where(r => r.Value == view).Select(r => r.Key).FirstOrDefault();
-            if (type == null)
-            {
-                throw new InvalidOperationException($"View not registered for ViewModel '{view.FullName}'");
-            }
-            return type;
+            return type ?? throw new InvalidOperationException($"View not registered for ViewModel '{view.FullName}'");
         }
 
         public bool IsMainView => CoreApplication.GetCurrentView().IsMain;
@@ -76,7 +64,10 @@ namespace Inventory.Services
 
         public bool CanGoBack => Frame.CanGoBack;
 
-        public void GoBack() => Frame.GoBack();
+        public void GoBack()
+        {
+            Frame.GoBack();
+        }
 
         public void Initialize(object frame)
         {
@@ -89,11 +80,9 @@ namespace Inventory.Services
         }
         public bool Navigate(Type viewModelType, object parameter = null)
         {
-            if (Frame == null)
-            {
-                throw new InvalidOperationException("Navigation frame not initialized.");
-            }
-            return Frame.Navigate(GetView(viewModelType), parameter);
+            return Frame == null
+                ? throw new InvalidOperationException("Navigation frame not initialized.")
+                : Frame.Navigate(GetView(viewModelType), parameter);
         }
 
         public async Task<int> CreateNewViewAsync<TViewModel>(object parameter = null)
@@ -104,13 +93,13 @@ namespace Inventory.Services
         {
             int viewId = 0;
 
-            var newView = CoreApplication.CreateNewView();
+            CoreApplicationView newView = CoreApplication.CreateNewView();
             await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 viewId = ApplicationView.GetForCurrentView().Id;
 
-                var frame = new Frame();
-                var args = new ShellArgs
+                Frame frame = new Frame();
+                ShellArgs args = new ShellArgs
                 {
                     ViewModel = viewModelType,
                     Parameter = parameter
@@ -121,12 +110,7 @@ namespace Inventory.Services
                 Window.Current.Activate();
             });
 
-            if (await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewId))
-            {
-                return viewId;
-            }
-
-            return 0;
+            return await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewId) ? viewId : 0;
         }
 
         public async Task CloseViewAsync()

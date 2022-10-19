@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Concurrent;
-using System.ComponentModel;
-
 namespace Inventory
 {
     public class DependencyExpressions
@@ -35,22 +30,18 @@ namespace Inventory
 
         public DependencyExpression Register(string name, params string[] dependencies)
         {
-            var dexp = new DependencyExpression(name, dependencies);
-            if (_dependencyMap.TryAdd(name, dexp))
-            {
-                return dexp;
-            }
-            throw new ArgumentException($"DependencyExpression already registered for property '{name}'.", name);
+            DependencyExpression dexp = new DependencyExpression(name, dependencies);
+            return _dependencyMap.TryAdd(name, dexp)
+                ? dexp
+                : throw new ArgumentException($"DependencyExpression already registered for property '{name}'.", name);
         }
 
         public DependencyExpression Register(string name, params DependencyExpression[] dependencies)
         {
-            var dexp = new DependencyExpression(name, dependencies.Select(r => r.Name).ToArray());
-            if (_dependencyMap.TryAdd(name, dexp))
-            {
-                return dexp;
-            }
-            throw new ArgumentException($"DependencyExpression already registered for property '{name}'.", name);
+            DependencyExpression dexp = new DependencyExpression(name, dependencies.Select(r => r.Name).ToArray());
+            return _dependencyMap.TryAdd(name, dexp)
+                ? dexp
+                : throw new ArgumentException($"DependencyExpression already registered for property '{name}'.", name);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

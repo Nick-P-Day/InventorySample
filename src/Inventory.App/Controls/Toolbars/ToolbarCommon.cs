@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 namespace Inventory.Controls
 {
     public enum ToolbarButton

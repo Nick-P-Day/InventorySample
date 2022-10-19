@@ -12,18 +12,15 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.Storage;
 
 namespace Inventory.Views
 {
     public sealed partial class ChartPane : UserControl
     {
-        private WebView _webView;
+        private readonly WebView _webView;
 
         public ChartPane()
         {

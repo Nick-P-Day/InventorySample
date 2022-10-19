@@ -12,11 +12,8 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.Foundation;
 
 namespace Inventory.Controls
 {
@@ -25,8 +22,8 @@ namespace Inventory.Controls
         #region Columns
         public int Columns
         {
-            get { return (int)GetValue(ColumnsProperty); }
-            set { SetValue(ColumnsProperty, value); }
+            get => (int)GetValue(ColumnsProperty);
+            set => SetValue(ColumnsProperty, value);
         }
 
         public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register(nameof(Columns), typeof(int), typeof(FluidGrid), new PropertyMetadata(2));
@@ -35,8 +32,8 @@ namespace Inventory.Controls
         #region ColumnWidth
         public double ColumnWidth
         {
-            get { return (double)GetValue(ColumnWidthProperty); }
-            set { SetValue(ColumnWidthProperty, value); }
+            get => (double)GetValue(ColumnWidthProperty);
+            set => SetValue(ColumnWidthProperty, value);
         }
 
         public static readonly DependencyProperty ColumnWidthProperty = DependencyProperty.Register(nameof(ColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
@@ -45,8 +42,8 @@ namespace Inventory.Controls
         #region MinColumnWidth
         public double MinColumnWidth
         {
-            get { return (double)GetValue(MinColumnWidthProperty); }
-            set { SetValue(MinColumnWidthProperty, value); }
+            get => (double)GetValue(MinColumnWidthProperty);
+            set => SetValue(MinColumnWidthProperty, value);
         }
 
         public static readonly DependencyProperty MinColumnWidthProperty = DependencyProperty.Register(nameof(MinColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(180.0));
@@ -55,20 +52,20 @@ namespace Inventory.Controls
         #region MaxColumnWidth
         public double MaxColumnWidth
         {
-            get { return (double)GetValue(MaxColumnWidthProperty); }
-            set { SetValue(MaxColumnWidthProperty, value); }
+            get => (double)GetValue(MaxColumnWidthProperty);
+            set => SetValue(MaxColumnWidthProperty, value);
         }
 
         public static readonly DependencyProperty MaxColumnWidthProperty = DependencyProperty.Register(nameof(MaxColumnWidth), typeof(double), typeof(FluidGrid), new PropertyMetadata(360.0));
         #endregion
 
         #region ColumnSpan
-        static public int GetColumnSpan(UIElement element)
+        public static int GetColumnSpan(UIElement element)
         {
             return (int)element.GetValue(ColumnSpanProperty);
         }
 
-        static public void SetColumnSpan(UIElement element, int value)
+        public static void SetColumnSpan(UIElement element, int value)
         {
             element.SetValue(ColumnSpanProperty, value);
         }
@@ -79,8 +76,8 @@ namespace Inventory.Controls
         #region ColumnSpacing
         public double ColumnSpacing
         {
-            get { return (double)GetValue(ColumnSpacingProperty); }
-            set { SetValue(ColumnSpacingProperty, value); }
+            get => (double)GetValue(ColumnSpacingProperty);
+            set => SetValue(ColumnSpacingProperty, value);
         }
 
         public static readonly DependencyProperty ColumnSpacingProperty = DependencyProperty.Register(nameof(ColumnSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
@@ -89,8 +86,8 @@ namespace Inventory.Controls
         #region RowSpacing
         public double RowSpacing
         {
-            get { return (double)GetValue(RowSpacingProperty); }
-            set { SetValue(RowSpacingProperty, value); }
+            get => (double)GetValue(RowSpacingProperty);
+            set => SetValue(RowSpacingProperty, value);
         }
 
         public static readonly DependencyProperty RowSpacingProperty = DependencyProperty.Register(nameof(RowSpacing), typeof(double), typeof(FluidGrid), new PropertyMetadata(0.0));
@@ -105,7 +102,7 @@ namespace Inventory.Controls
             foreach (FrameworkElement item in Children)
             {
                 int span = GetActualColumnSpan(item, count);
-                item.Measure(new Size(width * span + (ColumnSpacing * (span - 1)), availableSize.Height));
+                item.Measure(new Size((width * span) + (ColumnSpacing * (span - 1)), availableSize.Height));
             }
 
             int x = 0;
@@ -131,7 +128,7 @@ namespace Inventory.Controls
             }
             height += RowSpacing * y;
 
-            return new Size(count * width + (ColumnSpacing * (count - 1)), height);
+            return new Size((count * width) + (ColumnSpacing * (count - 1)), height);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -165,11 +162,11 @@ namespace Inventory.Controls
                 double h = 0;
                 for (int j = 0; j < count; j++)
                 {
-                    var cell = cells[j, i];
+                    FrameworkElement cell = cells[j, i];
                     if (cell != null)
                     {
                         int span = GetActualColumnSpan(cell, count);
-                        cell.Arrange(new Rect(j * widthspacing, height, width * span + (ColumnSpacing * (span - 1)), rowHeights[i]));
+                        cell.Arrange(new Rect(j * widthspacing, height, (width * span) + (ColumnSpacing * (span - 1)), rowHeights[i]));
                         h = Math.Max(h, cell.DesiredSize.Height);
                     }
                 }
@@ -197,16 +194,16 @@ namespace Inventory.Controls
                 return Tuple.Create(Columns, MaxColumnWidth);
             }
 
-            double maxDesiredWidth = Columns * MaxColumnWidth + ColumnSpacing * (Columns - 1);
+            double maxDesiredWidth = (Columns * MaxColumnWidth) + (ColumnSpacing * (Columns - 1));
             if (maxDesiredWidth <= availableWidth)
             {
                 return Tuple.Create(Columns, MaxColumnWidth);
             }
 
-            double minDesiredWidth = Columns * MinColumnWidth + ColumnSpacing * (Columns - 1);
+            double minDesiredWidth = (Columns * MinColumnWidth) + (ColumnSpacing * (Columns - 1));
             if (minDesiredWidth <= availableWidth)
             {
-                return Tuple.Create(Columns, (availableWidth - ColumnSpacing * (Columns - 1)) / Columns);
+                return Tuple.Create(Columns, (availableWidth - (ColumnSpacing * (Columns - 1))) / Columns);
             }
 
             if (MinColumnWidth >= availableWidth)
@@ -225,7 +222,7 @@ namespace Inventory.Controls
                 }
             }
 
-            return Tuple.Create(n, (availableWidth - ColumnSpacing * (n - 1)) / n);
+            return Tuple.Create(n, (availableWidth - (ColumnSpacing * (n - 1))) / n);
         }
     }
 }

@@ -12,15 +12,13 @@
 // ******************************************************************
 #endregion
 
+using Inventory.Data.Services;
+using Inventory.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
-
-using Inventory.Services;
-using Inventory.Data.Services;
 
 namespace Inventory.ViewModels
 {
@@ -46,8 +44,14 @@ namespace Inventory.ViewModels
         private string _message = null;
         public string Message
         {
-            get { return _message; }
-            set { if (Set(ref _message, value)) NotifyPropertyChanged(nameof(HasMessage)); }
+            get => _message;
+            set
+            {
+                if (Set(ref _message, value))
+                {
+                    NotifyPropertyChanged(nameof(HasMessage));
+                }
+            }
         }
 
         public bool HasMessage => _message != null;
@@ -70,12 +74,12 @@ namespace Inventory.ViewModels
         {
             try
             {
-                using (var db = new SQLServerDb(connectionString))
+                using (SQLServerDb db = new SQLServerDb(connectionString))
                 {
-                    var dbCreator = db.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+                    RelationalDatabaseCreator dbCreator = db.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
                     if (await dbCreator.ExistsAsync())
                     {
-                        var version = db.DbVersion.FirstOrDefault();
+                        Data.DbVersion version = db.DbVersion.FirstOrDefault();
                         if (version != null)
                         {
                             if (version.Version == SettingsService.DbVersion)

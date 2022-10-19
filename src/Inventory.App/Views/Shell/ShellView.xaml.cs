@@ -12,16 +12,12 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Inventory.Services;
+using Inventory.ViewModels;
+using Windows.ApplicationModel.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Windows.UI.ViewManagement;
-using Windows.ApplicationModel.Core;
-
-using Inventory.ViewModels;
-using Inventory.Services;
-using Windows.UI.Xaml;
 
 namespace Inventory.Views
 {
@@ -39,15 +35,15 @@ namespace Inventory.Views
 
         private void InitializeContext()
         {
-            var context = ServiceLocator.Current.GetService<IContextService>();
+            IContextService context = ServiceLocator.Current.GetService<IContextService>();
             context.Initialize(Dispatcher, ApplicationView.GetForCurrentView().Id, CoreApplication.GetCurrentView().IsMain);
         }
 
         private void InitializeNavigation()
         {
-            var navigationService = ServiceLocator.Current.GetService<INavigationService>();
+            INavigationService navigationService = ServiceLocator.Current.GetService<INavigationService>();
             navigationService.Initialize(frame);
-            var appView = ApplicationView.GetForCurrentView();
+            ApplicationView appView = ApplicationView.GetForCurrentView();
             appView.Consolidated += OnViewConsolidated;
         }
 
@@ -62,14 +58,14 @@ namespace Inventory.Views
             ViewModel.Unsubscribe();
             ViewModel = null;
             Bindings.StopTracking();
-            var appView = ApplicationView.GetForCurrentView();
+            ApplicationView appView = ApplicationView.GetForCurrentView();
             appView.Consolidated -= OnViewConsolidated;
             ServiceLocator.DisposeCurrent();
         }
 
         private async void OnUnlockClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            var context = ServiceLocator.Current.GetService<IContextService>();
+            IContextService context = ServiceLocator.Current.GetService<IContextService>();
             await ApplicationViewSwitcher.SwitchAsync(context.MainViewID);
         }
     }

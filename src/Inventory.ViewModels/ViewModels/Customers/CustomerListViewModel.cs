@@ -12,23 +12,25 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
     #region CustomerListArgs
     public class CustomerListArgs
     {
-        static public CustomerListArgs CreateEmpty() => new CustomerListArgs { IsEmpty = true };
+        public static CustomerListArgs CreateEmpty()
+        {
+            return new CustomerListArgs { IsEmpty = true };
+        }
 
         public CustomerListArgs()
         {
@@ -204,7 +206,7 @@ namespace Inventory.ViewModels
 
         private async Task DeleteItemsAsync(IEnumerable<CustomerModel> models)
         {
-            foreach (var model in models)
+            foreach (CustomerModel model in models)
             {
                 await CustomerService.DeleteCustomerAsync(model);
             }
@@ -213,7 +215,7 @@ namespace Inventory.ViewModels
         private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
         {
             DataRequest<Customer> request = BuildDataRequest();
-            foreach (var range in ranges)
+            foreach (IndexRange range in ranges)
             {
                 await CustomerService.DeleteCustomerRangeAsync(range.Index, range.Length, request);
             }

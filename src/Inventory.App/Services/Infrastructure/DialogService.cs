@@ -12,9 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
 using Windows.UI.Xaml.Controls;
 
 namespace Inventory.Services
@@ -33,7 +30,7 @@ namespace Inventory.Services
 
         public async Task<bool> ShowAsync(string title, string content, string ok = "Ok", string cancel = null)
         {
-            var dialog = new ContentDialog
+            ContentDialog dialog = new ContentDialog
             {
                 Title = title,
                 Content = content,

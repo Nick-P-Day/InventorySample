@@ -12,18 +12,19 @@
 // ******************************************************************
 #endregion
 
-using System;
+using Inventory.Services;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using Inventory.Services;
 
 namespace Inventory.ViewModels
 {
     #region SettingsArgs
     public class SettingsArgs
     {
-        static public SettingsArgs CreateDefault() => new SettingsArgs();
+        public static SettingsArgs CreateDefault()
+        {
+            return new SettingsArgs();
+        }
     }
     #endregion
 
@@ -48,8 +49,14 @@ namespace Inventory.ViewModels
         private bool _isLocalProvider;
         public bool IsLocalProvider
         {
-            get { return _isLocalProvider; }
-            set { if (Set(ref _isLocalProvider, value)) UpdateProvider(); }
+            get => _isLocalProvider;
+            set
+            {
+                if (Set(ref _isLocalProvider, value))
+                {
+                    UpdateProvider();
+                }
+            }
         }
 
         private bool _isSqlProvider;
@@ -68,8 +75,8 @@ namespace Inventory.ViewModels
 
         public bool IsRandomErrorsEnabled
         {
-            get { return SettingsService.IsRandomErrorsEnabled; }
-            set { SettingsService.IsRandomErrorsEnabled = value; }
+            get => SettingsService.IsRandomErrorsEnabled;
+            set => SettingsService.IsRandomErrorsEnabled = value;
         }
 
         public ICommand ResetLocalDataCommand => new RelayCommand(OnResetLocalData);
@@ -105,7 +112,7 @@ namespace Inventory.ViewModels
         {
             IsBusy = true;
             StatusMessage("Waiting database reset...");
-            var result = await SettingsService.ResetLocalDataProviderAsync();
+            Result result = await SettingsService.ResetLocalDataProviderAsync();
             IsBusy = false;
             if (result.IsOk)
             {
@@ -127,7 +134,7 @@ namespace Inventory.ViewModels
             StatusReady();
             IsBusy = true;
             StatusMessage("Validating connection string...");
-            var result = await SettingsService.ValidateConnectionAsync(SqlConnectionString);
+            Result result = await SettingsService.ValidateConnectionAsync(SqlConnectionString);
             IsBusy = false;
             if (result.IsOk)
             {
@@ -145,7 +152,7 @@ namespace Inventory.ViewModels
         {
             StatusReady();
             DisableAllViews("Waiting for the database to be created...");
-            var result = await SettingsService.CreateDabaseAsync(SqlConnectionString);
+            Result result = await SettingsService.CreateDabaseAsync(SqlConnectionString);
             EnableOtherViews();
             EnableThisView("");
             await Task.Delay(100);

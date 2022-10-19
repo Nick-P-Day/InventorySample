@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -28,7 +26,7 @@ namespace Inventory.Controls
 
         public double Radius
         {
-            get { return (double)GetValue(RadiusProperty); }
+            get => (double)GetValue(RadiusProperty);
             set
             {
                 SetValue(CornerRadiusProperty, new CornerRadius(value));
@@ -38,13 +36,11 @@ namespace Inventory.Controls
         }
         public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(nameof(Radius), typeof(double), typeof(RoundButton), new PropertyMetadata(0));
 
-
-
         #region CornerRadius
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(RoundButton), new PropertyMetadata(new CornerRadius(0)));

@@ -12,17 +12,16 @@
 // ******************************************************************
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Microsoft.EntityFrameworkCore;
-
 namespace Inventory.Data.Services
 {
-    abstract public partial class DataServiceBase : IDataService, IDisposable
+    public abstract partial class DataServiceBase : IDataService, IDisposable
     {
-        private IDataSource _dataSource = null;
+        private readonly IDataSource _dataSource = null;
 
         public DataServiceBase(IDataSource dataSource)
         {

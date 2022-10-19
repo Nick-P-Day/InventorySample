@@ -12,7 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -67,14 +66,14 @@ namespace Inventory.Controls
             base.PrepareContainerForItemOverride(obj, item);
             if (obj is FrameworkElement element)
             {
-                var heightBinding = new Binding()
+                Binding heightBinding = new Binding()
                 {
                     Source = this,
                     Path = new PropertyPath("ItemHeight"),
                     Mode = BindingMode.TwoWay
                 };
 
-                var widthBinding = new Binding()
+                Binding widthBinding = new Binding()
                 {
                     Source = this,
                     Path = new PropertyPath("ItemWidth"),
@@ -119,8 +118,8 @@ namespace Inventory.Controls
             }
 
             // subtract the margin from the width so we place the correct width for placement
-            var fallbackThickness = default(Thickness);
-            var itemMargin = AdaptiveHeightValueConverter.GetItemMargin(this, fallbackThickness);
+            Thickness fallbackThickness = default(Thickness);
+            Thickness itemMargin = AdaptiveHeightValueConverter.GetItemMargin(this, fallbackThickness);
             if (itemMargin == fallbackThickness)
             {
                 // No style explicitly defined, or no items or no container for the items
@@ -202,11 +201,11 @@ namespace Inventory.Controls
         {
             if (_isLoaded)
             {
-                var itemsWrapGridPanel = ItemsPanelRoot as ItemsWrapGrid;
+                ItemsWrapGrid itemsWrapGridPanel = ItemsPanelRoot as ItemsWrapGrid;
 
                 if (OneRowModeEnabled)
                 {
-                    var b = new Binding()
+                    Binding b = new Binding()
                     {
                         Source = this,
                         Path = new PropertyPath("ItemHeight"),
@@ -259,7 +258,7 @@ namespace Inventory.Controls
 
         private void RecalculateLayout(double containerWidth)
         {
-            var itemsPanel = ItemsPanelRoot as Panel;
+            Panel itemsPanel = ItemsPanelRoot;
             var panelMargin = itemsPanel != null ?
                               itemsPanel.Margin.Left + itemsPanel.Margin.Right :
                               0;

@@ -1,13 +1,10 @@
-﻿using System;
-using Windows.Foundation;
+﻿using Inventory.Services;
+using Inventory.ViewModels;
+using Windows.ApplicationModel.Activation;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Core;
-using Windows.ApplicationModel.Activation;
-using Inventory.Services;
-using Inventory.ViewModels;
-using System.Threading.Tasks;
-using Windows.System;
 
 namespace Inventory.Views.SplashScreen
 {
@@ -15,9 +12,9 @@ namespace Inventory.Views.SplashScreen
     public sealed partial class ExtendedSplash : Page
     {
         internal Rect splashImageRect; // Rect to store splash screen image coordinates.
-        private Windows.ApplicationModel.Activation.SplashScreen splashScreen; // Variable to hold the splash screen object.
-        private Frame rootFrame;
-        private IActivatedEventArgs activatedEventArgs;
+        private readonly Windows.ApplicationModel.Activation.SplashScreen splashScreen; // Variable to hold the splash screen object.
+        private readonly Frame rootFrame;
+        private readonly IActivatedEventArgs activatedEventArgs;
 
         public ExtendedSplash(IActivatedEventArgs e, bool loadState)
         {
@@ -28,7 +25,7 @@ namespace Inventory.Views.SplashScreen
             Window.Current.SizeChanged += new WindowSizeChangedEventHandler(ExtendedSplash_OnResize);
 
             splashScreen = e.SplashScreen;
-            this.activatedEventArgs = e;
+            activatedEventArgs = e;
 
             if (splashScreen != null)
             {
@@ -38,16 +35,16 @@ namespace Inventory.Views.SplashScreen
 
             Resize();
             rootFrame = new Frame();
-            LoadDataAsync(this.activatedEventArgs);
+            LoadDataAsync(activatedEventArgs);
         }
 
         private async void LoadDataAsync(IActivatedEventArgs e)
         {
-            var activationInfo = ActivationService.GetActivationInfo(e);
+            ActivationInfo activationInfo = ActivationService.GetActivationInfo(e);
 
             await Startup.ConfigureAsync();
 
-            var shellArgs = new ShellArgs
+            ShellArgs shellArgs = new ShellArgs
             {
                 ViewModel = activationInfo.EntryViewModel,
                 Parameter = activationInfo.EntryArgs,
@@ -71,22 +68,25 @@ namespace Inventory.Views.SplashScreen
         // Position the extended splash screen image in the same location as the system splash screen image.
         private void Resize()
         {
-            if (this.splashScreen == null) return;
+            if (splashScreen == null)
+            {
+                return;
+            }
 
             // The splash image's not always perfectly centered. Therefore we need to set our image's position 
             // to match the original one to obtain a clean transition between both splash screens.
 
-            this.splashImage.Height = this.splashScreen.ImageLocation.Height;
-            this.splashImage.Width = this.splashScreen.ImageLocation.Width;
+            this.splashImage.Height = splashScreen.ImageLocation.Height;
+            this.splashImage.Width = splashScreen.ImageLocation.Width;
 
-            this.splashImage.SetValue(Canvas.TopProperty, this.splashScreen.ImageLocation.Top);
-            this.splashImage.SetValue(Canvas.LeftProperty, this.splashScreen.ImageLocation.Left);
+            this.splashImage.SetValue(Canvas.TopProperty, splashScreen.ImageLocation.Top);
+            this.splashImage.SetValue(Canvas.LeftProperty, splashScreen.ImageLocation.Left);
 
-            this.progressRing.SetValue(Canvas.TopProperty, this.splashScreen.ImageLocation.Top + this.splashScreen.ImageLocation.Height + 50);
-            this.progressRing.SetValue(Canvas.LeftProperty, this.splashScreen.ImageLocation.Left + this.splashScreen.ImageLocation.Width / 2 - this.progressRing.Width / 2);
+            this.progressRing.SetValue(Canvas.TopProperty, splashScreen.ImageLocation.Top + splashScreen.ImageLocation.Height + 50);
+            this.progressRing.SetValue(Canvas.LeftProperty, splashScreen.ImageLocation.Left + (splashScreen.ImageLocation.Width / 2) - (this.progressRing.Width / 2));
         }
 
-        void ExtendedSplash_OnResize(Object sender, WindowSizeChangedEventArgs e)
+        private void ExtendedSplash_OnResize(Object sender, WindowSizeChangedEventArgs e)
         {
             // Safely update the extended splash screen image coordinates. This function will be fired in response to snapping, unsnapping, rotation, etc...
             if (splashScreen != null)
@@ -101,8 +101,8 @@ namespace Inventory.Views.SplashScreen
         {
             if (argsWithUser != null)
             {
-                var user = argsWithUser.User;
-                var userInfo = new UserInfo
+                User user = argsWithUser.User;
+                UserInfo userInfo = new UserInfo
                 {
                     AccountName = await user.GetPropertyAsync(KnownUserProperties.AccountName) as String,
                     FirstName = await user.GetPropertyAsync(KnownUserProperties.FirstName) as String,

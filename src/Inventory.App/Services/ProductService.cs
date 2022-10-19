@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Data.Services;
 using Inventory.Models;
@@ -36,24 +31,20 @@ namespace Inventory.Services
 
         public async Task<ProductModel> GetProductAsync(string id)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetProductAsync(dataService, id);
             }
         }
-        static private async Task<ProductModel> GetProductAsync(IDataService dataService, string id)
+        private static async Task<ProductModel> GetProductAsync(IDataService dataService, string id)
         {
             var item = await dataService.GetProductAsync(id);
-            if (item != null)
-            {
-                return await CreateProductModelAsync(item, includeAllFields: true);
-            }
-            return null;
+            return item != null ? await CreateProductModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<ProductModel>> GetProductsAsync(DataRequest<Product> request)
         {
-            var collection = new ProductCollection(this, LogService);
+            ProductCollection collection = new ProductCollection(this, LogService);
             await collection.LoadAsync(request);
             return collection;
         }
@@ -61,7 +52,7 @@ namespace Inventory.Services
         public async Task<IList<ProductModel>> GetProductsAsync(int skip, int take, DataRequest<Product> request)
         {
             var models = new List<ProductModel>();
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetProductsAsync(skip, take, request);
                 foreach (var item in items)
@@ -74,7 +65,7 @@ namespace Inventory.Services
 
         public async Task<int> GetProductsCountAsync(DataRequest<Product> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.GetProductsCountAsync(request);
             }
@@ -83,7 +74,7 @@ namespace Inventory.Services
         public async Task<int> UpdateProductAsync(ProductModel model)
         {
             string id = model.ProductID;
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var product = !String.IsNullOrEmpty(id) ? await dataService.GetProductAsync(model.ProductID) : new Product();
                 if (product != null)
@@ -98,8 +89,8 @@ namespace Inventory.Services
 
         public async Task<int> DeleteProductAsync(ProductModel model)
         {
-            var product = new Product { ProductID = model.ProductID };
-            using (var dataService = DataServiceFactory.CreateDataService())
+            Product product = new Product { ProductID = model.ProductID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.DeleteProductsAsync(product);
             }
@@ -107,16 +98,16 @@ namespace Inventory.Services
 
         public async Task<int> DeleteProductRangeAsync(int index, int length, DataRequest<Product> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetProductKeysAsync(index, length, request);
                 return await dataService.DeleteProductsAsync(items.ToArray());
             }
         }
 
-        static public async Task<ProductModel> CreateProductModelAsync(Product source, bool includeAllFields)
+        public static async Task<ProductModel> CreateProductModelAsync(Product source, bool includeAllFields)
         {
-            var model = new ProductModel()
+            ProductModel model = new ProductModel()
             {
                 ProductID = source.ProductID,
                 CategoryID = source.CategoryID,

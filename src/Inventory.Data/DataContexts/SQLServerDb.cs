@@ -12,15 +12,13 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Data.Services
 {
     public class SQLServerDb : DbContext, IDataSource
     {
-        private string _connectionString = null;
+        private readonly string _connectionString = null;
 
         public SQLServerDb(string connectionString)
         {

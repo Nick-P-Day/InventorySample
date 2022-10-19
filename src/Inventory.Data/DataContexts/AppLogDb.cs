@@ -12,20 +12,18 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-
 using Inventory.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inventory.Services
 {
     public class AppLogDb : DbContext
     {
-        private string _connectionString = null;
+        private readonly string _connectionString = null;
 
         public AppLogDb(string connectionString)
         {
@@ -54,7 +52,7 @@ namespace Inventory.Services
             IQueryable<AppLog> items = GetLogs(request);
 
             // Execute
-            var records = await items.Skip(skip).Take(take)
+            List<AppLog> records = await items.Skip(skip).Take(take)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -66,7 +64,7 @@ namespace Inventory.Services
             IQueryable<AppLog> items = GetLogs(request);
 
             // Execute
-            var records = await items.Skip(skip).Take(take)
+            List<AppLog> records = await items.Skip(skip).Take(take)
                 .Select(r => new AppLog
                 {
                     Id = r.Id,
@@ -76,7 +74,6 @@ namespace Inventory.Services
 
             return records;
         }
-
 
         private IQueryable<AppLog> GetLogs(DataRequest<AppLog> request)
         {
@@ -141,8 +138,8 @@ namespace Inventory.Services
 
         public async Task MarkAllAsReadAsync()
         {
-            var items = await Logs.Where(r => !r.IsRead).ToListAsync();
-            foreach (var item in items)
+            List<AppLog> items = await Logs.Where(r => !r.IsRead).ToListAsync();
+            foreach (AppLog item in items)
             {
                 item.IsRead = true;
             }

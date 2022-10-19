@@ -12,16 +12,15 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inventory.Data.Services
 {
-    partial class DataServiceBase
+    public partial class DataServiceBase
     {
         public async Task<Product> GetProductAsync(string id)
         {
@@ -33,7 +32,7 @@ namespace Inventory.Data.Services
             IQueryable<Product> items = GetProducts(request);
 
             // Execute
-            var records = await items.Skip(skip).Take(take)
+            List<Product> records = await items.Skip(skip).Take(take)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -45,7 +44,7 @@ namespace Inventory.Data.Services
             IQueryable<Product> items = GetProducts(request);
 
             // Execute
-            var records = await items.Skip(skip).Take(take)
+            List<Product> records = await items.Skip(skip).Take(take)
                 .Select(r => new Product
                 {
                     ProductID = r.ProductID,

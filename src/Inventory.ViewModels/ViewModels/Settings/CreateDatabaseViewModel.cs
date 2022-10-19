@@ -12,15 +12,13 @@
 // ******************************************************************
 #endregion
 
+using Inventory.Data.Services;
+using Inventory.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-
-using Inventory.Services;
-using Inventory.Data.Services;
 
 namespace Inventory.ViewModels
 {
@@ -60,8 +58,14 @@ namespace Inventory.ViewModels
         private string _message = null;
         public string Message
         {
-            get { return _message; }
-            set { if (Set(ref _message, value)) NotifyPropertyChanged(nameof(HasMessage)); }
+            get => _message;
+            set
+            {
+                if (Set(ref _message, value))
+                {
+                    NotifyPropertyChanged(nameof(HasMessage));
+                }
+            }
         }
 
         public bool HasMessage => _message != null;
@@ -86,9 +90,9 @@ namespace Inventory.ViewModels
             {
                 ProgressMaximum = 14;
                 ProgressStatus = "Connecting to Database";
-                using (var db = new SQLServerDb(connectionString))
+                using (SQLServerDb db = new SQLServerDb(connectionString))
                 {
-                    var dbCreator = db.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+                    RelationalDatabaseCreator dbCreator = db.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
                     if (!await dbCreator.ExistsAsync())
                     {
                         ProgressValue = 1;
@@ -120,10 +124,10 @@ namespace Inventory.ViewModels
 
         private async Task CopyDataTables(SQLServerDb db)
         {
-            using (var sourceDb = new SQLiteDb(SettingsService.PatternConnectionString))
+            using (SQLiteDb sourceDb = new SQLiteDb(SettingsService.PatternConnectionString))
             {
                 ProgressStatus = "Creating table Categories...";
-                foreach (var item in sourceDb.Categories.AsNoTracking())
+                foreach (Data.Category item in sourceDb.Categories.AsNoTracking())
                 {
                     await db.Categories.AddAsync(item);
                 }
@@ -131,7 +135,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 3;
 
                 ProgressStatus = "Creating table CountryCodes...";
-                foreach (var item in sourceDb.CountryCodes.AsNoTracking())
+                foreach (Data.CountryCode item in sourceDb.CountryCodes.AsNoTracking())
                 {
                     await db.CountryCodes.AddAsync(item);
                 }
@@ -139,7 +143,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 4;
 
                 ProgressStatus = "Creating table OrderStatus...";
-                foreach (var item in sourceDb.OrderStatus.AsNoTracking())
+                foreach (Data.OrderStatus item in sourceDb.OrderStatus.AsNoTracking())
                 {
                     await db.OrderStatus.AddAsync(item);
                 }
@@ -147,7 +151,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 5;
 
                 ProgressStatus = "Creating table PaymentTypes...";
-                foreach (var item in sourceDb.PaymentTypes.AsNoTracking())
+                foreach (Data.PaymentType item in sourceDb.PaymentTypes.AsNoTracking())
                 {
                     await db.PaymentTypes.AddAsync(item);
                 }
@@ -155,7 +159,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 6;
 
                 ProgressStatus = "Creating table Shippers...";
-                foreach (var item in sourceDb.Shippers.AsNoTracking())
+                foreach (Data.Shipper item in sourceDb.Shippers.AsNoTracking())
                 {
                     await db.Shippers.AddAsync(item);
                 }
@@ -163,7 +167,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 7;
 
                 ProgressStatus = "Creating table TaxTypes...";
-                foreach (var item in sourceDb.TaxTypes.AsNoTracking())
+                foreach (Data.TaxType item in sourceDb.TaxTypes.AsNoTracking())
                 {
                     await db.TaxTypes.AddAsync(item);
                 }
@@ -171,7 +175,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 8;
 
                 ProgressStatus = "Creating table Customers...";
-                foreach (var item in sourceDb.Customers.AsNoTracking())
+                foreach (Data.Customer item in sourceDb.Customers.AsNoTracking())
                 {
                     await db.Customers.AddAsync(item);
                 }
@@ -179,7 +183,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 9;
 
                 ProgressStatus = "Creating table Products...";
-                foreach (var item in sourceDb.Products.AsNoTracking())
+                foreach (Data.Product item in sourceDb.Products.AsNoTracking())
                 {
                     await db.Products.AddAsync(item);
                 }
@@ -187,7 +191,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 10;
 
                 ProgressStatus = "Creating table Orders...";
-                foreach (var item in sourceDb.Orders.AsNoTracking())
+                foreach (Data.Order item in sourceDb.Orders.AsNoTracking())
                 {
                     await db.Orders.AddAsync(item);
                 }
@@ -195,7 +199,7 @@ namespace Inventory.ViewModels
                 ProgressValue = 11;
 
                 ProgressStatus = "Creating table OrderItems...";
-                foreach (var item in sourceDb.OrderItems.AsNoTracking())
+                foreach (Data.OrderItem item in sourceDb.OrderItems.AsNoTracking())
                 {
                     await db.OrderItems.AddAsync(item);
                 }

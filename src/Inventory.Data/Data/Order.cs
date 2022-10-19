@@ -63,6 +63,9 @@ namespace Inventory.Data
         public virtual Customer Customer { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
 
-        public string BuildSearchTerms() => $"{OrderID} {CustomerID} {ShipCity} {ShipRegion}".ToLower();
+        public string BuildSearchTerms()
+        {
+            return $"{OrderID} {CustomerID} {ShipCity} {ShipRegion}".ToLower();
+        }
     }
 }

@@ -12,20 +12,20 @@
 // ******************************************************************
 #endregion
 
-using System;
-
-using Windows.ApplicationModel.Activation;
-
 using Inventory.ViewModels;
+using Windows.ApplicationModel.Activation;
 
 namespace Inventory.Services
 {
     #region ActivationInfo
     public class ActivationInfo
     {
-        static public ActivationInfo CreateDefault() => Create<DashboardViewModel>();
+        public static ActivationInfo CreateDefault()
+        {
+            return Create<DashboardViewModel>();
+        }
 
-        static public ActivationInfo Create<TViewModel>(object entryArgs = null) where TViewModel : ViewModelBase
+        public static ActivationInfo Create<TViewModel>(object entryArgs = null) where TViewModel : ViewModelBase
         {
             return new ActivationInfo
             {
@@ -39,9 +39,9 @@ namespace Inventory.Services
     }
     #endregion
 
-    static public class ActivationService
+    public static class ActivationService
     {
-        static public ActivationInfo GetActivationInfo(IActivatedEventArgs args)
+        public static ActivationInfo GetActivationInfo(IActivatedEventArgs args)
         {
             switch (args.Kind)
             {

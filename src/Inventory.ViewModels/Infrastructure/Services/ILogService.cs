@@ -12,12 +12,11 @@
 // ******************************************************************
 #endregion
 
+using Inventory.Data;
+using Inventory.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Inventory.Data;
-using Inventory.Models;
 
 namespace Inventory.Services
 {

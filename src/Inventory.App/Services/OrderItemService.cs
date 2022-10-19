@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Data.Services;
 using Inventory.Models;
@@ -34,19 +29,15 @@ namespace Inventory.Services
 
         public async Task<OrderItemModel> GetOrderItemAsync(long orderID, int lineID)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetOrderItemAsync(dataService, orderID, lineID);
             }
         }
-        static private async Task<OrderItemModel> GetOrderItemAsync(IDataService dataService, long orderID, int lineID)
+        private static async Task<OrderItemModel> GetOrderItemAsync(IDataService dataService, long orderID, int lineID)
         {
             var item = await dataService.GetOrderItemAsync(orderID, lineID);
-            if (item != null)
-            {
-                return await CreateOrderItemModelAsync(item, includeAllFields: true);
-            }
-            return null;
+            return item != null ? await CreateOrderItemModelAsync(item, includeAllFields: true) : null;
         }
 
         public Task<IList<OrderItemModel>> GetOrderItemsAsync(DataRequest<OrderItem> request)
@@ -58,7 +49,7 @@ namespace Inventory.Services
         public async Task<IList<OrderItemModel>> GetOrderItemsAsync(int skip, int take, DataRequest<OrderItem> request)
         {
             var models = new List<OrderItemModel>();
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetOrderItemsAsync(skip, take, request);
                 foreach (var item in items)
@@ -71,7 +62,7 @@ namespace Inventory.Services
 
         public async Task<int> GetOrderItemsCountAsync(DataRequest<OrderItem> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.GetOrderItemsCountAsync(request);
             }
@@ -79,7 +70,7 @@ namespace Inventory.Services
 
         public async Task<int> UpdateOrderItemAsync(OrderItemModel model)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var orderItem = model.OrderLine > 0 ? await dataService.GetOrderItemAsync(model.OrderID, model.OrderLine) : new OrderItem();
                 if (orderItem != null)
@@ -94,8 +85,8 @@ namespace Inventory.Services
 
         public async Task<int> DeleteOrderItemAsync(OrderItemModel model)
         {
-            var orderItem = new OrderItem { OrderID = model.OrderID, OrderLine = model.OrderLine };
-            using (var dataService = DataServiceFactory.CreateDataService())
+            OrderItem orderItem = new OrderItem { OrderID = model.OrderID, OrderLine = model.OrderLine };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.DeleteOrderItemsAsync(orderItem);
             }
@@ -103,16 +94,16 @@ namespace Inventory.Services
 
         public async Task<int> DeleteOrderItemRangeAsync(int index, int length, DataRequest<OrderItem> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetOrderItemKeysAsync(index, length, request);
                 return await dataService.DeleteOrderItemsAsync(items.ToArray());
             }
         }
 
-        static public async Task<OrderItemModel> CreateOrderItemModelAsync(OrderItem source, bool includeAllFields)
+        public static async Task<OrderItemModel> CreateOrderItemModelAsync(OrderItem source, bool includeAllFields)
         {
-            var model = new OrderItemModel()
+            OrderItemModel model = new OrderItemModel()
             {
                 OrderID = source.OrderID,
                 OrderLine = source.OrderLine,

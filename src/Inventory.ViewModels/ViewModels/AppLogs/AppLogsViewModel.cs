@@ -12,11 +12,10 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
@@ -70,7 +69,7 @@ namespace Inventory.ViewModels
             {
                 StatusReady();
             }
-            var selected = AppLogList.SelectedItem;
+            AppLogModel selected = AppLogList.SelectedItem;
             if (!AppLogList.IsMultipleSelection)
             {
                 if (selected != null && !selected.IsEmpty)
@@ -85,7 +84,7 @@ namespace Inventory.ViewModels
         {
             try
             {
-                var model = await LogService.GetLogAsync(selected.Id);
+                AppLogModel model = await LogService.GetLogAsync(selected.Id);
                 selected.Merge(model);
             }
             catch (Exception ex)

@@ -12,13 +12,11 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Inventory.Controls
 {
@@ -40,13 +38,13 @@ namespace Inventory.Controls
         #region Mode*
         public FormEditMode Mode
         {
-            get { return (FormEditMode)GetValue(ModeProperty); }
-            set { SetValue(ModeProperty, value); }
+            get => (FormEditMode)GetValue(ModeProperty);
+            set => SetValue(ModeProperty, value);
         }
 
         private static void ModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as FormCalendarDatePicker;
+            FormCalendarDatePicker control = d as FormCalendarDatePicker;
             control.UpdateMode();
             control.UpdateVisualState();
         }

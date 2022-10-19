@@ -12,21 +12,23 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
     #region ProductDetailsArgs
     public class ProductDetailsArgs
     {
-        static public ProductDetailsArgs CreateDefault() => new ProductDetailsArgs();
+        public static ProductDetailsArgs CreateDefault()
+        {
+            return new ProductDetailsArgs();
+        }
 
         public string ProductID { get; set; }
 
@@ -45,7 +47,7 @@ namespace Inventory.ViewModels
         public IProductService ProductService { get; }
         public IFilePickerService FilePickerService { get; }
 
-        override public string Title => (Item?.IsNew ?? true) ? "New Product" : TitleEdit;
+        public override string Title => (Item?.IsNew ?? true) ? "New Product" : TitleEdit;
         public string TitleEdit => Item == null ? "Product" : $"{Item.Name}";
 
         public override bool ItemIsNew => Item?.IsNew ?? true;
@@ -65,7 +67,7 @@ namespace Inventory.ViewModels
             {
                 try
                 {
-                    var item = await ProductService.GetProductAsync(ViewModelArgs.ProductID);
+                    ProductModel item = await ProductService.GetProductAsync(ViewModelArgs.ProductID);
                     Item = item ?? new ProductModel { ProductID = ViewModelArgs.ProductID, IsEmpty = true };
                 }
                 catch (Exception ex)
@@ -114,7 +116,7 @@ namespace Inventory.ViewModels
         private async void OnEditPicture()
         {
             NewPictureSource = null;
-            var result = await FilePickerService.OpenImagePickerAsync();
+            ImagePickerResult result = await FilePickerService.OpenImagePickerAsync();
             if (result != null)
             {
                 EditableItem.Picture = result.ImageBytes;
@@ -172,7 +174,7 @@ namespace Inventory.ViewModels
             return await DialogService.ShowAsync("Confirm Delete", "Are you sure you want to delete current product?", "Ok", "Cancel");
         }
 
-        override protected IEnumerable<IValidationConstraint<ProductModel>> GetValidationConstraints(ProductModel model)
+        protected override IEnumerable<IValidationConstraint<ProductModel>> GetValidationConstraints(ProductModel model)
         {
             yield return new RequiredConstraint<ProductModel>("Name", m => m.Name);
             yield return new RequiredGreaterThanZeroConstraint<ProductModel>("Category", m => m.CategoryID);
@@ -183,7 +185,7 @@ namespace Inventory.ViewModels
          ****************************************************************/
         private async void OnDetailsMessage(ProductDetailsViewModel sender, string message, ProductModel changed)
         {
-            var current = Item;
+            ProductModel current = Item;
             if (current != null)
             {
                 if (changed != null && changed.ProductID == current?.ProductID)
@@ -195,7 +197,7 @@ namespace Inventory.ViewModels
                             {
                                 try
                                 {
-                                    var item = await ProductService.GetProductAsync(current.ProductID);
+                                    ProductModel item = await ProductService.GetProductAsync(current.ProductID);
                                     item = item ?? new ProductModel { ProductID = current.ProductID, IsEmpty = true };
                                     current.Merge(item);
                                     current.NotifyChanges();
@@ -221,7 +223,7 @@ namespace Inventory.ViewModels
 
         private async void OnListMessage(ProductListViewModel sender, string message, object args)
         {
-            var current = Item;
+            ProductModel current = Item;
             if (current != null)
             {
                 switch (message)
@@ -238,7 +240,7 @@ namespace Inventory.ViewModels
                     case "ItemRangesDeleted":
                         try
                         {
-                            var model = await ProductService.GetProductAsync(current.ProductID);
+                            ProductModel model = await ProductService.GetProductAsync(current.ProductID);
                             if (model == null)
                             {
                                 await OnItemDeletedExternally();

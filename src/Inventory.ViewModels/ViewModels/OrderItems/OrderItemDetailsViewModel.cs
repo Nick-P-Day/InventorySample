@@ -12,21 +12,23 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
     #region OrderItemDetailsArgs
     public class OrderItemDetailsArgs
     {
-        static public OrderItemDetailsArgs CreateDefault() => new OrderItemDetailsArgs();
+        public static OrderItemDetailsArgs CreateDefault()
+        {
+            return new OrderItemDetailsArgs();
+        }
 
         public long OrderID { get; set; }
         public int OrderLine { get; set; }
@@ -44,7 +46,7 @@ namespace Inventory.ViewModels
 
         public IOrderItemService OrderItemService { get; }
 
-        override public string Title => (Item?.IsNew ?? true) ? TitleNew : TitleEdit;
+        public override string Title => (Item?.IsNew ?? true) ? TitleNew : TitleEdit;
         public string TitleNew => $"New Order Item, Order #{OrderID}";
         public string TitleEdit => $"Order Line {Item?.OrderLine}, #{Item?.OrderID}" ?? String.Empty;
 
@@ -78,7 +80,7 @@ namespace Inventory.ViewModels
             {
                 try
                 {
-                    var item = await OrderItemService.GetOrderItemAsync(OrderID, ViewModelArgs.OrderLine);
+                    OrderItemModel item = await OrderItemService.GetOrderItemAsync(OrderID, ViewModelArgs.OrderLine);
                     Item = item ?? new OrderItemModel { OrderID = OrderID, OrderLine = ViewModelArgs.OrderLine, IsEmpty = true };
                 }
                 catch (Exception ex)
@@ -154,7 +156,7 @@ namespace Inventory.ViewModels
             return await DialogService.ShowAsync("Confirm Delete", "Are you sure you want to delete current order item?", "Ok", "Cancel");
         }
 
-        override protected IEnumerable<IValidationConstraint<OrderItemModel>> GetValidationConstraints(OrderItemModel model)
+        protected override IEnumerable<IValidationConstraint<OrderItemModel>> GetValidationConstraints(OrderItemModel model)
         {
             yield return new RequiredConstraint<OrderItemModel>("Product", m => m.ProductID);
             yield return new NonZeroConstraint<OrderItemModel>("Quantity", m => m.Quantity);
@@ -169,7 +171,7 @@ namespace Inventory.ViewModels
          ****************************************************************/
         private async void OnDetailsMessage(OrderItemDetailsViewModel sender, string message, OrderItemModel changed)
         {
-            var current = Item;
+            OrderItemModel current = Item;
             if (current != null)
             {
                 if (changed != null && changed.OrderID == current?.OrderID && changed.OrderLine == current?.OrderLine)
@@ -181,7 +183,7 @@ namespace Inventory.ViewModels
                             {
                                 try
                                 {
-                                    var item = await OrderItemService.GetOrderItemAsync(current.OrderID, current.OrderLine);
+                                    OrderItemModel item = await OrderItemService.GetOrderItemAsync(current.OrderID, current.OrderLine);
                                     item = item ?? new OrderItemModel { OrderID = OrderID, OrderLine = ViewModelArgs.OrderLine, IsEmpty = true };
                                     current.Merge(item);
                                     current.NotifyChanges();
@@ -207,7 +209,7 @@ namespace Inventory.ViewModels
 
         private async void OnListMessage(OrderItemListViewModel sender, string message, object args)
         {
-            var current = Item;
+            OrderItemModel current = Item;
             if (current != null)
             {
                 switch (message)
@@ -224,7 +226,7 @@ namespace Inventory.ViewModels
                     case "ItemRangesDeleted":
                         try
                         {
-                            var model = await OrderItemService.GetOrderItemAsync(current.OrderID, current.OrderLine);
+                            OrderItemModel model = await OrderItemService.GetOrderItemAsync(current.OrderID, current.OrderLine);
                             if (model == null)
                             {
                                 await OnItemDeletedExternally();

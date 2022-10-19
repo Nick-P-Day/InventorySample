@@ -12,10 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Models;
 
@@ -32,7 +28,7 @@ namespace Inventory.Services
 
         public ICustomerService CustomerService { get; }
 
-        private CustomerModel _defaultItem = CustomerModel.CreateEmpty();
+        private readonly CustomerModel _defaultItem = CustomerModel.CreateEmpty();
         protected override CustomerModel DefaultItem => _defaultItem;
 
         public async Task LoadAsync(DataRequest<Customer> dataRequest)

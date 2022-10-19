@@ -12,23 +12,25 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
     #region ProductListArgs
     public class ProductListArgs
     {
-        static public ProductListArgs CreateEmpty() => new ProductListArgs { IsEmpty = true };
+        public static ProductListArgs CreateEmpty()
+        {
+            return new ProductListArgs { IsEmpty = true };
+        }
 
         public ProductListArgs()
         {
@@ -202,7 +204,7 @@ namespace Inventory.ViewModels
 
         private async Task DeleteItemsAsync(IEnumerable<ProductModel> models)
         {
-            foreach (var model in models)
+            foreach (ProductModel model in models)
             {
                 await ProductService.DeleteProductAsync(model);
             }
@@ -211,7 +213,7 @@ namespace Inventory.ViewModels
         private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
         {
             DataRequest<Product> request = BuildDataRequest();
-            foreach (var range in ranges)
+            foreach (IndexRange range in ranges)
             {
                 await ProductService.DeleteProductRangeAsync(range.Index, range.Length, request);
             }

@@ -12,10 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -25,7 +21,7 @@ namespace Inventory.Services
     {
         public async Task<ImagePickerResult> OpenImagePickerAsync()
         {
-            var picker = new FileOpenPicker
+            FileOpenPicker picker = new FileOpenPicker
             {
                 ViewMode = PickerViewMode.Thumbnail,
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary
@@ -51,7 +47,7 @@ namespace Inventory.Services
             return null;
         }
 
-        static private async Task<byte[]> GetImageBytesAsync(StorageFile file)
+        private static async Task<byte[]> GetImageBytesAsync(StorageFile file)
         {
             using (var randomStream = await file.OpenReadAsync())
             {

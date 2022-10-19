@@ -12,10 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
-using Windows.UI.Xaml;
-
 namespace Inventory
 {
     public class DependencyExpression

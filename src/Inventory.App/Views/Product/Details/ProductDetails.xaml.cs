@@ -12,12 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Inventory.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-using Inventory.ViewModels;
 
 namespace Inventory.Views
 {
@@ -31,8 +28,8 @@ namespace Inventory.Views
         #region ViewModel
         public ProductDetailsViewModel ViewModel
         {
-            get { return (ProductDetailsViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => (ProductDetailsViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(ProductDetailsViewModel), typeof(ProductDetails), new PropertyMetadata(null));

@@ -12,12 +12,10 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Inventory.Controls
 {
@@ -43,8 +41,8 @@ namespace Inventory.Controls
         #region DataType
         public TextDataType DataType
         {
-            get { return (TextDataType)GetValue(DataTypeProperty); }
-            set { SetValue(DataTypeProperty, value); }
+            get => (TextDataType)GetValue(DataTypeProperty);
+            set => SetValue(DataTypeProperty, value);
         }
 
         public static readonly DependencyProperty DataTypeProperty = DependencyProperty.Register(nameof(DataType), typeof(TextDataType), typeof(FormTextBox), new PropertyMetadata(TextDataType.String, OnPropertyChanged));
@@ -53,8 +51,8 @@ namespace Inventory.Controls
         #region Format
         public string Format
         {
-            get { return (string)GetValue(FormatProperty); }
-            set { SetValue(FormatProperty, value); }
+            get => (string)GetValue(FormatProperty);
+            set => SetValue(FormatProperty, value);
         }
 
         public static readonly DependencyProperty FormatProperty = DependencyProperty.Register(nameof(Format), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
@@ -63,8 +61,8 @@ namespace Inventory.Controls
         #region FormattedText
         public string FormattedText
         {
-            get { return (string)GetValue(FormattedTextProperty); }
-            set { SetValue(FormattedTextProperty, value); }
+            get => (string)GetValue(FormattedTextProperty);
+            set => SetValue(FormattedTextProperty, value);
         }
 
         public static readonly DependencyProperty FormattedTextProperty = DependencyProperty.Register(nameof(FormattedText), typeof(string), typeof(FormTextBox), new PropertyMetadata(null, OnPropertyChanged));
@@ -73,13 +71,13 @@ namespace Inventory.Controls
         #region Mode*
         public FormEditMode Mode
         {
-            get { return (FormEditMode)GetValue(ModeProperty); }
-            set { SetValue(ModeProperty, value); }
+            get => (FormEditMode)GetValue(ModeProperty);
+            set => SetValue(ModeProperty, value);
         }
 
         private static void ModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as FormTextBox;
+            FormTextBox control = d as FormTextBox;
             control.UpdateMode();
             control.UpdateVisualState();
         }
@@ -103,7 +101,7 @@ namespace Inventory.Controls
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as FormTextBox;
+            FormTextBox control = d as FormTextBox;
             control.ApplyTextFormat();
         }
 

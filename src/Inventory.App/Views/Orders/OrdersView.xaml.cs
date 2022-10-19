@@ -12,14 +12,11 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Inventory.Services;
+using Inventory.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-
-using Inventory.ViewModels;
-using Inventory.Services;
 
 namespace Inventory.Views
 {

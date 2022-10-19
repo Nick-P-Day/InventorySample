@@ -12,11 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.Foundation;
 
 namespace Inventory.Controls
 {
@@ -36,8 +34,8 @@ namespace Inventory.Controls
         #region NewLabel
         public string NewLabel
         {
-            get { return (string)GetValue(NewLabelProperty); }
-            set { SetValue(NewLabelProperty, value); }
+            get => (string)GetValue(NewLabelProperty);
+            set => SetValue(NewLabelProperty, value);
         }
 
         public static readonly DependencyProperty NewLabelProperty = DependencyProperty.Register(nameof(NewLabel), typeof(string), typeof(ListToolbar), new PropertyMetadata("New"));
@@ -46,13 +44,13 @@ namespace Inventory.Controls
         #region ToolbarMode
         public ListToolbarMode ToolbarMode
         {
-            get { return (ListToolbarMode)GetValue(ToolbarModeProperty); }
-            set { SetValue(ToolbarModeProperty, value); }
+            get => (ListToolbarMode)GetValue(ToolbarModeProperty);
+            set => SetValue(ToolbarModeProperty, value);
         }
 
         private static void ToolbarModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as ListToolbar;
+            ListToolbar control = d as ListToolbar;
             control.UpdateControl();
         }
 
@@ -62,25 +60,24 @@ namespace Inventory.Controls
         #region DefaultCommands*
         public string DefaultCommands
         {
-            get { return (string)GetValue(DefaultCommandsProperty); }
-            set { SetValue(DefaultCommandsProperty, value); }
+            get => (string)GetValue(DefaultCommandsProperty);
+            set => SetValue(DefaultCommandsProperty, value);
         }
 
         private static void DefaultCommandsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as ListToolbar;
+            ListToolbar control = d as ListToolbar;
             control.UpdateControl();
         }
 
         public static readonly DependencyProperty DefaultCommandsProperty = DependencyProperty.Register(nameof(DefaultCommands), typeof(string), typeof(ListToolbar), new PropertyMetadata("new,select,refresh,search", DefaultCommandsChanged));
         #endregion
 
-
         #region Query
         public string Query
         {
-            get { return (string)GetValue(QueryProperty); }
-            set { SetValue(QueryProperty, value); }
+            get => (string)GetValue(QueryProperty);
+            set => SetValue(QueryProperty, value);
         }
 
         public static readonly DependencyProperty QueryProperty = DependencyProperty.Register("Query", typeof(string), typeof(ListToolbar), new PropertyMetadata(null));

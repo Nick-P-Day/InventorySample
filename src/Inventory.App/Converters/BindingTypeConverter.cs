@@ -1,9 +1,8 @@
-﻿using System;
-using Windows.UI.Xaml.Data;
+﻿using Windows.UI.Xaml.Data;
 
 namespace Inventory.Converters
 {
-    class BindingTypeConverter : IValueConverter
+    internal class BindingTypeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

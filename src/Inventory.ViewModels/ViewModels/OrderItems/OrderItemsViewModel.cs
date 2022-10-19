@@ -12,11 +12,10 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
@@ -76,7 +75,7 @@ namespace Inventory.ViewModels
                 StatusReady();
                 OrderItemDetails.CancelEdit();
             }
-            var selected = OrderItemList.SelectedItem;
+            OrderItemModel selected = OrderItemList.SelectedItem;
             if (!OrderItemList.IsMultipleSelection)
             {
                 if (selected != null && !selected.IsEmpty)
@@ -91,7 +90,7 @@ namespace Inventory.ViewModels
         {
             try
             {
-                var model = await OrderItemService.GetOrderItemAsync(selected.OrderID, selected.OrderLine);
+                OrderItemModel model = await OrderItemService.GetOrderItemAsync(selected.OrderID, selected.OrderLine);
                 selected.Merge(model);
             }
             catch (Exception ex)

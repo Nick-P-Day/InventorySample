@@ -49,12 +49,8 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
-            if (value != null)
-            {
-                return !String.IsNullOrEmpty(value.ToString());
-            }
-            return false;
+            object value = PropertyValue(model);
+            return value != null && !String.IsNullOrEmpty(value.ToString());
         }
 
         string IValidationConstraint<T>.Message => $"Property '{PropertyName}' cannot be empty.";
@@ -75,7 +71,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))
@@ -104,7 +100,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))
@@ -133,7 +129,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))
@@ -164,7 +160,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))
@@ -197,7 +193,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))
@@ -228,7 +224,7 @@ namespace Inventory
 
         private bool ValidateProperty(T model)
         {
-            var value = PropertyValue(model);
+            object value = PropertyValue(model);
             if (value != null)
             {
                 if (Double.TryParse(value.ToString(), out double d))

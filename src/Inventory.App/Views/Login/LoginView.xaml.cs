@@ -12,19 +12,15 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Windows.UI.ViewManagement;
-using Windows.ApplicationModel.Core;
-
 using Inventory.Animations;
-using Inventory.ViewModels;
 using Inventory.Services;
+using Inventory.ViewModels;
+using Windows.ApplicationModel.Core;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 namespace Inventory.Views
 {
@@ -41,7 +37,7 @@ namespace Inventory.Views
 
         private void InitializeContext()
         {
-            var context = ServiceLocator.Current.GetService<IContextService>();
+            IContextService context = ServiceLocator.Current.GetService<IContextService>();
             context.Initialize(Dispatcher, ApplicationView.GetForCurrentView().Id, CoreApplication.GetCurrentView().IsMain);
         }
 
@@ -54,7 +50,7 @@ namespace Inventory.Views
 
         private void InitializeNavigation()
         {
-            var navigationService = ServiceLocator.Current.GetService<INavigationService>();
+            INavigationService navigationService = ServiceLocator.Current.GetService<INavigationService>();
             navigationService.Initialize(Frame);
         }
 

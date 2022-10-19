@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml.Data;
 
 namespace Inventory.Converters
@@ -22,19 +20,9 @@ namespace Inventory.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is Int32 n32)
-            {
-                if (targetType == typeof(String))
-                {
-                    return n32 == 0 ? "" : n32.ToString();
-                }
-                return n32;
-            }
-            if (targetType == typeof(String))
-            {
-                return "";
-            }
-            return 0;
+            return value is Int32 n32
+                ? targetType == typeof(String) ? n32 == 0 ? "" : n32.ToString() : n32
+                : targetType == typeof(String) ? "" : 0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

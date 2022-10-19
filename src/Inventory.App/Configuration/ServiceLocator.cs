@@ -12,25 +12,19 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections.Concurrent;
-
-using Windows.UI.ViewManagement;
-
-using Microsoft.Extensions.DependencyInjection;
-
 using Inventory.Services;
 using Inventory.ViewModels;
+using Windows.UI.ViewManagement;
 
 namespace Inventory
 {
     public class ServiceLocator : IDisposable
     {
-        static private readonly ConcurrentDictionary<int, ServiceLocator> _serviceLocators = new ConcurrentDictionary<int, ServiceLocator>();
+        private static readonly ConcurrentDictionary<int, ServiceLocator> _serviceLocators = new ConcurrentDictionary<int, ServiceLocator>();
 
-        static private ServiceProvider _rootServiceProvider = null;
+        private static ServiceProvider _rootServiceProvider = null;
 
-        static public void Configure(IServiceCollection serviceCollection)
+        public static void Configure(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<ISettingsService, SettingsService>();
             serviceCollection.AddSingleton<IDataServiceFactory, DataServiceFactory>();
@@ -79,7 +73,7 @@ namespace Inventory
             _rootServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        static public ServiceLocator Current
+        public static ServiceLocator Current
         {
             get
             {
@@ -88,7 +82,7 @@ namespace Inventory
             }
         }
 
-        static public void DisposeCurrent()
+        public static void DisposeCurrent()
         {
             int currentViewId = ApplicationView.GetForCurrentView().Id;
             if (_serviceLocators.TryRemove(currentViewId, out ServiceLocator current))
@@ -111,11 +105,7 @@ namespace Inventory
 
         public T GetService<T>(bool isRequired)
         {
-            if (isRequired)
-            {
-                return _serviceScope.ServiceProvider.GetRequiredService<T>();
-            }
-            return _serviceScope.ServiceProvider.GetService<T>();
+            return isRequired ? _serviceScope.ServiceProvider.GetRequiredService<T>() : _serviceScope.ServiceProvider.GetService<T>();
         }
 
         #region Dispose

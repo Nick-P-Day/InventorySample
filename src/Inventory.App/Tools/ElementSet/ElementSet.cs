@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
@@ -77,7 +72,7 @@ namespace Inventory
         {
             foreach (var item in Enumerable)
             {
-                var target = item as S;
+                S target = item as S;
                 if (target != null)
                 {
                     action(target);
@@ -91,21 +86,21 @@ namespace Inventory
             return new ElementSet<T>(Enumerable.Reverse());
         }
 
-        static public ElementSet<S> Children<S>(DependencyObject source, string category) where S : FrameworkElement
+        public static ElementSet<S> Children<S>(DependencyObject source, string category) where S : FrameworkElement
         {
             return new ElementSet<S>(GetChildren<S>(source, v => v.IsCategory(category)));
         }
 
-        static public ElementSet<S> Children<S>(object source, Func<S, bool> predicate = null) where S : UIElement
+        public static ElementSet<S> Children<S>(object source, Func<S, bool> predicate = null) where S : UIElement
         {
             return new ElementSet<S>(GetChildren<S>(source, predicate));
         }
-        static public ElementSet<S> Children<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
+        public static ElementSet<S> Children<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
         {
             return new ElementSet<S>(GetChildren<S>(source, predicate));
         }
 
-        static private IEnumerable<S> GetChildren<S>(object source, Func<S, bool> predicate = null) where S : UIElement
+        private static IEnumerable<S> GetChildren<S>(object source, Func<S, bool> predicate = null) where S : UIElement
         {
             predicate = predicate ?? new Func<S, bool>((e) => true);
 
@@ -140,7 +135,7 @@ namespace Inventory
             }
         }
 
-        static private IEnumerable<S> GetChildren<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
+        private static IEnumerable<S> GetChildren<S>(DependencyObject source, Func<S, bool> predicate = null) where S : UIElement
         {
             if (source != null)
             {
@@ -149,7 +144,7 @@ namespace Inventory
                 var count = VisualTreeHelper.GetChildrenCount(source);
                 for (int n = 0; n < count; n++)
                 {
-                    var child = VisualTreeHelper.GetChild(source, n);
+                    DependencyObject child = VisualTreeHelper.GetChild(source, n);
                     if (child is S match)
                     {
                         if (predicate(match))

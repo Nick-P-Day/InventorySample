@@ -12,11 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
 using Inventory.Models;
 using Inventory.Services;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {

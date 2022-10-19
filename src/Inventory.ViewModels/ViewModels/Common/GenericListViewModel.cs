@@ -12,17 +12,16 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Windows.Input;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
-    abstract public partial class GenericListViewModel<TModel> : ViewModelBase where TModel : ObservableObject
+    public abstract partial class GenericListViewModel<TModel> : ViewModelBase where TModel : ObservableObject
     {
         public GenericListViewModel(ICommonServices commonServices) : base(commonServices)
         {
@@ -91,7 +90,7 @@ namespace Inventory.ViewModels
         public ICommand RefreshCommand => new RelayCommand(OnRefresh);
 
         public ICommand StartSelectionCommand => new RelayCommand(OnStartSelection);
-        virtual protected void OnStartSelection()
+        protected virtual void OnStartSelection()
         {
             StatusMessage("Start selection");
             SelectedItem = null;
@@ -101,7 +100,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand CancelSelectionCommand => new RelayCommand(OnCancelSelection);
-        virtual protected void OnCancelSelection()
+        protected virtual void OnCancelSelection()
         {
             StatusReady();
             SelectedItems = null;
@@ -111,7 +110,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand SelectItemsCommand => new RelayCommand<IList<object>>(OnSelectItems);
-        virtual protected void OnSelectItems(IList<object> items)
+        protected virtual void OnSelectItems(IList<object> items)
         {
             StatusReady();
             if (IsMultipleSelection)
@@ -122,7 +121,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand DeselectItemsCommand => new RelayCommand<IList<object>>(OnDeselectItems);
-        virtual protected void OnDeselectItems(IList<object> items)
+        protected virtual void OnDeselectItems(IList<object> items)
         {
             if (items?.Count > 0)
             {
@@ -139,7 +138,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand SelectRangesCommand => new RelayCommand<IndexRange[]>(OnSelectRanges);
-        virtual protected void OnSelectRanges(IndexRange[] indexRanges)
+        protected virtual void OnSelectRanges(IndexRange[] indexRanges)
         {
             SelectedIndexRanges = indexRanges;
             int count = SelectedIndexRanges?.Sum(r => r.Length) ?? 0;
@@ -148,9 +147,9 @@ namespace Inventory.ViewModels
 
         public ICommand DeleteSelectionCommand => new RelayCommand(OnDeleteSelection);
 
-        abstract protected void OnNew();
-        abstract protected void OnRefresh();
-        abstract protected void OnDeleteSelection();
+        protected abstract void OnNew();
+        protected abstract void OnRefresh();
+        protected abstract void OnDeleteSelection();
 
     }
 }

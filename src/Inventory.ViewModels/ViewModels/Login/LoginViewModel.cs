@@ -12,11 +12,10 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Windows.Input;
-using System.Threading.Tasks;
-
 using Inventory.Services;
+using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
@@ -36,36 +35,36 @@ namespace Inventory.ViewModels
         private bool _isBusy = false;
         public bool IsBusy
         {
-            get { return _isBusy; }
-            set { Set(ref _isBusy, value); }
+            get => _isBusy;
+            set => Set(ref _isBusy, value);
         }
 
         private bool _isLoginWithPassword = false;
         public bool IsLoginWithPassword
         {
-            get { return _isLoginWithPassword; }
-            set { Set(ref _isLoginWithPassword, value); }
+            get => _isLoginWithPassword;
+            set => Set(ref _isLoginWithPassword, value);
         }
 
         private bool _isLoginWithWindowsHello = false;
         public bool IsLoginWithWindowsHello
         {
-            get { return _isLoginWithWindowsHello; }
-            set { Set(ref _isLoginWithWindowsHello, value); }
+            get => _isLoginWithWindowsHello;
+            set => Set(ref _isLoginWithWindowsHello, value);
         }
 
         private string _userName = null;
         public string UserName
         {
-            get { return _userName; }
-            set { Set(ref _userName, value); }
+            get => _userName;
+            set => Set(ref _userName, value);
         }
 
         private string _password = "UserPassword";
         public string Password
         {
-            get { return _password; }
-            set { Set(ref _password, value); }
+            get => _password;
+            set => Set(ref _password, value);
         }
 
         public ICommand ShowLoginWithPasswordCommand => new RelayCommand(ShowLoginWithPassword);
@@ -105,7 +104,7 @@ namespace Inventory.ViewModels
         public async void LoginWithPassword()
         {
             IsBusy = true;
-            var result = ValidateInput();
+            Result result = ValidateInput();
             if (result.IsOk)
             {
                 if (await LoginService.SignInWithPasswordAsync(UserName, Password))
@@ -126,7 +125,7 @@ namespace Inventory.ViewModels
         public async void LoginWithWindowHello()
         {
             IsBusy = true;
-            var result = await LoginService.SignInWithWindowsHelloAsync();
+            Result result = await LoginService.SignInWithWindowsHelloAsync();
             if (result.IsOk)
             {
                 EnterApplication();
@@ -152,15 +151,9 @@ namespace Inventory.ViewModels
 
         private Result ValidateInput()
         {
-            if (String.IsNullOrWhiteSpace(UserName))
-            {
-                return Result.Error("Login error", "Please, enter a valid user name.");
-            }
-            if (String.IsNullOrWhiteSpace(Password))
-            {
-                return Result.Error("Login error", "Please, enter a valid password.");
-            }
-            return Result.Ok();
+            return String.IsNullOrWhiteSpace(UserName)
+                ? Result.Error("Login error", "Please, enter a valid user name.")
+                : String.IsNullOrWhiteSpace(Password) ? Result.Error("Login error", "Please, enter a valid password.") : Result.Ok();
         }
     }
 }

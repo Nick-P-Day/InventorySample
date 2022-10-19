@@ -12,25 +12,43 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Composition;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 
 namespace Inventory
 {
-    partial class ElementSet<T>
+    public partial class ElementSet<T>
     {
-        public ElementSet<T> SetIsTranslationEnabled(bool value) => ForEach(e => ElementCompositionPreview.SetIsTranslationEnabled(e, value));
-        public ElementSet<T> SetImplicitShowAnimation(ICompositionAnimationBase animation) => ForEach(e => ElementCompositionPreview.SetImplicitShowAnimation(e, animation));
-        public ElementSet<T> SetImplicitHideAnimation(ICompositionAnimationBase animation) => ForEach(e => ElementCompositionPreview.SetImplicitHideAnimation(e, animation));
+        public ElementSet<T> SetIsTranslationEnabled(bool value)
+        {
+            return ForEach(e => ElementCompositionPreview.SetIsTranslationEnabled(e, value));
+        }
 
-        public ElementSet<T> Show() => ForEach(e => e.Visibility = Visibility.Visible);
-        public ElementSet<T> Hide() => ForEach(e => e.Visibility = Visibility.Collapsed);
+        public ElementSet<T> SetImplicitShowAnimation(ICompositionAnimationBase animation)
+        {
+            return ForEach(e => ElementCompositionPreview.SetImplicitShowAnimation(e, animation));
+        }
 
-        public void Focus(FocusState value) => FirstOrDefault<Control>()?.Focus(value);
+        public ElementSet<T> SetImplicitHideAnimation(ICompositionAnimationBase animation)
+        {
+            return ForEach(e => ElementCompositionPreview.SetImplicitHideAnimation(e, animation));
+        }
+
+        public ElementSet<T> Show()
+        {
+            return ForEach(e => e.Visibility = Visibility.Visible);
+        }
+
+        public ElementSet<T> Hide()
+        {
+            return ForEach(e => e.Visibility = Visibility.Collapsed);
+        }
+
+        public void Focus(FocusState value)
+        {
+            FirstOrDefault<Control>()?.Focus(value);
+        }
     }
 }

@@ -12,14 +12,11 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Windows.Input;
-
 namespace Inventory
 {
-    static public class ICommandExtensions
+    public static class ICommandExtensions
     {
-        static public void TryExecute(this ICommand command, object parameter = null)
+        public static void TryExecute(this ICommand command, object parameter = null)
         {
             if (command != null)
             {

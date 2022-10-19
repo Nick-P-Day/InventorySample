@@ -12,15 +12,17 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Inventory.Data;
+using System;
 
 namespace Inventory.Models
 {
     public class AppLogModel : ObservableObject
     {
-        static public AppLogModel CreateEmpty() => new AppLogModel { Id = -1, IsEmpty = true };
+        public static AppLogModel CreateEmpty()
+        {
+            return new AppLogModel { Id = -1, IsEmpty = true };
+        }
 
         public long Id { get; set; }
 

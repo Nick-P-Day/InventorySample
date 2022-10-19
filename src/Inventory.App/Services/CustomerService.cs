@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Data.Services;
 using Inventory.Models;
@@ -36,24 +31,20 @@ namespace Inventory.Services
 
         public async Task<CustomerModel> GetCustomerAsync(long id)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetCustomerAsync(dataService, id);
             }
         }
-        static private async Task<CustomerModel> GetCustomerAsync(IDataService dataService, long id)
+        private static async Task<CustomerModel> GetCustomerAsync(IDataService dataService, long id)
         {
             var item = await dataService.GetCustomerAsync(id);
-            if (item != null)
-            {
-                return await CreateCustomerModelAsync(item, includeAllFields: true);
-            }
-            return null;
+            return item != null ? await CreateCustomerModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<CustomerModel>> GetCustomersAsync(DataRequest<Customer> request)
         {
-            var collection = new CustomerCollection(this, LogService);
+            CustomerCollection collection = new CustomerCollection(this, LogService);
             await collection.LoadAsync(request);
             return collection;
         }
@@ -61,7 +52,7 @@ namespace Inventory.Services
         public async Task<IList<CustomerModel>> GetCustomersAsync(int skip, int take, DataRequest<Customer> request)
         {
             var models = new List<CustomerModel>();
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetCustomersAsync(skip, take, request);
                 foreach (var item in items)
@@ -74,7 +65,7 @@ namespace Inventory.Services
 
         public async Task<int> GetCustomersCountAsync(DataRequest<Customer> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.GetCustomersCountAsync(request);
             }
@@ -83,7 +74,7 @@ namespace Inventory.Services
         public async Task<int> UpdateCustomerAsync(CustomerModel model)
         {
             long id = model.CustomerID;
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var customer = id > 0 ? await dataService.GetCustomerAsync(model.CustomerID) : new Customer();
                 if (customer != null)
@@ -98,8 +89,8 @@ namespace Inventory.Services
 
         public async Task<int> DeleteCustomerAsync(CustomerModel model)
         {
-            var customer = new Customer { CustomerID = model.CustomerID };
-            using (var dataService = DataServiceFactory.CreateDataService())
+            Customer customer = new Customer { CustomerID = model.CustomerID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.DeleteCustomersAsync(customer);
             }
@@ -107,16 +98,16 @@ namespace Inventory.Services
 
         public async Task<int> DeleteCustomerRangeAsync(int index, int length, DataRequest<Customer> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetCustomerKeysAsync(index, length, request);
                 return await dataService.DeleteCustomersAsync(items.ToArray());
             }
         }
 
-        static public async Task<CustomerModel> CreateCustomerModelAsync(Customer source, bool includeAllFields)
+        public static async Task<CustomerModel> CreateCustomerModelAsync(Customer source, bool includeAllFields)
         {
-            var model = new CustomerModel()
+            CustomerModel model = new CustomerModel()
             {
                 CustomerID = source.CustomerID,
                 Title = source.Title,

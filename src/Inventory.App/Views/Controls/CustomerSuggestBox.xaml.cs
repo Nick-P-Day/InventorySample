@@ -12,18 +12,12 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.ApplicationModel;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using Windows.ApplicationModel;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Inventory.Controls
 {
@@ -43,8 +37,8 @@ namespace Inventory.Controls
         #region Items
         public IList<CustomerModel> Items
         {
-            get { return (IList<CustomerModel>)GetValue(ItemsProperty); }
-            set { SetValue(ItemsProperty, value); }
+            get => (IList<CustomerModel>)GetValue(ItemsProperty);
+            set => SetValue(ItemsProperty, value);
         }
 
         public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register(nameof(Items), typeof(IList<CustomerModel>), typeof(CustomerSuggestBox), new PropertyMetadata(null));
@@ -53,8 +47,8 @@ namespace Inventory.Controls
         #region DisplayText
         public string DisplayText
         {
-            get { return (string)GetValue(DisplayTextProperty); }
-            set { SetValue(DisplayTextProperty, value); }
+            get => (string)GetValue(DisplayTextProperty);
+            set => SetValue(DisplayTextProperty, value);
         }
 
         public static readonly DependencyProperty DisplayTextProperty = DependencyProperty.Register(nameof(DisplayText), typeof(string), typeof(CustomerSuggestBox), new PropertyMetadata(null));
@@ -63,13 +57,13 @@ namespace Inventory.Controls
         #region IsReadOnly*
         public bool IsReadOnly
         {
-            get { return (bool)GetValue(IsReadOnlyProperty); }
-            set { SetValue(IsReadOnlyProperty, value); }
+            get => (bool)GetValue(IsReadOnlyProperty);
+            set => SetValue(IsReadOnlyProperty, value);
         }
 
         private static void IsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as CustomerSuggestBox;
+            CustomerSuggestBox control = d as CustomerSuggestBox;
             control.suggestBox.Mode = ((bool)e.NewValue == true) ? FormEditMode.ReadOnly : FormEditMode.Auto;
         }
 
@@ -79,8 +73,8 @@ namespace Inventory.Controls
         #region CustomerSelectedCommand
         public ICommand CustomerSelectedCommand
         {
-            get { return (ICommand)GetValue(CustomerSelectedCommandProperty); }
-            set { SetValue(CustomerSelectedCommandProperty, value); }
+            get => (ICommand)GetValue(CustomerSelectedCommandProperty);
+            set => SetValue(CustomerSelectedCommandProperty, value);
         }
 
         public static readonly DependencyProperty CustomerSelectedCommandProperty = DependencyProperty.Register(nameof(CustomerSelectedCommand), typeof(ICommand), typeof(CustomerSuggestBox), new PropertyMetadata(null));
@@ -99,7 +93,7 @@ namespace Inventory.Controls
 
         private async Task<IList<CustomerModel>> GetItems(string query)
         {
-            var request = new DataRequest<Customer>()
+            DataRequest<Customer> request = new DataRequest<Customer>()
             {
                 Query = query,
                 OrderBy = r => r.FirstName

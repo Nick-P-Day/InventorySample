@@ -12,10 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Inventory.Services
 {
     public class MessageService : IMessageService
@@ -31,9 +27,14 @@ namespace Inventory.Services
         public void Subscribe<TSender, TArgs>(object target, Action<TSender, string, TArgs> action) where TSender : class
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
+
             if (action == null)
+            {
                 throw new ArgumentNullException(nameof(action));
+            }
 
             lock (_sync)
             {
@@ -50,7 +51,9 @@ namespace Inventory.Services
         public void Unsubscribe<TSender>(object target) where TSender : class
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
 
             lock (_sync)
             {
@@ -68,7 +71,9 @@ namespace Inventory.Services
         public void Unsubscribe<TSender, TArgs>(object target) where TSender : class
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
 
             lock (_sync)
             {
@@ -86,7 +91,9 @@ namespace Inventory.Services
         public void Unsubscribe(object target)
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
 
             lock (_sync)
             {
@@ -101,9 +108,11 @@ namespace Inventory.Services
         public void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
         {
             if (sender == null)
+            {
                 throw new ArgumentNullException(nameof(sender));
+            }
 
-            foreach (var subscriber in GetSubscribersSnapshot())
+            foreach (Subscriber subscriber in GetSubscribersSnapshot())
             {
                 // Avoid sending message to self
                 if (subscriber.Target != sender)
@@ -121,7 +130,7 @@ namespace Inventory.Services
             }
         }
 
-        class Subscriber
+        private class Subscriber
         {
             private WeakReference _reference = null;
 
@@ -178,7 +187,7 @@ namespace Inventory.Services
             }
         }
 
-        class Subscriptions
+        private class Subscriptions
         {
             private Dictionary<Type, Delegate> _subscriptions = null;
 

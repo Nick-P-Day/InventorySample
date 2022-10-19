@@ -12,31 +12,19 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-
-using Windows.UI.ViewManagement;
-using Windows.Foundation;
-using Windows.Storage;
-
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.Extensions.DependencyInjection;
-
-using Inventory.Views;
-using Inventory.ViewModels;
 using Inventory.Services;
+using Inventory.ViewModels;
+using Inventory.Views;
+using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 namespace Inventory
 {
-    static public class Startup
+    public static class Startup
     {
-        static private readonly ServiceCollection _serviceCollection = new ServiceCollection();
+        private static readonly ServiceCollection _serviceCollection = new ServiceCollection();
 
-        static public async Task ConfigureAsync()
+        public static async Task ConfigureAsync()
         {
             AppCenter.Start("7b48b5c7-768f-49e3-a2e4-7293abe8b0ca", typeof(Analytics), typeof(Crashes));
             Analytics.TrackEvent("AppStarted");
@@ -49,7 +37,7 @@ namespace Inventory
             await EnsureDatabaseAsync();
             await ConfigureLookupTables();
 
-            var logService = ServiceLocator.Current.GetService<ILogService>();
+            ILogService logService = ServiceLocator.Current.GetService<ILogService>();
             await logService.WriteAsync(Data.LogType.Information, "Startup", "Configuration", "Application Start", $"Application started.");
 
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(500, 500));
@@ -81,9 +69,9 @@ namespace Inventory
             NavigationService.Register<SettingsViewModel, SettingsView>();
         }
 
-        static private async Task EnsureLogDbAsync()
+        private static async Task EnsureLogDbAsync()
         {
-            var localFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
             var appLogFolder = await localFolder.CreateFolderAsync(AppSettings.AppLogPath, CreationCollisionOption.OpenIfExists);
             if (await appLogFolder.TryGetItemAsync(AppSettings.AppLogName) == null)
             {
@@ -93,14 +81,14 @@ namespace Inventory
             }
         }
 
-        static private async Task EnsureDatabaseAsync()
+        private static async Task EnsureDatabaseAsync()
         {
             await EnsureSQLiteDatabaseAsync();
         }
 
         private static async Task EnsureSQLiteDatabaseAsync()
         {
-            var localFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
             var databaseFolder = await localFolder.CreateFolderAsync(AppSettings.DatabasePath, CreationCollisionOption.OpenIfExists);
 
             if (await databaseFolder.TryGetItemAsync(AppSettings.DatabaseName) == null)
@@ -123,9 +111,9 @@ namespace Inventory
             }
         }
 
-        static private async Task ConfigureLookupTables()
+        private static async Task ConfigureLookupTables()
         {
-            var lookupTables = ServiceLocator.Current.GetService<ILookupTables>();
+            ILookupTables lookupTables = ServiceLocator.Current.GetService<ILookupTables>();
             await lookupTables.InitializeAsync();
             LookupTablesProxy.Instance = lookupTables;
         }

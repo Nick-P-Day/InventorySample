@@ -12,41 +12,37 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.IO;
-
-using Windows.Storage;
-using Windows.ApplicationModel;
-
 using Inventory.Services;
+using Windows.ApplicationModel;
+using Windows.Storage;
 
 namespace Inventory
 {
     public class AppSettings
     {
-        const string DB_NAME = "VanArsdel";
-        const string DB_VERSION = "1.01";
-        const string DB_BASEURL = "https://vanarsdelinventory.blob.core.windows.net/database";
+        private const string DB_NAME = "VanArsdel";
+        private const string DB_VERSION = "1.01";
+        private const string DB_BASEURL = "https://vanarsdelinventory.blob.core.windows.net/database";
 
         static AppSettings()
         {
             Current = new AppSettings();
         }
 
-        static public AppSettings Current { get; }
+        public static AppSettings Current { get; }
 
-        static public readonly string AppLogPath = "AppLog";
-        static public readonly string AppLogName = $"AppLog.1.0.db";
-        static public readonly string AppLogFileName = Path.Combine(AppLogPath, AppLogName);
+        public static readonly string AppLogPath = "AppLog";
+        public static readonly string AppLogName = $"AppLog.1.0.db";
+        public static readonly string AppLogFileName = Path.Combine(AppLogPath, AppLogName);
 
         public readonly string AppLogConnectionString = $"Data Source={AppLogFileName}";
 
-        static public readonly string DatabasePath = "Database";
-        static public readonly string DatabaseName = $"{DB_NAME}.{DB_VERSION}.db";
-        static public readonly string DatabasePattern = $"{DB_NAME}.{DB_VERSION}.pattern.db";
-        static public readonly string DatabaseFileName = Path.Combine(DatabasePath, DatabaseName);
-        static public readonly string DatabasePatternFileName = Path.Combine(DatabasePath, DatabasePattern);
-        static public readonly string DatabaseUrl = $"{DB_BASEURL}/{DatabaseName}";
+        public static readonly string DatabasePath = "Database";
+        public static readonly string DatabaseName = $"{DB_NAME}.{DB_VERSION}.db";
+        public static readonly string DatabasePattern = $"{DB_NAME}.{DB_VERSION}.pattern.db";
+        public static readonly string DatabaseFileName = Path.Combine(DatabasePath, DatabaseName);
+        public static readonly string DatabasePatternFileName = Path.Combine(DatabasePath, DatabasePattern);
+        public static readonly string DatabaseUrl = $"{DB_BASEURL}/{DatabaseName}";
 
         public readonly string SQLiteConnectionString = $"Data Source={DatabaseFileName}";
 
@@ -56,7 +52,7 @@ namespace Inventory
         {
             get
             {
-                var ver = Package.Current.Id.Version;
+                PackageVersion ver = Package.Current.Id.Version;
                 return $"{ver.Major}.{ver.Minor}.{ver.Build}.{ver.Revision}";
             }
         }

@@ -12,9 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Windows.Input;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -30,8 +27,8 @@ namespace Inventory.Views
         #region UserName
         public string UserName
         {
-            get { return (string)GetValue(UserNameProperty); }
-            set { SetValue(UserNameProperty, value); }
+            get => (string)GetValue(UserNameProperty);
+            set => SetValue(UserNameProperty, value);
         }
 
         public static readonly DependencyProperty UserNameProperty = DependencyProperty.Register(nameof(UserName), typeof(string), typeof(NamePasswordControl), new PropertyMetadata(null));
@@ -40,8 +37,8 @@ namespace Inventory.Views
         #region Password
         public string Password
         {
-            get { return (string)GetValue(PasswordProperty); }
-            set { SetValue(PasswordProperty, value); }
+            get => (string)GetValue(PasswordProperty);
+            set => SetValue(PasswordProperty, value);
         }
 
         public static readonly DependencyProperty PasswordProperty = DependencyProperty.Register(nameof(Password), typeof(string), typeof(NamePasswordControl), new PropertyMetadata(null));
@@ -50,8 +47,8 @@ namespace Inventory.Views
         #region LoginWithPasswordCommand
         public ICommand LoginWithPasswordCommand
         {
-            get { return (ICommand)GetValue(LoginWithPasswordCommandProperty); }
-            set { SetValue(LoginWithPasswordCommandProperty, value); }
+            get => (ICommand)GetValue(LoginWithPasswordCommandProperty);
+            set => SetValue(LoginWithPasswordCommandProperty, value);
         }
 
         public static readonly DependencyProperty LoginWithPasswordCommandProperty = DependencyProperty.Register(nameof(LoginWithPasswordCommand), typeof(ICommand), typeof(NamePasswordControl), new PropertyMetadata(null));

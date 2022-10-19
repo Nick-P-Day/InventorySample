@@ -12,15 +12,11 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 using Windows.UI.Xaml.Data;
 
 namespace Inventory.Services
 {
-    partial class VirtualCollection<T> : ISelectionInfo
+    public partial class VirtualCollection<T> : ISelectionInfo
     {
         private IList<ItemIndexRange> _rangeSelection = new List<ItemIndexRange>();
 
@@ -38,7 +34,10 @@ namespace Inventory.Services
         {
             foreach (ItemIndexRange range in _rangeSelection)
             {
-                if (index >= range.FirstIndex && index <= range.LastIndex) return true;
+                if (index >= range.FirstIndex && index <= range.LastIndex)
+                {
+                    return true;
+                }
             }
             return false;
         }

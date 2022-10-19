@@ -64,6 +64,9 @@ namespace Inventory.Data
         public byte[] Picture { get; set; }
         public byte[] Thumbnail { get; set; }
 
-        public string BuildSearchTerms() => $"{ProductID} {Name} {Color}".ToLower();
+        public string BuildSearchTerms()
+        {
+            return $"{ProductID} {Name} {Color}".ToLower();
+        }
     }
 }

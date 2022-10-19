@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Inventory
 {
-    partial class ElementSet<T>
+    public partial class ElementSet<T>
     {
         public event RoutedEventHandler Click
         {

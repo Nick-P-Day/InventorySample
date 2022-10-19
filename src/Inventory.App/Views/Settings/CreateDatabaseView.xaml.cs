@@ -12,13 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
+using Inventory.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-using Inventory.ViewModels;
 
 namespace Inventory.Views
 {

@@ -12,11 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-
-using Windows.UI.Xaml.Data;
-using Windows.System.UserProfile;
 using Windows.Globalization.DateTimeFormatting;
+using Windows.System.UserProfile;
+using Windows.UI.Xaml.Data;
 
 namespace Inventory.Converters
 {
@@ -38,7 +36,7 @@ namespace Inventory.Converters
                 {
                     string format = parameter as String ?? "shortdate";
                     var userLanguages = GlobalizationPreferences.Languages;
-                    var dateFormatter = new DateTimeFormatter(format, userLanguages);
+                    DateTimeFormatter dateFormatter = new DateTimeFormatter(format, userLanguages);
                     return dateFormatter.Format(dateTimeOffset.ToLocalTime());
                 }
                 return "N/A";

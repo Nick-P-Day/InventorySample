@@ -12,13 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Inventory.Services
 {
-    partial class VirtualCollection<T> : IList, IList<T> where T : class
+    public partial class VirtualCollection<T> : IList, IList<T> where T : class
     {
         public bool IsFixedSize => false;
         public bool IsReadOnly => false;
@@ -34,10 +30,10 @@ namespace Inventory.Services
         public T this[int index]
         {
             get => GetItem(index);
-            set { throw new NotImplementedException(); }
+            set => throw new NotImplementedException();
         }
 
-        virtual protected T GetItem(int index)
+        protected virtual T GetItem(int index)
         {
             int rangeIndex = index / RangeSize;
             if (Ranges.ContainsKey(rangeIndex))
@@ -78,7 +74,7 @@ namespace Inventory.Services
                     int index = range.Value.IndexOf(item);
                     if (index > -1)
                     {
-                        return range.Key * RangeSize + index;
+                        return (range.Key * RangeSize) + index;
                     }
                 }
             }
@@ -124,7 +120,6 @@ namespace Inventory.Services
         {
             throw new NotImplementedException();
         }
-
 
         public bool Contains(object value)
         {

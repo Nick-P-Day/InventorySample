@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Models;
 
@@ -88,7 +83,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetCategoriesAsync();
                     return items.Select(r => new CategoryModel
@@ -110,7 +105,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetCountryCodesAsync();
                     return items.OrderBy(r => r.Name).Select(r => new CountryCodeModel
@@ -132,7 +127,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetOrderStatusAsync();
                     return items.Select(r => new OrderStatusModel
@@ -154,7 +149,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetPaymentTypesAsync();
                     return items.Select(r => new PaymentTypeModel
@@ -176,7 +171,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetShippersAsync();
                     return items.Select(r => new ShipperModel
@@ -199,7 +194,7 @@ namespace Inventory.Services
         {
             try
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (Data.Services.IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var items = await dataService.GetTaxTypesAsync();
                     return items.Select(r => new TaxTypeModel

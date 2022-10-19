@@ -88,6 +88,9 @@ namespace Inventory.Data
 
         public virtual ICollection<Order> Orders { get; set; }
 
-        public string BuildSearchTerms() => $"{CustomerID} {FirstName} {LastName} {EmailAddress} {AddressLine1}".ToLower();
+        public string BuildSearchTerms()
+        {
+            return $"{CustomerID} {FirstName} {LastName} {EmailAddress} {AddressLine1}".ToLower();
+        }
     }
 }

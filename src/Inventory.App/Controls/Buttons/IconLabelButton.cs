@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -33,8 +31,8 @@ namespace Inventory.Controls
         #region Orientation
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(IconLabelButton), new PropertyMetadata(Orientation.Horizontal));
@@ -43,8 +41,8 @@ namespace Inventory.Controls
         #region Glyph
         public string Glyph
         {
-            get { return (string)GetValue(GlyphProperty); }
-            set { SetValue(GlyphProperty, value); }
+            get => (string)GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
         }
 
         public static readonly DependencyProperty GlyphProperty = DependencyProperty.Register("Glyph", typeof(string), typeof(IconLabelButton), new PropertyMetadata(null));
@@ -53,8 +51,8 @@ namespace Inventory.Controls
         #region GlyphSize
         public double GlyphSize
         {
-            get { return (double)GetValue(GlyphSizeProperty); }
-            set { SetValue(GlyphSizeProperty, value); }
+            get => (double)GetValue(GlyphSizeProperty);
+            set => SetValue(GlyphSizeProperty, value);
         }
 
         public static readonly DependencyProperty GlyphSizeProperty = DependencyProperty.Register("GlyphSize", typeof(double), typeof(IconLabelButton), new PropertyMetadata(0.0));
@@ -63,8 +61,8 @@ namespace Inventory.Controls
         #region Label
         public string Label
         {
-            get { return (string)GetValue(LabelProperty); }
-            set { SetValue(LabelProperty, value); }
+            get => (string)GetValue(LabelProperty);
+            set => SetValue(LabelProperty, value);
         }
 
         public static readonly DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(IconLabelButton), new PropertyMetadata(null));

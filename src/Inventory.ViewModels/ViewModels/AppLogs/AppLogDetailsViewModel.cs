@@ -12,20 +12,22 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
     #region AppLogDetailsArgs
     public class AppLogDetailsArgs
     {
-        static public AppLogDetailsArgs CreateDefault() => new AppLogDetailsArgs();
+        public static AppLogDetailsArgs CreateDefault()
+        {
+            return new AppLogDetailsArgs();
+        }
 
         public long AppLogID { get; set; }
     }
@@ -37,7 +39,7 @@ namespace Inventory.ViewModels
         {
         }
 
-        override public string Title => "Activity Logs";
+        public override string Title => "Activity Logs";
 
         public override bool ItemIsNew => false;
 
@@ -49,7 +51,7 @@ namespace Inventory.ViewModels
 
             try
             {
-                var item = await LogService.GetLogAsync(ViewModelArgs.AppLogID);
+                AppLogModel item = await LogService.GetLogAsync(ViewModelArgs.AppLogID);
                 Item = item ?? new AppLogModel { Id = 0, IsEmpty = true };
             }
             catch (Exception ex)
@@ -113,7 +115,7 @@ namespace Inventory.ViewModels
          ****************************************************************/
         private async void OnDetailsMessage(AppLogDetailsViewModel sender, string message, AppLogModel changed)
         {
-            var current = Item;
+            AppLogModel current = Item;
             if (current != null)
             {
                 if (changed != null && changed.Id == current?.Id)
@@ -130,7 +132,7 @@ namespace Inventory.ViewModels
 
         private async void OnListMessage(AppLogListViewModel sender, string message, object args)
         {
-            var current = Item;
+            AppLogModel current = Item;
             if (current != null)
             {
                 switch (message)
@@ -145,7 +147,7 @@ namespace Inventory.ViewModels
                         }
                         break;
                     case "ItemRangesDeleted":
-                        var model = await LogService.GetLogAsync(current.Id);
+                        AppLogModel model = await LogService.GetLogAsync(current.Id);
                         if (model == null)
                         {
                             await OnItemDeletedExternally();

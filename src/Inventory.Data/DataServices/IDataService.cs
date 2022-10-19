@@ -48,7 +48,6 @@ namespace Inventory.Data.Services
         Task<int> UpdateProductAsync(Product product);
         Task<int> DeleteProductsAsync(params Product[] products);
 
-
         Task<IList<Category>> GetCategoriesAsync();
         Task<IList<CountryCode>> GetCountryCodesAsync();
         Task<IList<OrderStatus>> GetOrderStatusAsync();

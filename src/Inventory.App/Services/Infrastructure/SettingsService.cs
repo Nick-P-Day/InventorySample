@@ -12,13 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
-using Windows.UI.Xaml.Controls;
-using Windows.Storage;
-
 using Inventory.Views;
+using Windows.Storage;
+using Windows.UI.Xaml.Controls;
 
 namespace Inventory.Services
 {
@@ -67,7 +63,7 @@ namespace Inventory.Services
             string errorMessage = null;
             try
             {
-                var localFolder = ApplicationData.Current.LocalFolder;
+                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
                 var databaseFolder = await localFolder.CreateFolderAsync(AppSettings.DatabasePath, CreationCollisionOption.OpenIfExists);
                 var sourceFile = await databaseFolder.GetFileAsync(AppSettings.DatabasePattern);
                 var targetFile = await databaseFolder.CreateFileAsync(AppSettings.DatabaseName, CreationCollisionOption.ReplaceExisting);
@@ -89,7 +85,7 @@ namespace Inventory.Services
 
         public async Task<Result> ValidateConnectionAsync(string connectionString)
         {
-            var dialog = new ValidateConnectionView(connectionString);
+            ValidateConnectionView dialog = new ValidateConnectionView(connectionString);
             var res = await dialog.ShowAsync();
             switch (res)
             {
@@ -103,7 +99,7 @@ namespace Inventory.Services
 
         public async Task<Result> CreateDabaseAsync(string connectionString)
         {
-            var dialog = new CreateDatabaseView(connectionString);
+            CreateDatabaseView dialog = new CreateDatabaseView(connectionString);
             var res = await dialog.ShowAsync();
             switch (res)
             {

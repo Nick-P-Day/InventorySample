@@ -12,13 +12,10 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
-using Windows.Storage.Streams;
 using Windows.Security.Credentials;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
+using Windows.Storage.Streams;
 
 namespace Inventory.Services
 {
@@ -65,7 +62,7 @@ namespace Inventory.Services
                 if (retrieveResult.Status == KeyCredentialStatus.Success)
                 {
                     var credential = retrieveResult.Credential;
-                    var challengeBuffer = CryptographicBuffer.DecodeFromBase64String("challenge");
+                    IBuffer challengeBuffer = CryptographicBuffer.DecodeFromBase64String("challenge");
                     var result = await credential.RequestSignAsync(challengeBuffer);
                     if (result.Status == KeyCredentialStatus.Success)
                     {
@@ -114,8 +111,8 @@ namespace Inventory.Services
                 {
                     // When communicating with the server in the future, we pass a hash of the
                     // public key in order to identify which key the server should use to verify the challenge.
-                    var hashProvider = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
-                    var publicKeyHash = hashProvider.HashData(publicKey);
+                    HashAlgorithmProvider hashProvider = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
+                    IBuffer publicKeyHash = hashProvider.HashData(publicKey);
                     AppSettings.Current.WindowsHelloPublicKeyHint = CryptographicBuffer.EncodeToBase64String(publicKeyHash);
                 }
             }
@@ -148,10 +145,10 @@ namespace Inventory.Services
             return null;
         }
 
-        const int NTE_NO_KEY = unchecked((int)0x8009000D);
-        const int NTE_PERM = unchecked((int)0x80090010);
+        private const int NTE_NO_KEY = unchecked((int)0x8009000D);
+        private const int NTE_PERM = unchecked((int)0x80090010);
 
-        static private async Task<bool> TryDeleteCredentialAccountAsync(string userName)
+        private static async Task<bool> TryDeleteCredentialAccountAsync(string userName)
         {
             try
             {
@@ -177,7 +174,7 @@ namespace Inventory.Services
             return false;
         }
 
-        static private Task<bool> RegisterPassportCredentialWithServerAsync(IBuffer publicKey)
+        private static Task<bool> RegisterPassportCredentialWithServerAsync(IBuffer publicKey)
         {
             // TODO:
             // Register the public key and attestation of the key credential with the server

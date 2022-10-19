@@ -12,11 +12,8 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 
 namespace Inventory.Controls
 {
@@ -70,19 +67,19 @@ namespace Inventory.Controls
 
         private static void OnOneRowModeEnabledChanged(DependencyObject d, object newValue)
         {
-            var self = d as AdaptiveGridView;
+            AdaptiveGridView self = d as AdaptiveGridView;
             self.DetermineOneRowMode();
         }
 
         private static void DesiredWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var self = d as AdaptiveGridView;
+            AdaptiveGridView self = d as AdaptiveGridView;
             self.RecalculateLayout(self.ActualWidth);
         }
 
         private static void OnStretchContentForSingleRowPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var self = d as AdaptiveGridView;
+            AdaptiveGridView self = d as AdaptiveGridView;
             self.RecalculateLayout(self.ActualWidth);
         }
 
@@ -92,8 +89,8 @@ namespace Inventory.Controls
         /// <value>The width of the desired.</value>
         public double DesiredWidth
         {
-            get { return (double)GetValue(DesiredWidthProperty); }
-            set { SetValue(DesiredWidthProperty, value); }
+            get => (double)GetValue(DesiredWidthProperty);
+            set => SetValue(DesiredWidthProperty, value);
         }
 
         /// <summary>
@@ -106,8 +103,8 @@ namespace Inventory.Controls
         /// <value>A value indicating whether the control should stretch the content to fill at least one row.</value>
         public bool StretchContentForSingleRow
         {
-            get { return (bool)GetValue(StretchContentForSingleRowProperty); }
-            set { SetValue(StretchContentForSingleRowProperty, value); }
+            get => (bool)GetValue(StretchContentForSingleRowProperty);
+            set => SetValue(StretchContentForSingleRowProperty, value);
         }
 
         /// <summary>
@@ -116,8 +113,8 @@ namespace Inventory.Controls
         /// <value>The item click command.</value>
         public ICommand ItemClickCommand
         {
-            get { return (ICommand)GetValue(ItemClickCommandProperty); }
-            set { SetValue(ItemClickCommandProperty, value); }
+            get => (ICommand)GetValue(ItemClickCommandProperty);
+            set => SetValue(ItemClickCommandProperty, value);
         }
 
         /// <summary>
@@ -126,8 +123,8 @@ namespace Inventory.Controls
         /// <value>The height of the item.</value>
         public double ItemHeight
         {
-            get { return (double)GetValue(ItemHeightProperty); }
-            set { SetValue(ItemHeightProperty, value); }
+            get => (double)GetValue(ItemHeightProperty);
+            set => SetValue(ItemHeightProperty, value);
         }
 
         /// <summary>
@@ -136,8 +133,8 @@ namespace Inventory.Controls
         /// <value><c>true</c> if only one row is displayed; otherwise, <c>false</c>.</value>
         public bool OneRowModeEnabled
         {
-            get { return (bool)GetValue(OneRowModeEnabledProperty); }
-            set { SetValue(OneRowModeEnabledProperty, value); }
+            get => (bool)GetValue(OneRowModeEnabledProperty);
+            set => SetValue(OneRowModeEnabledProperty, value);
         }
 
         /// <summary>
@@ -155,8 +152,8 @@ namespace Inventory.Controls
 
         private double ItemWidth
         {
-            get { return (double)GetValue(ItemWidthProperty); }
-            set { SetValue(ItemWidthProperty, value); }
+            get => (double)GetValue(ItemWidthProperty);
+            set => SetValue(ItemWidthProperty, value);
         }
 
         private static int CalculateColumns(double containerWidth, double itemWidth)

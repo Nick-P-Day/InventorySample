@@ -12,28 +12,22 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Threading.Tasks;
-
+using Inventory.Data;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-using Inventory.Data;
-
 namespace Inventory.Services
 {
-    abstract public partial class VirtualCollection<T> : IItemsRangeInfo, INotifyCollectionChanged
+    public abstract partial class VirtualCollection<T> : IItemsRangeInfo, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public readonly int RangeSize;
 
-        private DispatcherTimer _timer = null;
-        bool MustExploreDeepExceptions { get;  set; }
-        public VirtualCollection(ILogService logService, int rangeSize = 16, bool mustExploreDeepExceptions=false)
+        private readonly DispatcherTimer _timer = null;
+
+        private bool MustExploreDeepExceptions { get; set; }
+        public VirtualCollection(ILogService logService, int rangeSize = 16, bool mustExploreDeepExceptions = false)
         {
             MustExploreDeepExceptions = mustExploreDeepExceptions;
             LogService = logService;
@@ -41,8 +35,10 @@ namespace Inventory.Services
             RangeSize = rangeSize;
             Ranges = new Dictionary<int, IList<T>>();
 
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(50);
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
             _timer.Tick += OnTimerTick;
         }
 
@@ -119,7 +115,10 @@ namespace Inventory.Services
             foreach (var trackedRange in trackedItems)
             {
                 await FetchRange(trackedRange);
-                if (_cancel) return;
+                if (_cancel)
+                {
+                    return;
+                }
             }
         }
 
@@ -137,7 +136,7 @@ namespace Inventory.Services
                         Ranges[index] = items;
                         for (int n = 0; n < items.Count; n++)
                         {
-                            int replaceIndex = Math.Min(index * RangeSize + n, Count - 1);
+                            int replaceIndex = Math.Min((index * RangeSize) + n, Count - 1);
                             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, items[n], null, replaceIndex));
                         }
                     }
@@ -157,9 +156,9 @@ namespace Inventory.Services
             }
         }
 
-        virtual public void Dispose() { }
+        public virtual void Dispose() { }
 
-        abstract protected T DefaultItem { get; }
-        abstract protected Task<IList<T>> FetchDataAsync(int pageIndex, int pageSize);
+        protected abstract T DefaultItem { get; }
+        protected abstract Task<IList<T>> FetchDataAsync(int pageIndex, int pageSize);
     }
 }

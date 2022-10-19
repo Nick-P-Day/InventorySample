@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -32,13 +30,13 @@ namespace Inventory.Controls
         #region Orientation
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         private static void OrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as IconLabel;
+            IconLabel control = d as IconLabel;
             control.UpdateControl();
         }
 
@@ -48,8 +46,8 @@ namespace Inventory.Controls
         #region Glyph
         public string Glyph
         {
-            get { return (string)GetValue(GlyphProperty); }
-            set { SetValue(GlyphProperty, value); }
+            get => (string)GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
         }
 
         public static readonly DependencyProperty GlyphProperty = DependencyProperty.Register("Glyph", typeof(string), typeof(IconLabel), new PropertyMetadata(null));
@@ -58,8 +56,8 @@ namespace Inventory.Controls
         #region GlyphSize
         public double GlyphSize
         {
-            get { return (double)GetValue(GlyphSizeProperty); }
-            set { SetValue(GlyphSizeProperty, value); }
+            get => (double)GetValue(GlyphSizeProperty);
+            set => SetValue(GlyphSizeProperty, value);
         }
 
         public static readonly DependencyProperty GlyphSizeProperty = DependencyProperty.Register("GlyphSize", typeof(double), typeof(IconLabel), new PropertyMetadata(0.0));
@@ -68,13 +66,13 @@ namespace Inventory.Controls
         #region Label
         public string Label
         {
-            get { return (string)GetValue(LabelProperty); }
-            set { SetValue(LabelProperty, value); }
+            get => (string)GetValue(LabelProperty);
+            set => SetValue(LabelProperty, value);
         }
 
         private static void LabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as IconLabel;
+            IconLabel control = d as IconLabel;
             control.UpdateControl();
         }
 

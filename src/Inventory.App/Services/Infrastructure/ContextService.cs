@@ -12,16 +12,13 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
 using Windows.UI.Core;
 
 namespace Inventory.Services
 {
     public class ContextService : IContextService
     {
-        static private int _mainViewID = -1;
+        private static int _mainViewID = -1;
 
         private CoreDispatcher _dispatcher = null;
 

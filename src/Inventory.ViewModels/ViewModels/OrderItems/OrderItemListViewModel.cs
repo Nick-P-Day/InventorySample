@@ -12,23 +12,25 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inventory.ViewModels
 {
     #region OrderItemListArgs
     public class OrderItemListArgs
     {
-        static public OrderItemListArgs CreateEmpty() => new OrderItemListArgs { IsEmpty = true };
+        public static OrderItemListArgs CreateEmpty()
+        {
+            return new OrderItemListArgs { IsEmpty = true };
+        }
 
         public OrderItemListArgs()
         {
@@ -214,7 +216,7 @@ namespace Inventory.ViewModels
 
         private async Task DeleteItemsAsync(IEnumerable<OrderItemModel> models)
         {
-            foreach (var model in models)
+            foreach (OrderItemModel model in models)
             {
                 await OrderItemService.DeleteOrderItemAsync(model);
             }
@@ -223,7 +225,7 @@ namespace Inventory.ViewModels
         private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
         {
             DataRequest<OrderItem> request = BuildDataRequest();
-            foreach (var range in ranges)
+            foreach (IndexRange range in ranges)
             {
                 await OrderItemService.DeleteOrderItemRangeAsync(range.Index, range.Length, request);
             }
@@ -231,7 +233,7 @@ namespace Inventory.ViewModels
 
         private DataRequest<OrderItem> BuildDataRequest()
         {
-            var request = new DataRequest<OrderItem>()
+            DataRequest<OrderItem> request = new DataRequest<OrderItem>()
             {
                 Query = Query,
                 OrderBy = ViewModelArgs.OrderBy,

@@ -12,16 +12,12 @@
 // ******************************************************************
 #endregion
 
-using System;
-
-using Windows.UI.Xaml;
-
 namespace Inventory
 {
-    static public class GridLengths
+    public static class GridLengths
     {
-        static public readonly GridLength Zero = new GridLength(0);
-        static public readonly GridLength Star = new GridLength(1, GridUnitType.Star);
-        static public readonly GridLength Auto = new GridLength(1, GridUnitType.Auto);
+        public static readonly GridLength Zero = new GridLength(0);
+        public static readonly GridLength Star = new GridLength(1, GridUnitType.Star);
+        public static readonly GridLength Auto = new GridLength(1, GridUnitType.Auto);
     }
 }

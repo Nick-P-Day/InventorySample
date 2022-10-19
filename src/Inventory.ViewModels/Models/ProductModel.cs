@@ -12,15 +12,17 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Inventory.Services;
+using System;
 
 namespace Inventory.Models
 {
     public class ProductModel : ObservableObject
     {
-        static public ProductModel CreateEmpty() => new ProductModel { ProductID = "", IsEmpty = true };
+        public static ProductModel CreateEmpty()
+        {
+            return new ProductModel { ProductID = "", IsEmpty = true };
+        }
 
         public string ProductID { get; set; }
 

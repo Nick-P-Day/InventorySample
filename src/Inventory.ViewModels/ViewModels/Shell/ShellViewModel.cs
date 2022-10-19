@@ -12,10 +12,9 @@
 // ******************************************************************
 #endregion
 
+using Inventory.Services;
 using System;
 using System.Threading.Tasks;
-
-using Inventory.Services;
 
 namespace Inventory.ViewModels
 {
@@ -65,7 +64,7 @@ namespace Inventory.ViewModels
 
         public ShellArgs ViewModelArgs { get; protected set; }
 
-        virtual public Task LoadAsync(ShellArgs args)
+        public virtual Task LoadAsync(ShellArgs args)
         {
             ViewModelArgs = args;
             if (ViewModelArgs != null)
@@ -75,17 +74,17 @@ namespace Inventory.ViewModels
             }
             return Task.CompletedTask;
         }
-        virtual public void Unload()
+        public virtual void Unload()
         {
         }
 
-        virtual public void Subscribe()
+        public virtual void Subscribe()
         {
             MessageService.Subscribe<ILoginService, bool>(this, OnLoginMessage);
             MessageService.Subscribe<ViewModelBase, string>(this, OnMessage);
         }
 
-        virtual public void Unsubscribe()
+        public virtual void Unsubscribe()
         {
             MessageService.Unsubscribe(this);
         }

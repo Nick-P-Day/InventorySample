@@ -12,22 +12,24 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Inventory.ViewModels
 {
     #region AppLogListArgs
     public class AppLogListArgs
     {
-        static public AppLogListArgs CreateEmpty() => new AppLogListArgs { IsEmpty = true };
+        public static AppLogListArgs CreateEmpty()
+        {
+            return new AppLogListArgs { IsEmpty = true };
+        }
 
         public AppLogListArgs()
         {
@@ -183,7 +185,7 @@ namespace Inventory.ViewModels
 
         private async Task DeleteItemsAsync(IEnumerable<AppLogModel> models)
         {
-            foreach (var model in models)
+            foreach (AppLogModel model in models)
             {
                 await LogService.DeleteLogAsync(model);
             }
@@ -192,7 +194,7 @@ namespace Inventory.ViewModels
         private async Task DeleteRangesAsync(IEnumerable<IndexRange> ranges)
         {
             DataRequest<AppLog> request = BuildDataRequest();
-            foreach (var range in ranges)
+            foreach (IndexRange range in ranges)
             {
                 await LogService.DeleteLogRangeAsync(range.Index, range.Length, request);
             }

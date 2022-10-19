@@ -12,18 +12,16 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
+using Inventory.Models;
+using Inventory.Services;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-using Inventory.Models;
-using Inventory.Services;
-
 namespace Inventory.ViewModels
 {
-    abstract public partial class GenericDetailsViewModel<TModel> : ViewModelBase where TModel : ObservableObject, new()
+    public abstract partial class GenericDetailsViewModel<TModel> : ViewModelBase where TModel : ObservableObject, new()
     {
         public GenericDetailsViewModel(ICommonServices commonServices) : base(commonServices)
         {
@@ -75,7 +73,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand BackCommand => new RelayCommand(OnBack);
-        virtual protected void OnBack()
+        protected virtual void OnBack()
         {
             StatusReady();
             if (NavigationService.CanGoBack)
@@ -85,32 +83,32 @@ namespace Inventory.ViewModels
         }
 
         public ICommand EditCommand => new RelayCommand(OnEdit);
-        virtual protected void OnEdit()
+        protected virtual void OnEdit()
         {
             StatusReady();
             BeginEdit();
             MessageService.Send(this, "BeginEdit", Item);
         }
-        virtual public void BeginEdit()
+        public virtual void BeginEdit()
         {
             if (!IsEditMode)
             {
                 IsEditMode = true;
                 // Create a copy for edit
-                var editableItem = new TModel();
+                TModel editableItem = new TModel();
                 editableItem.Merge(Item);
                 EditableItem = editableItem;
             }
         }
 
         public ICommand CancelCommand => new RelayCommand(OnCancel);
-        virtual protected void OnCancel()
+        protected virtual void OnCancel()
         {
             StatusReady();
             CancelEdit();
             MessageService.Send(this, "CancelEdit", Item);
         }
-        virtual public void CancelEdit()
+        public virtual void CancelEdit()
         {
             if (ItemIsNew)
             {
@@ -135,10 +133,10 @@ namespace Inventory.ViewModels
         }
 
         public ICommand SaveCommand => new RelayCommand(OnSave);
-        virtual protected async void OnSave()
+        protected virtual async void OnSave()
         {
             StatusReady();
-            var result = Validate(EditableItem);
+            Result result = Validate(EditableItem);
             if (result.IsOk)
             {
                 await SaveAsync();
@@ -148,7 +146,7 @@ namespace Inventory.ViewModels
                 await DialogService.ShowAsync(result.Message, $"{result.Description} Please, correct the error and try again.");
             }
         }
-        virtual public async Task SaveAsync()
+        public virtual async Task SaveAsync()
         {
             IsEnabled = false;
             bool isNew = ItemIsNew;
@@ -175,7 +173,7 @@ namespace Inventory.ViewModels
         }
 
         public ICommand DeleteCommand => new RelayCommand(OnDelete);
-        virtual protected async void OnDelete()
+        protected virtual async void OnDelete()
         {
             StatusReady();
             if (await ConfirmDeleteAsync())
@@ -183,9 +181,9 @@ namespace Inventory.ViewModels
                 await DeleteAsync();
             }
         }
-        virtual public async Task DeleteAsync()
+        public virtual async Task DeleteAsync()
         {
-            var model = Item;
+            TModel model = Item;
             if (model != null)
             {
                 IsEnabled = false;
@@ -200,9 +198,9 @@ namespace Inventory.ViewModels
             }
         }
 
-        virtual public Result Validate(TModel model)
+        public virtual Result Validate(TModel model)
         {
-            foreach (var constraint in GetValidationConstraints(model))
+            foreach (IValidationConstraint<TModel> constraint in GetValidationConstraints(model))
             {
                 if (!constraint.Validate(model))
                 {
@@ -212,12 +210,15 @@ namespace Inventory.ViewModels
             return Result.Ok();
         }
 
-        virtual protected IEnumerable<IValidationConstraint<TModel>> GetValidationConstraints(TModel model) => Enumerable.Empty<IValidationConstraint<TModel>>();
+        protected virtual IEnumerable<IValidationConstraint<TModel>> GetValidationConstraints(TModel model)
+        {
+            return Enumerable.Empty<IValidationConstraint<TModel>>();
+        }
 
-        abstract public bool ItemIsNew { get; }
+        public abstract bool ItemIsNew { get; }
 
-        abstract protected Task<bool> SaveItemAsync(TModel model);
-        abstract protected Task<bool> DeleteItemAsync(TModel model);
-        abstract protected Task<bool> ConfirmDeleteAsync();
+        protected abstract Task<bool> SaveItemAsync(TModel model);
+        protected abstract Task<bool> DeleteItemAsync(TModel model);
+        protected abstract Task<bool> ConfirmDeleteAsync();
     }
 }

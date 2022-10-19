@@ -12,9 +12,8 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Inventory.Models;
+using System;
 
 namespace Inventory.ViewModels
 {

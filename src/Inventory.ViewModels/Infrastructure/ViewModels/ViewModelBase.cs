@@ -12,18 +12,17 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Diagnostics;
-
 using Inventory.Data;
 using Inventory.Models;
 using Inventory.Services;
+using System;
+using System.Diagnostics;
 
 namespace Inventory.ViewModels
 {
     public class ViewModelBase : ObservableObject
     {
-        private Stopwatch _stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
         public ViewModelBase(ICommonServices commonServices)
         {
@@ -42,7 +41,7 @@ namespace Inventory.ViewModels
 
         public bool IsMainView => ContextService.IsMainView;
 
-        virtual public string Title => String.Empty;
+        public virtual string Title => String.Empty;
 
         public async void LogInformation(string source, string action, string message, string description)
         {
@@ -72,7 +71,7 @@ namespace Inventory.ViewModels
         public void EndStatusMessage(string message)
         {
             _stopwatch.Stop();
-            StatusMessage($"{message} ({_stopwatch.Elapsed.TotalSeconds:#0.000} seconds)");            
+            StatusMessage($"{message} ({_stopwatch.Elapsed.TotalSeconds:#0.000} seconds)");
         }
 
         public void StatusReady()

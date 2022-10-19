@@ -12,13 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Windows.Input;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -35,13 +28,13 @@ namespace Inventory.Controls
             DependencyExpressions.Initialize(this);
         }
 
-        static private readonly DependencyExpressions DependencyExpressions = new DependencyExpressions();
+        private static readonly DependencyExpressions DependencyExpressions = new DependencyExpressions();
 
         #region NewLabel
         public string NewLabel
         {
-            get { return (string)GetValue(NewLabelProperty); }
-            set { SetValue(NewLabelProperty, value); }
+            get => (string)GetValue(NewLabelProperty);
+            set => SetValue(NewLabelProperty, value);
         }
 
         public static readonly DependencyProperty NewLabelProperty = DependencyProperty.Register(nameof(NewLabel), typeof(string), typeof(DataList), new PropertyMetadata("New"));
@@ -50,13 +43,13 @@ namespace Inventory.Controls
         #region ItemsSource*
         public IEnumerable ItemsSource
         {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get => (IEnumerable)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
         private static void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DataList;
+            DataList control = d as DataList;
             control.UpdateItemsSource(e.NewValue, e.OldValue);
             DependencyExpressions.UpdateDependencies(control, nameof(ItemsSource));
         }
@@ -79,8 +72,8 @@ namespace Inventory.Controls
         #region HeaderTemplate
         public DataTemplate HeaderTemplate
         {
-            get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
-            set { SetValue(HeaderTemplateProperty, value); }
+            get => (DataTemplate)GetValue(HeaderTemplateProperty);
+            set => SetValue(HeaderTemplateProperty, value);
         }
 
         public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.Register(nameof(HeaderTemplate), typeof(DataTemplate), typeof(DataList), new PropertyMetadata(null));
@@ -89,8 +82,8 @@ namespace Inventory.Controls
         #region ItemTemplate
         public DataTemplate ItemTemplate
         {
-            get { return (DataTemplate)GetValue(ItemTemplateProperty); }
-            set { SetValue(ItemTemplateProperty, value); }
+            get => (DataTemplate)GetValue(ItemTemplateProperty);
+            set => SetValue(ItemTemplateProperty, value);
         }
 
         public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(DataList), new PropertyMetadata(null));
@@ -99,8 +92,8 @@ namespace Inventory.Controls
         #region ItemSecondaryActionInvokedCommand
         public ICommand ItemSecondaryActionInvokedCommand
         {
-            get { return (ICommand)GetValue(ItemSecondaryActionInvokedCommandProperty); }
-            set { SetValue(ItemSecondaryActionInvokedCommandProperty, value); }
+            get => (ICommand)GetValue(ItemSecondaryActionInvokedCommandProperty);
+            set => SetValue(ItemSecondaryActionInvokedCommandProperty, value);
         }
 
         public static readonly DependencyProperty ItemSecondaryActionInvokedCommandProperty = DependencyProperty.Register(nameof(ItemSecondaryActionInvokedCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -109,8 +102,8 @@ namespace Inventory.Controls
         #region DefaultCommands
         public string DefaultCommands
         {
-            get { return (string)GetValue(DefaultCommandsProperty); }
-            set { SetValue(DefaultCommandsProperty, value); }
+            get => (string)GetValue(DefaultCommandsProperty);
+            set => SetValue(DefaultCommandsProperty, value);
         }
 
         public static readonly DependencyProperty DefaultCommandsProperty = DependencyProperty.Register(nameof(DefaultCommands), typeof(string), typeof(DataList), new PropertyMetadata("new,select,refresh,search"));
@@ -119,8 +112,8 @@ namespace Inventory.Controls
         #region SelectedItem
         public object SelectedItem
         {
-            get { return (object)GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
+            get => (object)GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
         }
 
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(nameof(SelectedItem), typeof(object), typeof(DataList), new PropertyMetadata(null));
@@ -129,13 +122,13 @@ namespace Inventory.Controls
         #region IsMultipleSelection*
         public bool IsMultipleSelection
         {
-            get { return (bool)GetValue(IsMultipleSelectionProperty); }
-            set { SetValue(IsMultipleSelectionProperty, value); }
+            get => (bool)GetValue(IsMultipleSelectionProperty);
+            set => SetValue(IsMultipleSelectionProperty, value);
         }
 
         private static void IsMultipleSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DataList;
+            DataList control = d as DataList;
             DependencyExpressions.UpdateDependencies(control, nameof(IsMultipleSelection));
         }
 
@@ -145,25 +138,24 @@ namespace Inventory.Controls
         #region SelectedItemsCount*
         public int SelectedItemsCount
         {
-            get { return (int)GetValue(SelectedItemsCountProperty); }
-            set { SetValue(SelectedItemsCountProperty, value); }
+            get => (int)GetValue(SelectedItemsCountProperty);
+            set => SetValue(SelectedItemsCountProperty, value);
         }
 
         private static void SelectedItemsCountChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DataList;
+            DataList control = d as DataList;
             DependencyExpressions.UpdateDependencies(control, nameof(SelectedItemsCount));
         }
 
         public static readonly DependencyProperty SelectedItemsCountProperty = DependencyProperty.Register(nameof(SelectedItemsCount), typeof(int), typeof(DataList), new PropertyMetadata(null, SelectedItemsCountChanged));
         #endregion
 
-
         #region Query
         public string Query
         {
-            get { return (string)GetValue(QueryProperty); }
-            set { SetValue(QueryProperty, value); }
+            get => (string)GetValue(QueryProperty);
+            set => SetValue(QueryProperty, value);
         }
 
         public static readonly DependencyProperty QueryProperty = DependencyProperty.Register(nameof(Query), typeof(string), typeof(DataList), new PropertyMetadata(null));
@@ -172,19 +164,18 @@ namespace Inventory.Controls
         #region ItemsCount
         public int ItemsCount
         {
-            get { return (int)GetValue(ItemsCountProperty); }
-            set { SetValue(ItemsCountProperty, value); }
+            get => (int)GetValue(ItemsCountProperty);
+            set => SetValue(ItemsCountProperty, value);
         }
 
         public static readonly DependencyProperty ItemsCountProperty = DependencyProperty.Register(nameof(ItemsCount), typeof(int), typeof(DataList), new PropertyMetadata(0));
         #endregion
 
-
         #region RefreshCommand
         public ICommand RefreshCommand
         {
-            get { return (ICommand)GetValue(RefreshCommandProperty); }
-            set { SetValue(RefreshCommandProperty, value); }
+            get => (ICommand)GetValue(RefreshCommandProperty);
+            set => SetValue(RefreshCommandProperty, value);
         }
 
         public static readonly DependencyProperty RefreshCommandProperty = DependencyProperty.Register(nameof(RefreshCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -193,8 +184,8 @@ namespace Inventory.Controls
         #region QuerySubmittedCommand
         public ICommand QuerySubmittedCommand
         {
-            get { return (ICommand)GetValue(QuerySubmittedCommandProperty); }
-            set { SetValue(QuerySubmittedCommandProperty, value); }
+            get => (ICommand)GetValue(QuerySubmittedCommandProperty);
+            set => SetValue(QuerySubmittedCommandProperty, value);
         }
 
         public static readonly DependencyProperty QuerySubmittedCommandProperty = DependencyProperty.Register(nameof(QuerySubmittedCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -203,8 +194,8 @@ namespace Inventory.Controls
         #region NewCommand
         public ICommand NewCommand
         {
-            get { return (ICommand)GetValue(NewCommandProperty); }
-            set { SetValue(NewCommandProperty, value); }
+            get => (ICommand)GetValue(NewCommandProperty);
+            set => SetValue(NewCommandProperty, value);
         }
 
         public static readonly DependencyProperty NewCommandProperty = DependencyProperty.Register(nameof(NewCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -213,19 +204,18 @@ namespace Inventory.Controls
         #region DeleteCommand
         public ICommand DeleteCommand
         {
-            get { return (ICommand)GetValue(DeleteCommandProperty); }
-            set { SetValue(DeleteCommandProperty, value); }
+            get => (ICommand)GetValue(DeleteCommandProperty);
+            set => SetValue(DeleteCommandProperty, value);
         }
 
         public static readonly DependencyProperty DeleteCommandProperty = DependencyProperty.Register(nameof(DeleteCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
         #endregion
 
-
         #region StartSelectionCommand
         public ICommand StartSelectionCommand
         {
-            get { return (ICommand)GetValue(StartSelectionCommandProperty); }
-            set { SetValue(StartSelectionCommandProperty, value); }
+            get => (ICommand)GetValue(StartSelectionCommandProperty);
+            set => SetValue(StartSelectionCommandProperty, value);
         }
 
         public static readonly DependencyProperty StartSelectionCommandProperty = DependencyProperty.Register(nameof(StartSelectionCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -234,8 +224,8 @@ namespace Inventory.Controls
         #region CancelSelectionCommand
         public ICommand CancelSelectionCommand
         {
-            get { return (ICommand)GetValue(CancelSelectionCommandProperty); }
-            set { SetValue(CancelSelectionCommandProperty, value); }
+            get => (ICommand)GetValue(CancelSelectionCommandProperty);
+            set => SetValue(CancelSelectionCommandProperty, value);
         }
 
         public static readonly DependencyProperty CancelSelectionCommandProperty = DependencyProperty.Register(nameof(CancelSelectionCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -244,8 +234,8 @@ namespace Inventory.Controls
         #region SelectItemsCommand
         public ICommand SelectItemsCommand
         {
-            get { return (ICommand)GetValue(SelectItemsCommandProperty); }
-            set { SetValue(SelectItemsCommandProperty, value); }
+            get => (ICommand)GetValue(SelectItemsCommandProperty);
+            set => SetValue(SelectItemsCommandProperty, value);
         }
 
         public static readonly DependencyProperty SelectItemsCommandProperty = DependencyProperty.Register(nameof(SelectItemsCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -254,8 +244,8 @@ namespace Inventory.Controls
         #region DeselectItemsCommand
         public ICommand DeselectItemsCommand
         {
-            get { return (ICommand)GetValue(DeselectItemsCommandProperty); }
-            set { SetValue(DeselectItemsCommandProperty, value); }
+            get => (ICommand)GetValue(DeselectItemsCommandProperty);
+            set => SetValue(DeselectItemsCommandProperty, value);
         }
 
         public static readonly DependencyProperty DeselectItemsCommandProperty = DependencyProperty.Register(nameof(DeselectItemsCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
@@ -264,31 +254,36 @@ namespace Inventory.Controls
         #region SelectRangesCommand
         public ICommand SelectRangesCommand
         {
-            get { return (ICommand)GetValue(SelectRangesCommandProperty); }
-            set { SetValue(SelectRangesCommandProperty, value); }
+            get => (ICommand)GetValue(SelectRangesCommandProperty);
+            set => SetValue(SelectRangesCommandProperty, value);
         }
 
         public static readonly DependencyProperty SelectRangesCommandProperty = DependencyProperty.Register(nameof(SelectRangesCommand), typeof(ICommand), typeof(DataList), new PropertyMetadata(null));
         #endregion
 
-
         public ListToolbarMode ToolbarMode => IsMultipleSelection ? (SelectedItemsCount > 0 ? ListToolbarMode.CancelDelete : ListToolbarMode.Cancel) : ListToolbarMode.Default;
-        static DependencyExpression ToolbarModeExpression = DependencyExpressions.Register(nameof(ToolbarMode), nameof(IsMultipleSelection), nameof(SelectedItemsCount));
+
+        private static readonly DependencyExpression ToolbarModeExpression = DependencyExpressions.Register(nameof(ToolbarMode), nameof(IsMultipleSelection), nameof(SelectedItemsCount));
 
         public ListViewSelectionMode SelectionMode => IsMultipleSelection ? ListViewSelectionMode.Multiple : ListViewSelectionMode.Single;
-        static DependencyExpression SelectionModeExpression = DependencyExpressions.Register(nameof(SelectionMode), nameof(IsMultipleSelection));
+
+        private static readonly DependencyExpression SelectionModeExpression = DependencyExpressions.Register(nameof(SelectionMode), nameof(IsMultipleSelection));
 
         public bool IsSingleSelection => !IsMultipleSelection;
-        static DependencyExpression IsSingleSelectionExpression = DependencyExpressions.Register(nameof(IsSingleSelection), nameof(IsMultipleSelection));
 
-        public bool IsDataAvailable => (ItemsSource?.Cast<object>().Any() ?? false);
-        static DependencyExpression IsDataAvailableExpression = DependencyExpressions.Register(nameof(IsDataAvailable), nameof(ItemsSource));
+        private static readonly DependencyExpression IsSingleSelectionExpression = DependencyExpressions.Register(nameof(IsSingleSelection), nameof(IsMultipleSelection));
+
+        public bool IsDataAvailable => ItemsSource?.Cast<object>().Any() ?? false;
+
+        private static readonly DependencyExpression IsDataAvailableExpression = DependencyExpressions.Register(nameof(IsDataAvailable), nameof(ItemsSource));
 
         public bool IsDataUnavailable => !IsDataAvailable;
-        static DependencyExpression IsDataUnavailableExpression = DependencyExpressions.Register(nameof(IsDataUnavailable), nameof(IsDataAvailable));
+
+        private static readonly DependencyExpression IsDataUnavailableExpression = DependencyExpressions.Register(nameof(IsDataUnavailable), nameof(IsDataAvailable));
 
         public string DataUnavailableMessage => ItemsSource == null ? "Loading..." : "No items found.";
-        static DependencyExpression DataUnavailableMessageExpression = DependencyExpressions.Register(nameof(DataUnavailableMessage), nameof(ItemsSource));
+
+        private static readonly DependencyExpression DataUnavailableMessageExpression = DependencyExpressions.Register(nameof(DataUnavailableMessage), nameof(ItemsSource));
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

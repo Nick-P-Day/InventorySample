@@ -12,11 +12,9 @@
 // ******************************************************************
 #endregion
 
-using System;
+using Inventory.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Inventory.Models;
 
 namespace Inventory.Services
 {
@@ -42,6 +40,6 @@ namespace Inventory.Services
 
     public class LookupTablesProxy
     {
-        static public ILookupTables Instance { get; set; }
+        public static ILookupTables Instance { get; set; }
     }
 }

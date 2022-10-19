@@ -12,11 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using Inventory.Data;
 using Inventory.Data.Services;
 using Inventory.Models;
@@ -36,24 +31,20 @@ namespace Inventory.Services
 
         public async Task<OrderModel> GetOrderAsync(long id)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await GetOrderAsync(dataService, id);
             }
         }
-        static private async Task<OrderModel> GetOrderAsync(IDataService dataService, long id)
+        private static async Task<OrderModel> GetOrderAsync(IDataService dataService, long id)
         {
             var item = await dataService.GetOrderAsync(id);
-            if (item != null)
-            {
-                return await CreateOrderModelAsync(item, includeAllFields: true);
-            }
-            return null;
+            return item != null ? await CreateOrderModelAsync(item, includeAllFields: true) : null;
         }
 
         public async Task<IList<OrderModel>> GetOrdersAsync(DataRequest<Order> request)
         {
-            var collection = new OrderCollection(this, LogService);
+            OrderCollection collection = new OrderCollection(this, LogService);
             await collection.LoadAsync(request);
             return collection;
         }
@@ -61,7 +52,7 @@ namespace Inventory.Services
         public async Task<IList<OrderModel>> GetOrdersAsync(int skip, int take, DataRequest<Order> request)
         {
             var models = new List<OrderModel>();
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetOrdersAsync(skip, take, request);
                 foreach (var item in items)
@@ -74,7 +65,7 @@ namespace Inventory.Services
 
         public async Task<int> GetOrdersCountAsync(DataRequest<Order> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.GetOrdersCountAsync(request);
             }
@@ -82,7 +73,7 @@ namespace Inventory.Services
 
         public async Task<OrderModel> CreateNewOrderAsync(long customerID)
         {
-            var model = new OrderModel
+            OrderModel model = new OrderModel
             {
                 CustomerID = customerID,
                 OrderDate = DateTime.UtcNow,
@@ -90,7 +81,7 @@ namespace Inventory.Services
             };
             if (customerID > 0)
             {
-                using (var dataService = DataServiceFactory.CreateDataService())
+                using (IDataService dataService = DataServiceFactory.CreateDataService())
                 {
                     var parent = await dataService.GetCustomerAsync(customerID);
                     if (parent != null)
@@ -111,7 +102,7 @@ namespace Inventory.Services
         public async Task<int> UpdateOrderAsync(OrderModel model)
         {
             long id = model.OrderID;
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var order = id > 0 ? await dataService.GetOrderAsync(model.OrderID) : new Order();
                 if (order != null)
@@ -126,8 +117,8 @@ namespace Inventory.Services
 
         public async Task<int> DeleteOrderAsync(OrderModel model)
         {
-            var order = new Order { OrderID = model.OrderID };
-            using (var dataService = DataServiceFactory.CreateDataService())
+            Order order = new Order { OrderID = model.OrderID };
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 return await dataService.DeleteOrdersAsync(order);
             }
@@ -135,16 +126,16 @@ namespace Inventory.Services
 
         public async Task<int> DeleteOrderRangeAsync(int index, int length, DataRequest<Order> request)
         {
-            using (var dataService = DataServiceFactory.CreateDataService())
+            using (IDataService dataService = DataServiceFactory.CreateDataService())
             {
                 var items = await dataService.GetOrderKeysAsync(index, length, request);
                 return await dataService.DeleteOrdersAsync(items.ToArray());
             }
         }
 
-        static public async Task<OrderModel> CreateOrderModelAsync(Order source, bool includeAllFields)
+        public static async Task<OrderModel> CreateOrderModelAsync(Order source, bool includeAllFields)
         {
-            var model = new OrderModel()
+            OrderModel model = new OrderModel()
             {
                 OrderID = source.OrderID,
                 CustomerID = source.CustomerID,

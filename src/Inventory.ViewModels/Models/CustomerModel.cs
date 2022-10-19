@@ -12,15 +12,17 @@
 // ******************************************************************
 #endregion
 
-using System;
-
 using Inventory.Services;
+using System;
 
 namespace Inventory.Models
 {
     public class CustomerModel : ObservableObject
     {
-        static public CustomerModel CreateEmpty() => new CustomerModel { CustomerID = -1, IsEmpty = true };
+        public static CustomerModel CreateEmpty()
+        {
+            return new CustomerModel { CustomerID = -1, IsEmpty = true };
+        }
 
         public long CustomerID { get; set; }
 
@@ -64,14 +66,7 @@ namespace Inventory.Models
         public string Initials => String.Format("{0}{1}", $"{FirstName} "[0], $"{LastName} "[0]).Trim().ToUpper();
         public string CountryName => LookupTablesProxy.Instance.GetCountry(CountryCode);
 
-        public string FullAddress
-        {
-            get
-            {
-                return $"{AddressLine1} {AddressLine2}\n{City}, {Region} {PostalCode}\n{CountryName}";
-          
-            }
-        }
+        public string FullAddress => $"{AddressLine1} {AddressLine2}\n{City}, {Region} {PostalCode}\n{CountryName}";
 
         public override void Merge(ObservableObject source)
         {

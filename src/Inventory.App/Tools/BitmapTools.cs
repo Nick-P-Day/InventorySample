@@ -12,24 +12,20 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Inventory
 {
-    static public class BitmapTools
+    public static class BitmapTools
     {
-        static public async Task<BitmapImage> LoadBitmapAsync(byte[] bytes)
+        public static async Task<BitmapImage> LoadBitmapAsync(byte[] bytes)
         {
             if (bytes != null && bytes.Length > 0)
             {
-                using (var stream = new InMemoryRandomAccessStream())
+                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
-                    var bitmap = new BitmapImage();
+                    BitmapImage bitmap = new BitmapImage();
                     await stream.WriteAsync(bytes.AsBuffer());
                     stream.Seek(0);
                     await bitmap.SetSourceAsync(stream);
@@ -39,9 +35,9 @@ namespace Inventory
             return null;
         }
 
-        static public async Task<BitmapImage> LoadBitmapAsync(IRandomAccessStreamReference randomStreamReference)
+        public static async Task<BitmapImage> LoadBitmapAsync(IRandomAccessStreamReference randomStreamReference)
         {
-            var bitmap = new BitmapImage();
+            BitmapImage bitmap = new BitmapImage();
             try
             {
                 using (var stream = await randomStreamReference.OpenReadAsync())

@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -26,15 +24,15 @@ namespace Inventory.Controls
 
         public Thickness DefaultItemMargin
         {
-            get { return thickness; }
-            set { thickness = value; }
+            get => thickness;
+            set => thickness = value;
         }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value != null)
             {
-                var gridView = (GridView)parameter;
+                GridView gridView = (GridView)parameter;
                 if (gridView == null)
                 {
                     return value;
@@ -43,7 +41,7 @@ namespace Inventory.Controls
                 double.TryParse(value.ToString(), out double height);
 
                 var padding = gridView.Padding;
-                var margin = GetItemMargin(gridView, DefaultItemMargin);
+                Thickness margin = GetItemMargin(gridView, DefaultItemMargin);
                 height = height + margin.Top + margin.Bottom + padding.Top + padding.Bottom;
 
                 return height;
@@ -68,7 +66,7 @@ namespace Inventory.Controls
             {
                 if (view.Items.Count > 0)
                 {
-                    var container = (GridViewItem)view.ContainerFromIndex(0);
+                    GridViewItem container = (GridViewItem)view.ContainerFromIndex(0);
                     if (container != null)
                     {
                         return container.Margin;

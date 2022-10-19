@@ -12,8 +12,6 @@
 // ******************************************************************
 #endregion
 
-using System;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -27,8 +25,8 @@ namespace Inventory.Controls
         /// </summary>
         public double HorizontalSpacing
         {
-            get { return (double)GetValue(HorizontalSpacingProperty); }
-            set { SetValue(HorizontalSpacingProperty, value); }
+            get => (double)GetValue(HorizontalSpacingProperty);
+            set => SetValue(HorizontalSpacingProperty, value);
         }
 
         /// <summary>
@@ -47,8 +45,8 @@ namespace Inventory.Controls
         /// </summary>
         public double VerticalSpacing
         {
-            get { return (double)GetValue(VerticalSpacingProperty); }
-            set { SetValue(VerticalSpacingProperty, value); }
+            get => (double)GetValue(VerticalSpacingProperty);
+            set => SetValue(VerticalSpacingProperty, value);
         }
 
         /// <summary>
@@ -68,8 +66,8 @@ namespace Inventory.Controls
         /// </summary>
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         /// <summary>
@@ -91,8 +89,8 @@ namespace Inventory.Controls
         /// </returns>
         public Thickness Padding
         {
-            get { return (Thickness)GetValue(PaddingProperty); }
-            set { SetValue(PaddingProperty, value); }
+            get => (Thickness)GetValue(PaddingProperty);
+            set => SetValue(PaddingProperty, value);
         }
 
         /// <summary>
@@ -120,16 +118,16 @@ namespace Inventory.Controls
         {
             availableSize.Width = availableSize.Width - Padding.Left - Padding.Right;
             availableSize.Height = availableSize.Height - Padding.Top - Padding.Bottom;
-            var totalMeasure = UvMeasure.Zero;
-            var parentMeasure = new UvMeasure(Orientation, availableSize.Width, availableSize.Height);
-            var spacingMeasure = new UvMeasure(Orientation, HorizontalSpacing, VerticalSpacing);
-            var lineMeasure = UvMeasure.Zero;
+            UvMeasure totalMeasure = UvMeasure.Zero;
+            UvMeasure parentMeasure = new UvMeasure(Orientation, availableSize.Width, availableSize.Height);
+            UvMeasure spacingMeasure = new UvMeasure(Orientation, HorizontalSpacing, VerticalSpacing);
+            UvMeasure lineMeasure = UvMeasure.Zero;
 
             foreach (var child in Children)
             {
                 child.Measure(availableSize);
 
-                var currentMeasure = new UvMeasure(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
+                UvMeasure currentMeasure = new UvMeasure(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
 
                 if (parentMeasure.U >= currentMeasure.U + lineMeasure.U + spacingMeasure.U)
                 {
@@ -179,16 +177,16 @@ namespace Inventory.Controls
         /// <inheritdoc />
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var parentMeasure = new UvMeasure(Orientation, finalSize.Width, finalSize.Height);
-            var spacingMeasure = new UvMeasure(Orientation, HorizontalSpacing, VerticalSpacing);
-            var paddingStart = new UvMeasure(Orientation, Padding.Left, Padding.Top);
-            var paddingEnd = new UvMeasure(Orientation, Padding.Right, Padding.Bottom);
-            var position = new UvMeasure(Orientation, Padding.Left, Padding.Top);
+            UvMeasure parentMeasure = new UvMeasure(Orientation, finalSize.Width, finalSize.Height);
+            UvMeasure spacingMeasure = new UvMeasure(Orientation, HorizontalSpacing, VerticalSpacing);
+            UvMeasure paddingStart = new UvMeasure(Orientation, Padding.Left, Padding.Top);
+            UvMeasure paddingEnd = new UvMeasure(Orientation, Padding.Right, Padding.Bottom);
+            UvMeasure position = new UvMeasure(Orientation, Padding.Left, Padding.Top);
 
             double currentV = 0;
             foreach (var child in Children)
             {
-                var desiredMeasure = new UvMeasure(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
+                UvMeasure desiredMeasure = new UvMeasure(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
                 if ((desiredMeasure.U + position.U + paddingEnd.U) > parentMeasure.U)
                 {
                     // next row!
@@ -236,5 +234,4 @@ namespace Inventory.Controls
             }
         }
     }
-
 }
